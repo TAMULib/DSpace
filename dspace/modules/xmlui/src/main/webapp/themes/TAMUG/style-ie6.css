@@ -1,0 +1,22 @@
+/*
+  IE-6 Specific stylesheets for the TAMU Galveston theme
+
+  style-ie6.css
+*/
+
+
+/*
+Height to 285 for IE-8 to prevent hosing of status line
+*/
+
+div#ds-header  a span#ds-header-logo {
+    width: 752px;
+    height 168px;
+    float:left;
+    margin: 0;
+}
+
+span#ds-footer-logo {
+    background-image: url("tamug_logo3.gif");
+}
+

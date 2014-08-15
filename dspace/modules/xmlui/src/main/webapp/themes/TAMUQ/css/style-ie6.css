@@ -1,0 +1,132 @@
+/*
+IE-6 Specific stylesheets for the TAMU Quatar theme
+
+style-ie6.css
+*/
+
+
+div#ds-body {
+    width: 575px;
+    margin-left: 20px;
+}
+
+div#ds-header {
+    background:transparent;
+    margin-left: -1px;
+}
+
+/*
+div#ds-header a span#ds-header-logo {
+    width: 746px;
+    margin: 0;
+    padding: 0;
+    background-repeat: no-repeat;
+}
+*/
+img#ds-header-logo
+{
+    position: relative;
+    left: 55px;
+}
+
+div#front-page-image-wrapper
+{
+    position: relative;
+    left: -45px;
+    top: -26px;
+    width: 699px;
+    overflow: hidden;
+    display: none;
+}
+
+
+em#repository-label
+{
+    padding-right: 3px;
+}
+
+div#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser
+{
+	/*width: 325px;*/
+}
+
+
+p.ListEmpty
+{
+    padding-left: 15px;
+}
+
+div#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul
+{
+    width: 425px;
+}
+
+div#headerWrapper
+{
+    overflow: hidden;
+}
+
+
+div#ds-user-box
+{
+    right: -6px;
+}
+
+a#advanced-search-link
+{
+    left: 0px;
+}
+
+
+/*span#ds-footer-logo {
+    background-image: url("../images/cobranded_logo.gif");
+}*/
+
+ul#ds-trail
+{
+    margin-left: 3px;
+    margin-top: 10px;
+}
+
+ul.ds-artifact-list {
+    width: 565px;
+    float: none;
+}
+#content .next-page-link
+{
+    right:33px;
+}
+
+div#mainNav
+{
+    position: relative;
+    top: -26px;
+    left: 15px;
+}
+
+
+div#below-header div#ds-footer
+{
+    
+    background: transparent;
+    /*
+    height: 85px;
+    */
+}
+
+div#ds-footer-internal-wrapper
+{
+    position: relative;
+    padding-top: 10px;
+    height: 64px;
+    left: 15px;
+    background-color: #500000;
+    width: 900px;
+}
+
+div#footerCap
+{
+    
+    width: 930px;
+    left: 0px; 
+}

@@ -1,0 +1,39 @@
+/*
+IE-7 Specific stylesheets for the TAMU Quatar theme
+
+style-ie6.css
+*/
+
+div#headerWrapper
+{
+    margin-left: -1px
+}
+
+div#mainNav
+{
+    position: relative;
+    top: -26px;
+}
+
+div#ds-footer
+{
+    padding-top: 25px;
+    
+}
+
+ul#ds-trail
+{
+    margin-left: 3px;
+    margin-top: 10px;
+}
+
+div#ds-header a#ds-header-logo-anchor
+{
+    left: -255px
+}
+
+div#front-page-image-wrapper
+{
+    top: -26px;
+}
+

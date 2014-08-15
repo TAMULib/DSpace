@@ -1,0 +1,31 @@
+# E-mail sent to an item's submitter, requesting temporary access.
+#
+# Parameters: {0} item title
+#             {1} item link
+#             {2} requestor's name
+#             {3} phone number
+#             {4} postal address
+#             {5} email address
+#             {6} request message
+# See org.dspace.core.Email for information on the format of this file.
+#
+Subject: OAKTrust: Former Student open access request
+
+
+{2} has requested the following item be made open access:
+
+{0}
+{1}
+
+-----------------------------------------------------------------------
+
+"{6}"
+
+-----------------------------------------------------------------------
+
+Their contact information is:
+Name: {2}
+Email: {5}
+Phone: {3}
+Mailing Address: {4}
+

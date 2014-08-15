@@ -1,0 +1,7 @@
+
+User-agent: *
+
+Disallow: /browse
+Disallow: /*/browse
+
+Sitemap: http://repository.tamu.edu/sitemap
