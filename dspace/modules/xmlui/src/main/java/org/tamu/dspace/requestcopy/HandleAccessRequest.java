@@ -49,8 +49,6 @@ import org.dspace.eperson.Group;
 import org.dspace.eperson.Subscribe;
 import org.xml.sax.SAXException;
 
-import org.tamu.dpace.utilities.ConfigurationUtility;
-
 // Should this be an Action instead? Yeah, this really ought to be an action.
 public class HandleAccessRequest extends AbstractDSpaceTransformer
 {
