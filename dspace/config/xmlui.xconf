@@ -101,6 +101,7 @@
         <!-- By default, DSpace uses a Statistics engine based on SOLR -->
         <aspect name="Statistics" path="resource://aspects/Statistics/" />
         <aspect name="ProfilePageTweaks" path="resource://aspects/ProfilePageTweaks/" />
+        <aspect name="Request Copy" path="resource://aspects/RequestCopy/" />
 
         <!--
              If you prefer to use "Elastic Search" Statistics, you can uncomment the below
