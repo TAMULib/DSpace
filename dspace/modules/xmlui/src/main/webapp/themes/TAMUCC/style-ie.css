@@ -1,0 +1,31 @@
+/*
+Internet Explorer specific stylesheets for the TAMU Corpus Christi theme
+
+style-ie.css
+*/
+
+
+div#ds-options .ds-sublist-head {
+    font-size: 11px;
+}
+
+div#ds-options h3 {
+    font-size: 14px;
+}
+
+ul#ds-trail {
+    margin-top: 12px;
+    margin-left: 2px;
+}
+
+div#ds-header {
+    font-weight: bold;
+}
+
+div#ds-header a {
+    font-weight: bold;
+}
+
+form.ds-interactive-div  li.ds-form-item.last {
+	width: 559px;
+}

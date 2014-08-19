@@ -1,0 +1,21 @@
+/*
+IE-6 Specific stylesheets for the TAMU Corpus Christi theme
+
+style-ie6.css
+*/
+
+div#ds-header {
+    margin: 0;
+    margin-right: 10px;
+    margin-left: 15px;
+    font-weight: bold;
+}
+
+div#ds-header a {
+    font-weight: bold;
+}
+
+div#ds-header a span#ds-header-logo {
+    width: 750px;
+}
+

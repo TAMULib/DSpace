@@ -1,0 +1,65 @@
+/*
+IE-7 Specific stylesheets for the TAMU Galveston theme
+
+style-ie.css
+*/
+
+
+body {
+    padding: 0;
+    margin: 0;
+}
+
+/*
+Changed for IE-8 to prevent hosing status line
+*/ 
+div#ds-header {
+    height: 168px;
+}
+
+
+div.ds-option-set {
+    padding-left: 8px;
+}
+
+div#ds-options h3 {
+    font-weight:bold;
+    font-size: 120%;
+}
+
+
+div#ds-options .ds-sublist-head {
+    font-size: 12px;
+    font-weight: bolder;
+    margin-bottom: 8px;
+}
+
+form#ds-search-form {
+    font-size:90%;
+    margin-bottom: 6px;
+}
+
+div#ds-search-option input.ds-text-field {
+    width: 100px;
+    margin: 0;
+    margin-left: -8px;
+    padding: 0;
+    position: relative;
+    top: -2px;
+    left: 8px;
+    height: 12px;
+}
+
+
+div#ds-user-box {
+    width: 300px;
+    position: absolute;
+    top: -16px;
+    right: 5px;
+    text-align: right;
+}
+
+form.ds-interactive-div  li.ds-form-item.last {
+	width: 559px;
+}
+

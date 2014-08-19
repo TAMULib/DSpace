@@ -1,0 +1,131 @@
+/*
+Internet Explorer specific stylesheets for the TAMU Quatar theme
+
+style-ie.css
+*/
+
+body {
+    margin: 0;
+    padding: 0;
+}
+
+div#ds-main {
+    margin-top: 0;
+}
+
+div#ds-body {
+	margin-top: 0px;
+}
+
+div#navigation_inner
+{
+    padding-top: 4px;
+}
+
+div#ds-header
+{
+    margin-bottom: -1px;
+}
+
+div.ds-option-set {
+	padding: 30px 2px 3px 2px;
+	width: 133px;
+	margin: -10px 0px 0px 0px;
+}
+
+div#searchbar
+{
+    padding-right: 10px;
+    top: -54px;
+}
+
+div#ds-options h3 {
+	position: relative;
+	top: 18px;
+	font-size: 120%; 
+}
+
+div#ds-options h4 {
+    font-size: 110%;
+}
+
+div#ds-search-option input {
+	font-size: 90%;
+}
+
+div#ds-search-option input.ds-text-field {
+	width: 70%;
+	margin-left: -5px;
+	padding: 0;
+	top: -2px;
+}
+
+form#ds-search-form {
+    margin-bottom: 5px;
+}
+
+div#ds-search-option input.ds-button-field {
+	width: auto;
+	height: 20px;
+	margin: 0px;
+	padding-left: 2px;
+	padding-right: 2px;
+	position: relative;
+	top: -1px;
+	left: 10px;
+}
+
+div#ds-search-option a {
+	margin-top: -20px;
+	padding: 0;
+}
+
+div#ds-search-option label {
+	padding-left: 10px;
+}
+
+/*ul#ds-trail {
+    position: absolute;
+    top: 105px;
+    left: 4px;
+}*/
+
+/* this styling serves to indent sub-lists */
+ul li ul,
+ul li ol,
+ol li ul,
+ol li ol
+{
+	position: relative;
+	left: 25px;
+}
+
+
+div#ds-header a#ds-header-logo-anchor
+{
+    left: -307px;
+}
+
+a#ds-footer-logo-anchor
+{
+    position: relative;
+    top: -10px;
+}
+
+div#ds-footer p {
+    width: 475px;
+}
+div#ds-footer
+{
+    height: 65px;
+    margin-bottom:0px;
+}
+
+#footerCap
+{
+    top: 0px;
+}
+
+form.ds-interactive-div  li.ds-form-item.last {
+	/*width: 559px;*/
+}

@@ -1,0 +1,189 @@
+
+body, p, a, div, span, label, input
+{
+    text-align:right;
+}
+
+span.ds-form-label, label.ds-form-label
+{
+    position: relative;
+    top: -30px;
+    float: right;
+}
+
+input, textarea, select
+{
+    clear: left;
+ 
+}
+
+input#aspect_artifactbrowser_AdvancedSearch_field_submit,
+input#aspect_artifactbrowser_SimpleSearch_field_submit
+{
+    float: left;
+}
+
+#aspect_artifactbrowser_AdvancedSearch_list_search-query ol li label
+{
+    top: -40px;
+    position: relative;
+}
+
+#aspect_artifactbrowser_SimpleSearch_list_search-query ol li label
+{
+    top: -30px;
+    position: relative;
+}
+
+#aspect_artifactbrowser_AdvancedSearch_list_search-query
+{
+    height: 50px;
+}
+
+#aspect_eperson_PasswordLogin_list_password-login ol li div input
+{
+    position: relative;
+    left: -30px;
+}
+#aspect_eperson_PasswordLogin_list_password-login ol li div input#aspect_eperson_PasswordLogin_field_login_password
+{
+    left: -26px;
+}
+
+
+div#ds-header a#ds-header-logo-anchor
+{
+    position: relative;
+    left: -508px;
+    top: 19px;
+}
+div#ds-header em#repository-label
+{
+    position: relative;
+    left:-494px;
+    font-size: 28pt;
+    color:white;
+    font-family:Parkavenue, Florence;
+}
+
+
+ul#ds-trail
+{
+    padding-right: 6px;
+}
+
+
+p.ListMinus
+{
+    padding-right: 2px;  
+    padding-left: 1px;
+}
+
+p.ListEmpty
+{
+    padding:0px 0px 0px 16px;
+}
+
+
+/*communities in dspace - browse communities and collections */
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser li p
+{
+    display: inline;
+}
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul,
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ol
+{
+    /*list-style: disc outside;*/
+	list-style: none;
+	margin: 7px 14px;
+	padding:0px 40px 0px 0px;
+}
+/*communities in dspace - browse communities and collections - further down */
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul li ul,
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ol li ul
+{
+    /*list-style: circle outside;*/
+	list-style: none;
+    margin: 7px 14px;
+    padding:0px 40px 0px 0px;
+}
+/*communities in dspace - browse communities and collections - further still*/
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul li ul li ul,
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ol li ul li ul
+{
+    /*list-style: square outside;*/
+	list-style: none;
+	margin: 7px 14px;
+	padding:0px 40px 0px 0px;
+}
+
+/*the following styling serves to indent collections in the community/collection hierarchy*/
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul li ul a
+{
+    position: relative;
+    right: 33px;
+}
+/* the following styling prevents the collection styling above from applying to communities. */
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul li ul span.bold a
+{
+    position: relative;
+    right: 0px;
+}
+
+div.ds-option-set
+{
+    width: auto;     
+}
+div.ds-option-set li
+{
+    list-style: none;
+}
+
+p#expand_all_clicker, p#collapse_all_clicker
+{
+    width: auto;
+}
+
+/*styling for password login form */
+fieldset#aspect_eperson_PasswordLogin_list_password-login
+{
+    width: 500px;
+    margin-left: 160px;
+}
+fieldset#aspect_eperson_PasswordLogin_list_password-login div.ds-form-content
+{
+    width: 400px;
+}
+fieldset#aspect_eperson_PasswordLogin_list_password-login div.ds-form-content label
+{
+    padding: 10px 20px 5px 120px;
+}
+fieldset#aspect_eperson_PasswordLogin_list_password-login div.ds-form-content a
+{
+    position: relative;
+    display: block;
+    top: 5px;
+    left: 203px;
+    width: 200px;
+}
+
+div#aspect_artifactbrowser_CommunityViewer_div_community-view ul
+{
+    list-style: none;
+}
+
+div#aspect_artifactbrowser_CommunityViewer_div_community-recent-submission ul.ds-artifact-list,
+div#aspect_artifactbrowser_CollectionViewer_div_collection-recent-submission ul.ds-artifact-list,
+div#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-title-results ul.ds-artifact-list,
+div#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-dateissued-results ul.ds-artifact-list,
+div#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-author-results ul.ds-artifact-list,
+div#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-subject-results ul.ds-artifact-list
+{
+    position: relative;
+    left: 80px;
+}
+ul.ds-artifact-list li div.artifact-description
+{
+    float:right;
+}
+

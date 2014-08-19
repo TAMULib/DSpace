@@ -1,0 +1,47 @@
+/* Safari 2 only: */
+
+#searchbar #ds-search-form fieldset
+{
+	position: relative;
+	bottom: 9px;
+}
+
+
+ul.page_top_buttons
+{
+    position: relative;
+    top: 25px;
+}
+
+#page_header
+{
+    position: relative;
+    top: 6px;
+}
+
+#page_top ul {
+	list-style-type: none;
+	float: right;
+	margin: -25px 0 0 0;
+	padding: 0;
+}
+
+
+.next-page-link
+{
+	top: 5px;
+}
+
+.top-icon-hover-text
+{
+	left: -150px;
+	top: 5px;
+}
+
+#content .ds-simple-list.horizontal
+{
+    position: relative;
+    left: 2px;
+    /*top: -30px;*/
+	top: -31px;
+}
