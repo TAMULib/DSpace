@@ -98,6 +98,7 @@
              Local Customizations
              ==================== -->
         <aspect name="AggregateKML" path="resource://aspects/AggregateKML/" />
+	    <aspect name="AlumReq" path="resource://aspects/ETDAlumniRequest/" />
 
 
         <!-- ========================
