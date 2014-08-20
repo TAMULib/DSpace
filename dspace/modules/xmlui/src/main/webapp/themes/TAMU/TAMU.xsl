@@ -327,7 +327,7 @@
 		    <map name="logomap">
 		        <area shape="rect" coords="0,0,162,64" href="http://www.tamu.edu" alt="TAMU Homepage" />
 		        <area shape="rect" coords="163,0,288,64" href="http://library.tamu.edu" alt="TAMU Libraries Homepage" />
-		        <area shape="rect" coords="289,0,393,64" href="http://digital.library.tamu.edu" alt="TAMU Digital Library Homepage" />
+		        <area shape="rect" coords="289,0,430,64" href="http://digital.library.tamu.edu" alt="TAMU Digital Library Homepage" />
 		    </map>
 
                   
