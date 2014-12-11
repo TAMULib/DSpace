@@ -19,7 +19,7 @@ import org.apache.log4j.Logger;
 import org.dspace.app.util.SubmissionInfo;
 import org.dspace.app.util.Util;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.DCValue;
+import org.dspace.content.Metadatum;
 import org.dspace.content.Item;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Context;
@@ -239,6 +239,8 @@ public class CCLicenseStep extends AbstractProcessingStep
     	String licenseclass = (request.getParameter("licenseclass_chooser") != null) ? request.getParameter("licenseclass_chooser") : "";
     	String jurisdiction = (ConfigurationManager.getProperty("cc.license.jurisdiction") != null) ? ConfigurationManager.getProperty("cc.license.jurisdiction") : "";
     	if (licenseclass.equals("standard")) {
+    		if(jurisdiction != "")
+    			map.put("version", request.getParameter("version_chooser"));
     		map.put("commercial", request.getParameter("commercial_chooser"));
     		map.put("derivatives", request.getParameter("derivatives_chooser"));
     	} else if (licenseclass.equals("recombo")) {
@@ -338,3 +340,4 @@ public class CCLicenseStep extends AbstractProcessingStep
     }
    
 }
+
