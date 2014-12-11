@@ -10,6 +10,7 @@ package org.dspace.app.xmlui.cocoon;
 import java.io.IOException;
 import java.util.Map;
 import java.util.ArrayList;
+import java.lang.Boolean;
 import javax.servlet.http.HttpServletResponse;
 import org.xml.sax.SAXException;
 
@@ -31,6 +32,7 @@ import org.dspace.handle.HandleManager;
 import org.dspace.core.Context;
 import org.dspace.core.Constants;
 import org.dspace.core.LogManager;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
@@ -81,7 +83,6 @@ public class MetadataExportReader extends AbstractReader implements Recyclable
 
     private static Logger log = Logger.getLogger(MetadataExportReader.class);
 
-
     DSpaceCSV csv = null;
     MetadataExport exporter = null;
     String filename = null;
@@ -95,6 +96,10 @@ public class MetadataExportReader extends AbstractReader implements Recyclable
             IOException
     {
         super.setup(resolver, objectModel, src, par);
+        
+        String export_config = ConfigurationManager.getProperty("bulkedit", "xmlui.export_all");
+        
+        boolean export_all = (export_config != null) ? Boolean.parseBoolean(export_config) : false;
 
         try
         {
@@ -112,22 +117,22 @@ public class MetadataExportReader extends AbstractReader implements Recyclable
 
             String handle = par.getParameter("handle");
             DSpaceObject dso = HandleManager.resolveToObject(context, handle);
-            
+                        
             java.util.List<Integer> itemmd = new ArrayList<Integer>();
             if(dso.getType() == Constants.ITEM)
             {
                itemmd.add(dso.getID());
-               exporter = new MetadataExport(context, new ItemIterator(context, itemmd), false);
+               exporter = new MetadataExport(context, new ItemIterator(context, itemmd), export_all);
             }
             else if(dso.getType() == Constants.COLLECTION)
             {
                Collection collection = (Collection)dso;
                ItemIterator toExport = collection.getAllItems();
-               exporter = new MetadataExport(context, toExport, false);
+               exporter = new MetadataExport(context, toExport, export_all);
             }
             else if(dso.getType() == Constants.COMMUNITY)
             {
-               exporter = new MetadataExport(context, (Community)dso, false);
+               exporter = new MetadataExport(context, (Community)dso, export_all);
             }
 
             log.info(LogManager.getHeader(context, "metadataexport", "exporting_handle:" + handle));
