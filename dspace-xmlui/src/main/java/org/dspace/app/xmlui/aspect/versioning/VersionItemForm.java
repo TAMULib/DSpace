@@ -16,6 +16,7 @@ import org.dspace.app.xmlui.wing.element.*;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.AuthorizeManager;
 import org.dspace.content.Item;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.utils.DSpace;
 import org.dspace.versioning.VersioningService;
 
@@ -62,8 +63,9 @@ public class VersionItemForm extends AbstractDSpaceTransformer {
         // Get our parameters and state
         Item item = getItem();
 
-        //Only (collection) admins should be able to create a new version
-        if(!AuthorizeManager.isAdmin(context, item.getOwningCollection())){
+        //Only (collection) admins or those with write access to the item should be able to create a new version
+        boolean nonAdminsCanVersion = ConfigurationManager.getProperty("versioning", "item.editor_can_create") != null ? ConfigurationManager.getProperty("versioning", "item.editor_can_create").equals("true") : false;
+		if(!AuthorizeManager.isAdmin(context, item.getOwningCollection()) && !( item.canEdit() && nonAdminsCanVersion)){
             throw new AuthorizeException();
         }
 

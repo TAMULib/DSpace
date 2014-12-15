@@ -26,8 +26,10 @@ import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.AuthorizeManager;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
+import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.eperson.Group;
+import org.dspace.services.ConfigurationService;
 import org.dspace.utils.DSpace;
 import org.dspace.versioning.VersioningService;
 import org.xml.sax.SAXException;
@@ -158,24 +160,26 @@ public class Navigation extends AbstractDSpaceTransformer implements CacheablePr
     	if (dso != null && dso.getType() == Constants.ITEM)
         {
     		Item item = (Item) dso;
-            if(AuthorizeManager.isAdmin(this.context, item.getOwningCollection()))
+    		
+    		boolean isCollectionAdmin = AuthorizeManager.isAdmin(this.context, item.getOwningCollection());
+    		boolean nonAdminsCanViewHistory = ConfigurationManager.getProperty("versioning", "item.history.view.admin") != null ? ConfigurationManager.getProperty("versioning", "item.history.view.admin").equals("false") : true;
+    		boolean nonAdminsCanVersion = ConfigurationManager.getProperty("versioning", "item.editor_can_create") != null ? ConfigurationManager.getProperty("versioning", "item.editor_can_create").equals("true") : false;
+    		
+    		boolean headAdded=false;
+            if((isCollectionAdmin || (nonAdminsCanVersion && item.canEdit())) && (isLatest(item) && item.isArchived()))
             {
-                boolean headAdded=false;
-                if(isLatest(item) && item.isArchived())
+                context.setHead(T_context_head);
+                headAdded=true;
+                context.addItem().addXref(contextPath+"/item/version?itemID="+item.getID(), T_context_create_version);
+            }
+            
+            if((isCollectionAdmin || nonAdminsCanViewHistory) && hasVersionHistory(item))
+            {
+                if(!headAdded)
                 {
                     context.setHead(T_context_head);
-                    headAdded=true;
-                    context.addItem().addXref(contextPath+"/item/version?itemID="+item.getID(), T_context_create_version);
                 }
-
-                if(hasVersionHistory(item))
-                {
-                    if(!headAdded)
-                    {
-                        context.setHead(T_context_head);
-                    }
-                    context.addItem().addXref(contextPath+"/item/versionhistory?itemID="+item.getID(), T_context_show_version_history);
-                }
+                context.addItem().addXref(contextPath+"/item/versionhistory?itemID="+item.getID(), T_context_show_version_history);                
             }
     	}
     }
