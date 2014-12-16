@@ -13,7 +13,9 @@ import org.apache.cocoon.environment.Request;
 import org.apache.cocoon.util.HashUtil;
 import org.apache.excalibur.source.SourceValidity;
 import org.apache.excalibur.source.impl.validity.NOPValidity;
+import org.apache.log4j.Logger;
 import org.dspace.app.util.Util;
+import org.dspace.app.xmlui.aspect.administrative.collection.AssignCollectionRoles;
 import org.dspace.app.xmlui.cocoon.AbstractDSpaceTransformer;
 import org.dspace.app.xmlui.utils.DSpaceValidity;
 import org.dspace.app.xmlui.utils.HandleUtil;
@@ -32,6 +34,7 @@ import org.dspace.eperson.Group;
 import org.dspace.services.ConfigurationService;
 import org.dspace.utils.DSpace;
 import org.dspace.versioning.VersioningService;
+import org.mortbay.log.Log;
 import org.xml.sax.SAXException;
 
 import java.io.IOException;
@@ -53,6 +56,8 @@ public class Navigation extends AbstractDSpaceTransformer implements CacheablePr
     private static final Message T_context_head = message("xmlui.administrative.Navigation.context_head");
     private static final Message T_context_create_version= message("xmlui.aspect.versioning.VersioningNavigation.context_create_version");
     private static final Message T_context_show_version_history= message("xmlui.aspect.versioning.VersioningNavigation.context_show_version_history");
+    
+    private static Logger log = Logger.getLogger(Navigation.class);
 
     /** Cached validity object */
 	private SourceValidity validity;
@@ -162,18 +167,36 @@ public class Navigation extends AbstractDSpaceTransformer implements CacheablePr
     		Item item = (Item) dso;
     		
     		boolean isCollectionAdmin = AuthorizeManager.isAdmin(this.context, item.getOwningCollection());
+    		
+    		boolean isReader = false;
+    		Group[] readerGroups = AuthorizeManager.getAuthorizedGroups(this.context, item, Constants.READ);
+    		for(Group group : readerGroups)
+    		{
+    			if(group.isMember(eperson))
+    			{
+    				isReader = true;
+    				break;
+    			}
+    		}
+    		
     		boolean nonAdminsCanViewHistory = ConfigurationManager.getProperty("versioning", "item.history.view.admin") != null ? ConfigurationManager.getProperty("versioning", "item.history.view.admin").equals("false") : true;
     		boolean nonAdminsCanVersion = ConfigurationManager.getProperty("versioning", "item.editor_can_create") != null ? ConfigurationManager.getProperty("versioning", "item.editor_can_create").equals("true") : false;
+    		
+    		
+    		log.info("******* VERSIONING LOGGING INFO **********");
+    		log.info("isReader: " + isReader);
+    		log.info("nonAdminsCanViewHistory: " + nonAdminsCanViewHistory);
+    		log.info("nonAdminsCanVersion: " + nonAdminsCanVersion);
     		
     		boolean headAdded=false;
             if((isCollectionAdmin || (nonAdminsCanVersion && item.canEdit())) && (isLatest(item) && item.isArchived()))
             {
                 context.setHead(T_context_head);
                 headAdded=true;
-                context.addItem().addXref(contextPath+"/item/version?itemID="+item.getID(), T_context_create_version);
+                context.addItem().addXref(contextPath+"/item/version?itemID="+item.getID()+"&nacv="+nonAdminsCanVersion, T_context_create_version);
             }
             
-            if((isCollectionAdmin || nonAdminsCanViewHistory) && hasVersionHistory(item))
+            if(isCollectionAdmin && hasVersionHistory(item))
             {
                 if(!headAdded)
                 {
