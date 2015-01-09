@@ -189,9 +189,8 @@
         <theme name="Voucher XRays" handle="1969.1/148733" path="TAMU/ImageGallery/"/>
         <theme name="The Themiest" handle="123456789/2" path="TAMU/ImageGallery/"/>
 
-        <!-- Mirage theme, @mire contributed theme, default since DSpace 3.0 -->
+        <!-- Mirage 2 theme, @mire contributed theme, customized for TAMU through module -->
         <theme name="Mirage 2" regex=".*" path="Mirage2/" />
-
 
         <!-- Reference theme, the default Manakin XMLUI layout up to DSpace 1.8 -->
         <!-- <theme name="Default Reference Theme" regex=".*" path="Reference/" /> -->
