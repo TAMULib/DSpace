@@ -1,0 +1,3291 @@
+/***************************************************************
+
+style.css: page structure, background colors & images, etc.
+Jeremy Tarpley
+James Creel
+Adam Mikeal
+Alexey Maslov
+7/24/2007
+
+***************************************************************/
+
+
+body {
+	font-family: Verdana,Lucida,Helvetica,Arial,sans-serif;
+	font-size: 1em;
+	font-style: normal;
+	text-align: center;
+	background: #1b2932 url('../../images/background.jpg') repeat-x 0% 0%;
+	margin: 0 20px;
+	padding: 0;
+	text-align: left;
+	width: 1000px;
+}
+
+#ds-header {
+	display: block;
+	padding: 0;
+	margin: 0;
+	height: 116px;
+}
+
+#wrapper {
+	display: block;
+	min-height: 300px;
+	margin: 0;
+	padding: 0;
+	background-color: #fff;
+	/*background-image: url('../../images/wrapperbg.png');*/
+	background: #fff url('../../images/content_bg.gif') repeat-x 0% 0%;
+	border-left: 1px solid #CCCCCC;
+	border-bottom: 1px solid #CCCCCC;
+	/* if this is too small, content gets pushed to the bottom when the window is shrunk. */
+	width: 999px;
+}
+
+#ds-main {
+	background: transparent url('../../images/header_bg.jpg') repeat-x 0% 0%;
+}
+
+#ds-body
+{
+	/*position: relative;
+	left: 300px;
+	width: 700px;*/
+	/*margin-top: 12px;*/
+    margin-top: -4px;
+}
+
+/****************************************************************
+				Top of the page, date, icons
+****************************************************************/
+#page_top {
+	margin: 0 14px 0 15px;
+	padding: 0;
+	font-size: 12px;
+	height: 15px;
+	color: #fff;
+}
+
+#page_top a, #page_top a:visited, #page_top a:active {
+	color: #fff;
+	text-decoration: none;
+}
+
+#page_top ul {
+	list-style-type: none;
+	float: right;
+	/* margin: -25px 0 0 0;*/
+	margin: 2px 0 0 0;
+	padding: 0;
+	/* On jul 30 2008, we got asked to remove the page top icons */
+    display:none;
+}
+
+#page_top ul li {
+	display: inline;
+}
+
+.top-icon-hover-text
+{
+	text-align: right;
+	position: absolute;
+	
+	left: 725px;
+	top: 9px;
+	
+	/*color: yellow;*/
+	color: white;
+	display: none;
+	
+	width: 140px;
+}
+
+
+.top-icon-text-shown
+{
+	display: inline;
+}
+
+ul#portal-globalnav 
+{
+    background:transparent url(http://dl.tamu.edu/global_nav_tabs.gif) no-repeat scroll 0pt;
+    z-index:2;
+    position:relative;
+    top: 61px;
+    width: 210px;
+    line-height: 1.5em;
+    left: 136px;
+}
+ul#portal-globalnav li
+{
+    display: inline;
+    float: left;
+    font-size: 11px;
+    font-weight: bold;
+    height: 20px;
+    margin: 0pt;
+    padding: 3px 0pt 0pt;
+    position: relative;
+    text-align: center;
+    width: 70px;
+    color: #666666;
+}
+ul#portal-globalnav li a,
+ul#portal-globalnav li a:visited,
+ul#portal-globalnav li a:active
+{
+    color: #666666;
+}
+
+
+
+
+
+/****************************************************************
+							Header
+****************************************************************/
+#header {
+	/* background-color: #596B78; */
+	/*height: 65px; */
+	height: 46px;
+	/*margin: 0 0 0 -2px;*/ 
+	padding: 0;
+	/* border-right: 1px solid #ccc; */
+}
+
+#header a, div#header a:visited {
+	color: #ffffff;
+}
+
+#page_header {
+    /*width: 559px;*/
+	position: relative;
+	margin-bottom: 1px;
+	/* background: url('/manakin/themes/Library/images/header_bg.jpg') repeat-x 0% 0%; */
+	/* height: 107px; */
+	
+}
+
+#site_logo, #page_header {
+	/*height: 107px; */
+	display: block;
+}
+
+#site_logo {
+	float: left;
+	width: 228px;
+	margin: -16px 0px 0px 0px;
+	padding: 0;
+}
+
+#page_header img {
+	display: none;
+	/*float: right; 
+	clear: right;
+	padding: 0;*/
+}
+
+
+
+
+
+/***************************************************************
+				Horizontal navigation area below the header
+***************************************************************/
+#top_navigation {
+	/* background: #697B88 url('../../images/breadcrumb_bg.png') center center repeat-x; */
+	background: #681121 url('../../images/breadcrumb_bg.png') repeat-x scroll 0 0;
+	border: 1px solid #ccc;
+	/*height: 15px;*/
+	/*TODO:  can we take the height to 20px;?*/
+    height: 20px;
+    padding: 5px 0 0 10px;
+	margin-top: 3px;
+	color: #fff;
+	font-size: 10px;
+	/* used to be a min! */
+	width: 988px; /* varies based on the content size and navigation size */
+}
+
+#top_navigation a, #top_navigation a:visited, #top_navigation a:active,
+#ds-user-box a{
+	text-decoration: none;
+	color: #fff;
+}
+
+#ds-user-box
+{
+	font-size: 10px;
+	position: relative;
+	
+	float:right;
+	right: 12px;
+	
+	/* TODO:; trying to expand the top_navigation */
+	/*top: -2px;*/
+	top: 0px;
+	
+	text-align: right;
+	height: 12px;
+	
+	/*margin-top: 9px;*/
+}
+#ds-user-box p a
+{
+    height: 12px;
+}
+
+
+#top_navigation ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+#top_navigation ul#breadcrumbs
+{
+    position: absolute;
+    /* TODO:  trying to expand the top_navigation */
+    /*top: 68px;*/
+    top: 71px;
+    
+}
+#breadcrumbs li {
+	display: inline;
+	margin: 1px;
+}
+
+
+#breadcrumbs li a {
+	/*margin-right: 2px;*/
+}
+
+#breadcrumbs li span {
+	margin-right: 4px;
+}
+
+#quicklinks {
+	float: right;
+	margin: -15px 0 0 0;
+	padding: 0 30px 0 0;
+}
+
+#quicklinks a, #quicklinks a:visited, #quicklinks a:active {
+	color: #F2AF00;
+}
+
+
+
+
+
+
+
+/***************************************************************
+				Vertical navigation area on left side of page
+***************************************************************/
+#navigation {
+	background: transparent url('../../images/nav_bg.gif') repeat-x left bottom;
+	width: 220px;
+	height: 100%;
+	float: left;
+	margin: 0;
+	padding: 0 0 100px 0;
+	font-family: Verdana, arial, sans-serif;
+	font-size: 10px;
+	display: block;
+}
+
+#navigation_inner{
+    /*TODO:  trying to expand top_navigation */
+    /*padding-top 3px;*/
+	padding-top: 8px;
+}
+
+#navigation_inner .ds-options-list
+{
+	padding-left: 21px;
+	padding-top: 9px;
+	/*
+	background: url('../../images/nav_news_bg.png') #1B2931 bottom repeat-x;
+	*/
+	background-color: #fafafe;
+	
+	border-right: 1px solid #CCCCCC;
+	
+	/* Fixed heights were needed for the unpopular hover-accordion sliders.
+	/*min-height: 60px;*/
+	
+	/*height:21em;*/
+	
+}
+
+div.navigation-static-link
+{
+    font-size:12px;
+    padding-left:21px;
+    padding-top: 9px;
+    padding-bottom:8px;
+    background-color: #FAFAFE;
+    border-right: 1px solid #CCC;
+}
+
+
+#navigation a, #navigation a:hover, #navigation a:active {
+	/*color: #fff;*/
+	color: #666;
+	text-decoration: none;
+}
+
+#navigation ul {
+	/*padding: 0 4px 0 0;*/
+	margin: 0;
+}
+
+#navigation li {
+	margin: 0;
+	padding: 0;
+}
+
+.primary_navigation li a,
+.ds-options-list li a {
+	display: block;
+	font-size: 12px;
+}
+
+.nav_closed {
+	background: transparent url('../../images/nav_arrow_closed.gif') no-repeat 4px 2px;
+}
+
+.nav_open {
+	background: transparent url('../../images/nav_arrow_open.gif') no-repeat 4px 2px;
+}
+
+.ds-option-set-head, .menu_nav_icon
+{
+	cursor: pointer;
+}
+.menu_nav_icon_open, .menu_nav_icon_closed
+{
+	margin-left: 3px;
+	margin-right: 3px;
+}
+.ds-option-set-head
+{
+	padding: 4px 0px 4px 2px;
+	color: #eeeeee;
+	font-size: 12px;
+}
+.ds-option-set-head-clickable
+{
+	/*margin: 8px 0px -5px 0px;*/
+	background-color:#283944;
+	border-top: 1px solid #CCCCCC;
+	padding: 4px 0px 4px 2px;
+	color: #eeeeee;
+	font-size: 12px;
+	cursor: pointer;
+	/*margin: 7px; */
+}
+#navigation h3 {
+	font-weight: normal;
+}
+.ds-option-set-head-clickable.open
+{
+    background-color:#728696;
+}
+
+.ds-option-set-head-clickable.closed
+{
+}
+
+.secondary_navigation  li a,
+.ds-simple-list li a{
+	font-size: 11px;
+	font-weight: normal;
+	border-bottom: none;
+	margin: 4px 0 3px 0;
+	width: 170px;
+}
+
+ul#hours {
+	margin-top: 20px;
+	background: #efae00 url('../../images/nav_highlighted_bg.png') top left repeat-x;
+	border-top: 1px solid #ccc;
+	border-bottom: 1px solid #ccc;
+}
+
+.highlighted {
+	margin: 0;
+	padding: 4px 0 4px 0;
+	height: 19px;
+}
+
+.ds-sublist-head
+{
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+/* if you edit this one, be sure to also edit it in style-ie6.css */
+#searchbar
+{	
+	position: relative;
+	display: block;
+	height: 38px;
+	border-left: 1px solid #ccc;
+	border-right: 1px solid #ccc;
+	background-image: url('../../images/search_icon.jpg');
+	background-repeat: no-repeat;
+	background-position: 52px 2px;
+	background-color:  #1B2931;
+	padding: 3px 0px;
+}
+#searchbar #ds-search-form fieldset
+{
+	border: none;
+	display: inline;
+	position: relative;
+
+	/*
+	width: 220px;
+	position: relative;
+	left: -13px;
+	margin-top: -10px;
+	margin-bottom: -12px;
+	*/
+}
+#ds-search-form fieldset label
+{
+	display: inline;
+	color: #697B88;
+	font-size: x-small;	
+}
+#ds-search-option-head
+{
+	color: white;
+	font-weight:bolder;
+	cursor: default;
+	margin-top: 3px;
+	padding: 3px;
+	
+	position: absolute;
+	top: 3px;
+	left: /*94px;*/ 87px;
+}
+#ds-search-form
+{
+	position: absolute;
+	top: 7px;
+	left: 220px;
+}
+#ds-search-form input.ds-text-field {
+	width: 200px;
+	padding: 1px 3px;
+}
+#searchbar a
+{
+	position: absolute;
+	top: 24px;
+	/*left: 480px;*/
+	/*left: 133px;*/
+	right:786px;
+	/*color: #dedefe;*/
+	/*color: #fff;*/
+	color: #CCCCCC;
+	text-decoration: underline;
+	font-size: 0.85em;
+}
+
+#aspect_discovery_SimpleSearch_div_discovery-search-box {
+	background: #efefef;
+	padding: 10px;
+	border: thin solid #b6b6b6;
+}
+
+#aspect_discovery_SimpleSearch_list_primary-search,
+#aspect_discovery_SimpleSearch_list_primary-search ol,
+#aspect_discovery_SimpleSearch_div_general-query li.ds-form-item,
+#aspect_discovery_SimpleSearch_div_general-query div.ds-form-content {
+	width: 100% !important;
+}
+
+#aspect_discovery_SimpleSearch_div_general-query label.ds-form-label {
+	width: auto !important;
+
+}
+
+#aspect_discovery_SimpleSearch_div_general-query div.ds-form-content {
+	padding: 0px !important;
+	float:none !important;
+}
+
+#aspect_discovery_SimpleSearch_field_query {
+	width: 75%;
+}
+
+#aspect_discovery_SimpleSearch_div_general-query input.search-icon {
+	background-image: url('../../images/search_icon_ffffff_20x20.png');
+	background-repeat: no-repeat;
+	background-position: center center;
+	text-indent: -1000px;
+	font-size: 0;
+	display: block;
+	line-height: 0;
+	height: 31PX;
+	background-color: #283944;
+	box-shadow: inset 2px 2px 15px 2px #567A91;
+	border: none;
+	cursor: pointer;
+}
+
+.discover-filters-box h4.ds-div-head {
+	font-size: 1.5em !important;
+}
+
+.discover-filters-box p.ds-paragraph {
+	font-style: italic;
+}
+
+
+.discover-filters-box table.discovery-filters input.filter-control.filter-add {
+	background-image: url('../../images/button_plus.png');
+}
+
+.discover-filters-box table.discovery-filters input.filter-control.filter-remove {
+	margin-left: 7px;
+	background-image: url('../../images/button_minus.png');
+}
+
+.discover-filters-box table.discovery-filters input.filter-control {
+	margin-left: 5px;
+	text-indent: -1000px;
+	background-repeat: no-repeat;
+	background-position: center center;
+	height: 17px;
+	width: 17px;
+	float: left;
+	background-color: transparent;
+	border: none;
+	font-size: 0;
+	display: block;
+	line-height: 0;
+}
+
+#aspect_discovery_SimpleSearch_table_discovery-filters {
+	width: 86%;
+}
+
+#aspect_discovery_SimpleSearch_table_discovery-filters, 
+#aspect_discovery_SimpleSearch_table_discovery-filters tr {
+	border-spacing: 0px;
+}
+
+#aspect_discovery_SimpleSearch_table_discovery-filters .ds-select-field {
+	width: 100%;
+}
+
+#aspect_discovery_SimpleSearch_table_discovery-filters tr:nth-of-type(even):not(:last-of-type) {
+	background-color: #fefefe;
+}
+
+#aspect_discovery_SimpleSearch_table_discovery-filters td {
+	border-spacing: 0px;
+}
+
+.pagination-masked {
+	background: #efefef;
+	border: thin solid #b6b6b6 !important;
+}
+
+ul.pagination-links {
+	margin: 4px;
+	font-size: 1.2em;
+	top: 2px;
+
+}
+
+ul.pagination-links a {
+	text-decoration: none !important;
+}
+
+#aspect_discovery_SimpleSearch_div_search-results ul {
+	width: 100%;
+	overflow: hidden;
+}
+
+#aspect_discovery_SimpleSearch_div_search-results .ds-artifact-item {
+	padding: 20px !important;
+}
+
+
+
+.apply-filter {
+	text-align: right;
+	height: 50px;
+}
+#aspect_discovery_SimpleSearch_field_submit_apply_filter {
+	padding: 5px 10px !important;
+	margin-right: -5px;
+}
+
+#aspect_discovery_SimpleSearch_field_submit_apply_filter,
+#content li.current-page-link a, 
+#content li.current-page-link a:visited,
+a.next-page-link,
+a.previous-page-link  {
+	color: #efefef !important;
+	background: #283944;
+	padding: 2px 4px;
+	border: thin solid #ffffff;
+	box-shadow: inset 2px 2px 5px 2px #567A91;
+	text-decoration: none !important;
+	vertical-align: top;
+	cursor: pointer;
+}
+
+
+a.next-page-link,
+a.previous-page-link {
+	padding: 2px 5px 0px 5px !important;
+	top: 2px !important;
+	display: inline-block;
+}
+
+.controls-gear-wrapper {
+	position: relative;
+	float: right;
+	top: 5px;
+	cursor: pointer !important;
+}
+.controls-gear-wrapper:nth-of-type(2) {
+	top: -20px;
+}
+
+.top[id="aspect_discovery_SimpleSearch_div_search-controls-gear"] {
+	top: -75px;
+}
+
+.controls-gear-wrapper .discovery-controls-gear {
+	padding: 0;
+	margin-right: 3px;
+	margin-bottom: 0;
+	margin-top: 0;
+	background: none;
+	border: none;
+}
+.gear-icon {
+	background-image: url('../../images/gear_6D859C_25x25.png');
+	height: 25px;
+	width: 25px;
+}
+.rgba.boxshadow ul.gear-selection {
+-webkit-box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+-moz-box-shadow: 2px 2px 10px rgba(0,0,0,0.2);
+box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+}
+ul.gear-selection {
+min-width: 140px;
+margin: 0 2px 0 0;
+list-style: none;
+background-color: #FFFFFF;
+position: absolute;
+right: 0;
+z-index: 999;
+border: 1px solid #EBEBEB;
+padding: 0;
+display: none;
+-moz-box-shadow: rgb(104, 104, 104) 1px 1px 5px 0px;
+-webkit-box-shadow: rgb(104, 104, 104) 1px 1px 5px 0px;
+-o-box-shadow: rgb(104, 104, 104) 1px 1px 5px 0px;
+box-shadow: rgb(104, 104, 104) 1px 1px 5px 0px;
+}
+ul.gear-selection li.gear-head.first {
+border-top: none;
+}
+ul.gear-selection li.gear-head {	
+padding: 5px;
+border-top: 1px solid #EBEBEB;
+}
+ul.gear-selection li {
+list-style: none;
+}
+ul.gear-selection li.gear-option-selected {
+background: url('../../images/check_606060_15x15.png') no-repeat 3px center;
+}
+#aspect_discovery_SimpleSearch_list_sort-options li ul {
+	position: relative;
+	left: 0px;
+}
+ul.gear-selection li.gear-option {
+padding: 5px 5px 5px 25px;
+white-space: nowrap;
+cursor: pointer;
+}
+ul.gear-selection ul {
+margin-top: 0;
+margin-bottom: 0;
+margin-left: 0;
+padding-left: 0;
+}
+ul.gear-selection li.gear-option a {
+color: #444444;
+text-decoration: none;
+}
+
+
+
+
+
+/***************************************************************
+					Some Common Page Content
+				Including front page and browsing lists
+***************************************************************/
+#content {
+	/*background: #fff url('/manakin/themes/Library/images/content_bg.png') repeat-y 0% 0%;*/
+	color: /*#222;*/ #535353;
+	width: 730px; /* number was formerl a max */
+	position: relative;
+	float: right;
+	/*top: 15px;
+	left: 15px;*/
+	/*padding-right: 15px; */
+}
+
+
+#content h1, h2, h3, h4, h5, h6 {
+	color: #697B88;
+}
+
+#content h1 {
+	margin: 15px 0;
+	padding: 0;
+	/*font-size: 18px;*/
+}
+
+#content a, #content a:visited, #content a:active {
+	color: #656580;
+}
+
+#content_wrapper, #content {
+	margin: 0 0 25px 0;
+	/*TODO:  trying to expand top_navigation*/
+	/*padding: 7px 24px 5px 25px;*/
+	padding: 12px 24px 5px 25px;
+	/*width: 100%;*/
+	/* width: 650px; */
+}
+
+#content_wrapper ul, #content ul {
+	/* margin: 15px 0 0 0; */
+	padding: 0;
+}
+
+
+#content h1.ds-div-head
+{
+	margin-top: 22px;
+	position: relative;
+	left: 0px;
+	width: 560px;
+}
+
+div#rotating_header_wrapper
+{
+    height: 178px;
+}
+
+a#rotating_header_anchor
+{
+    position: relative;
+    top: -4px;
+    /*TODO:  ensure this looks good in all browsers */
+    margin-left: -25px;
+    width: 777px;
+    /*z-index: 50;*/
+}
+
+div#rotating_header_about_this_image_wrapper
+{
+    width: 775px;     
+    height: 90px;
+    position: relative;
+    top: -70px;    
+    left: -24px;    
+}
+p.rotating_header_clicker
+{
+    color: white;
+    /*background-color: #212121;*/
+    filter:alpha(opacity=75);
+    opacity:.75;
+    
+    position: absolute;
+    left: 648px;
+    /*TODO: trying to expand the top_navigation */
+    /*top: 35px*/ /*31px*/;
+    top: 20px;
+    cursor: pointer;
+    /*border: 1px solid white;*/
+    padding: 2px;
+    height: 14px;
+    /*z-index: 100;*/
+}
+p#rotating_header_para
+{
+    position: relative;
+    padding: 6px 25px 18px 25px;
+    font-size: 10pt;
+    height: 50px /*89px*/;
+    width: 725px;
+    border: 1px solid black;
+    color: #eaeaef;
+    /*z-index: 90;*/
+    background-color: 	#030303;
+    filter:alpha(opacity=85);
+    opacity:.85;    
+}
+p#rotating_header_para a, p#rotating_header_para a:visited
+{
+    color: #aabaf9;
+}
+
+p#expand_all_clicker,
+p#collapse_all_clicker
+{
+    background-color:#2E6DA2;
+    border-bottom-color:white;
+    border-bottom-style:outset;
+    border-bottom-width:3px;
+    
+    border-left-color:white;
+    border-left-style:outset;
+    border-left-width:3px;
+    
+    border-right-color:white;
+    border-right-style:outset;
+    border-right-width:3px;
+    
+    border-top-color:white;
+    border-top-style:outset;
+    border-top-width:3px;
+    
+    text-align:center;
+    color:white;
+    padding-bottom:3px;
+    padding-left:3px;
+    padding-right:3px;
+    padding-top:3px;
+    width: 75px;
+    cursor: pointer;
+    margin-bottom: 6px;
+}
+
+p.ListPlus,
+p.ListMinus
+{
+    cursor: pointer;
+}
+
+p.ListPlus,
+p.ListMinus,
+p.ListEmpty
+{
+    padding-bottom:0px;
+    display: inline;
+}
+
+p.ListEmpty
+{
+    padding-left: 23px;
+}
+
+p.ListMinus
+{
+    padding-right: 2px;  
+    padding-left: 2px;
+}
+
+p.item-view-toggle-bottom
+{
+    font-weight: bold;
+    padding-top: 18px;
+}
+
+a.communitySummaryListAnchorDIM
+{
+    font-weight: normal;
+}
+
+
+div#front_page_column_container
+{
+    background-image:url('../../images/fade_transparent.png');
+    background-repeat: no-repeat;
+    width:781px;
+    min-height:135px;
+    margin-left:-24px;
+    
+}
+
+/*
+div#left_content_column h1
+{
+	font-size:202% !important;
+	margin-top: 8px !important;
+}
+*/
+
+div#center_content_column,
+div#left_content_column,
+div#right_content_column
+{
+    float: left;
+    padding-left: 26px;
+    width: 220px;
+}
+
+
+div#right_content_column p.front-page-col-heading, 
+div#center_content_column p.front-page-col-heading, 
+div#left_content_column p.front-page-col-heading {
+    color: #535353;
+    font-size: 140%;
+    margin-top: 10px;
+    width: 225px;
+}
+
+h2.ds-div-head
+{
+	letter-spacing: 0px;
+	font-weight: bold;
+	padding: 25px 0px 10px 0px;
+}
+
+
+h3.ds-list-head
+{
+    font-weight: bold;
+    font-size: 120%;
+    margin: 20px 0px 10px 0px;
+}
+
+div#searchbox_left, div#search, div#searchbox_right {
+	display: block;
+	float: left;
+	height: 130px;
+	margin: 0;
+	padding: 0;
+}
+
+#searchbox_left {
+	width: 67px;
+	background: transparent url('../../images/searchbox_left.png') top left no-repeat;
+}
+
+#searchbox_right {
+	width: 113px;
+	background: transparent url('../../images/searchbox_right.png') top left no-repeat;
+}
+
+#search {
+	width: 350px;
+	background: transparent url('../../images/searchbox_bg.png') top left repeat-x;
+	font-size: 13px;
+}
+
+#search a, #search a:visited, #search a:active, #search form, #search p {
+	text-align: center;
+	font-weight: bold;
+	color: #333 !important;
+	margin: 0 auto;
+}
+
+#search p {
+	margin: 20px 0 10px 0;
+}
+
+#search a {
+	padding-left: 20px;
+	text-decoration: underline;
+}
+
+#search_form {
+	display: block;
+}
+
+#search_form label {
+	margin-right: 25px;
+}
+
+#search_form input {
+	width: 220px;
+}
+
+
+div.intro-text
+{
+    margin-top: 8px;
+}
+
+div.content_box {
+	display: block;
+	margin: 10px 0;
+}
+
+.content_box li {
+	margin-bottom: 10px;
+}
+
+#about_the_dl {
+	width: 330px;
+	/*float: left;*/
+	font-size: 12px;
+	font-weight: bold;
+}
+
+
+#di_icon {
+	margin: -20px 0 0 20px;
+	
+}
+
+#recent_submissions {
+	width: 310px;
+	float: right;
+	font-size: 12px;
+}
+
+
+
+#about_the_dl h1, #recent_submissions h1, #about_dl_icon, #recent_submission_icon {
+	display: inline;
+}	
+
+#about_the_dl h1, #recent_submissions h1 {
+	margin-left: 5px;
+}
+
+#about_dl_icon, #recent_submission_icon { 
+	margin-bottom: -10px;
+}
+
+#content div.di_rss {
+	text-align: right;
+	width: 250px;	
+	font-size: 15px;
+	color: #697B88;
+}
+
+div.di_res a, .di_res a:visited, .di_res a:active {
+	padding-right: 50px;
+	font-size: 15px;
+	color: #697B88;
+}
+
+
+.ds-text-field, .ds-password-field
+{
+    width: 175px;
+}
+
+/* Communities in DSpace, appears on the front page */
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser,
+#artifactbrowser_CommunityBrowser_div_comunity-browser
+{
+	/*margin: 15px;*/    
+}
+
+#content #aspect_artifactbrowser_CommunityBrowser_div_comunity-browser a,
+#content #aspect_artifactbrowser_CommunityBrowser_div_comunity-browser a.communitySummaryListAnchorDIM,
+#content #aspect_artifactbrowser_CommunityViewer_div_community-view a
+{
+    text-decoration: none;
+}
+
+/*communities in dspace - browse communities and collections */
+/*#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser li p*/
+p.ListMinus, p.ListPlus, p.ListEmpty
+{
+    display: inline;
+}
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul,
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ol
+{
+    /*list-style: disc outside;*/
+	list-style: none;
+	margin: 7px;
+}
+/*communities in dspace - browse communities and collections - further down */
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul li ul,
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ol li ul
+{
+    /*list-style: circle outside;*/
+	list-style: none;
+    margin: 7px 14px;
+}
+/*communities in dspace - browse communities and collections - further still*/
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ul li ul li ul,
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser ol li ul li ul
+{
+    /*list-style: square outside;*/
+	list-style: none;
+	margin: 7px 14px;
+}
+
+/* communities within this community */
+#aspect_artifactbrowser_CommunityViewer_div_community-view ul li ul,
+#aspect_artifactbrowser_CommunityViewer_div_community-view ol li ul,
+#aspect_artifactbrowser_CommunityViewer_div_community-view ul li ul li ul,
+#aspect_artifactbrowser_CommunityViewer_div_community-view ol li ul li ul
+{
+    list-style: none;
+    margin: 3px 14px !important;
+}
+
+div.detail-view
+{
+    margin-bottom: 5px;
+}
+
+div.intro-text ul
+{
+    margin: 3px 0px 3px;
+    list-style: disc outside;
+}
+div.intro-text ul li
+{
+	margin: 15px;
+}
+
+/* search on the search results page itself */
+#aspect_artifactbrowser_SimpleSearch_div_general-query
+/*#aspect_artifactbrowser_SimpleSearch_list_search-query*/
+{
+    background-color: #eeeeee;
+	border: 1px solid #bbbbbb;
+	padding: 12px 12px 0px 12px;
+	margin-bottom: 3px;
+}
+#aspect_artifactbrowser_SimpleSearch_list_search-query ol li
+{
+	margin-right: 8px;
+	display: inline;
+}
+
+#aspect_artifactbrowser_SimpleSearch_list_search-query ol li span.ds-form-label
+{
+	display: inline;
+}
+#aspect_artifactbrowser_SimpleSearch_list_search-query ol li div.ds-form-content
+{
+	display: inline;
+}
+
+/* go button on that search on the search results page itself */
+#aspect_artifactbrowser_SimpleSearch_field_submit
+{
+	display: inline;
+}
+
+/* lists of artifacts/items */
+/* TODO:  are verify these names */
+#aspect_artifactbrowser_CollectionViewer_div_collection-recent-submission ul,
+#aspect_artifactbrowser_BrowseTitles_div_browse-by-title-results ul,
+#aspect_artifactbrowser_BrowseAuthorItems_div_browse-by-author-item-results ul,
+#aspect_artifactbrowser_BrowseDates_div_browse-by-date-results ul,
+#aspect_artifactbrowser_SimpleSearch_div_search-results ul,
+#aspect_artifactbrowser_AdvancedSearch_div_search-results ul,
+#org_tdl_dspace_filtersearch_FilterSearch_div_search-results ul,
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-dateissued-results,
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-title-results,
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-author-results,
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-subject-results,
+#edu_tamu_metadatatreebrowser_BrowseNode_div_search-results
+{
+	border: 1px solid #ddd;		
+}
+
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser p.ds-paragraph
+{
+    padding-bottom: 3px;
+}
+
+div#right_content_column #aspect_artifactbrowser_CommunityBrowser_div_comunity-browser span.bold a.communitySummaryListAnchorDIM
+{
+    font-weight: bold;
+}
+
+
+/* Recent submissions div */
+
+div.frontPageRecent {
+    margin: 0 0 20px 0;
+}
+
+div.authorDate {
+    margin: 3px 0 3px 13px;    
+}
+
+div.frontPageRecent div.slider-bitstreams {
+    margin-left: 10px;
+}
+
+
+
+
+
+/***********
+ Item lists and item surrogates 
+ ***********/
+ /* TODO: why did we not need the padding and why are different lists different color patterns?*/
+#content .ds-static-div.primary .ds-static-div.primary ul.ds-artifact-list,
+#content .ds-static-div.primary .ds-static-div.secondary ul.ds-artifact-list
+{
+	margin: 0px;
+}
+
+#content .ds-static-div.primary .ds-static-div.primary ul.ds-artifact-list li.ds-artifact-item,
+#content .ds-static-div.primary .ds-static-div.secondary ul.ds-artifact-list li.ds-artifact-item,
+#content .ds-static-div.primary .ds-static-div.primary ul.ds-artifact-list li.ds-artifact-item-with-popup,
+#content .ds-static-div.primary .ds-static-div.secondary ul.ds-artifact-list li.ds-artifact-item-with-popup
+{
+	padding: 0px /*5px*/;
+}
+
+
+#content .ds-static-div.primary .ds-static-div.primary .ds-artifact-list .ds-artifact-item.odd,
+#content .ds-static-div.primary .ds-static-div.secondary .ds-artifact-list .ds-artifact-item.odd,
+#content .ds-static-div.primary .ds-static-div.primary .ds-artifact-list .ds-artifact-item-with-popup.odd,
+#content .ds-static-div.primary .ds-static-div.secondary .ds-artifact-list .ds-artifact-item-with-popup.odd,
+#content .ds-static-div.primary .ds-static-div.primary .ds-artifact-list li.odd div.ds-artifact-item-with-popup
+{
+	background: #f4f5f7 url('../../images/itemlist_bg.gif') repeat-x 0% 0%;
+	border-bottom: 1px solid #ddd;
+}
+
+#content div#aspect_artifactbrowser_CommunityViewer_div_community-home div#aspect_artifactbrowser_CommunityViewer_div_community-view ul.ds-artifact-list li.ds-artifact-item.odd,
+#content div#aspect_artifactbrowser_CommunityViewer_div_community-home div#aspect_artifactbrowser_CommunityViewer_div_community-view ul.ds-artifact-list li.ds-artifact-item.even
+{
+    background: none;
+    border-bottom: none;
+}
+
+
+
+.ds-artifact-list .ds-artifact-item,
+.ds-artifact-list .ds-artifact-item-with-popup
+{
+	/*
+	min-height: 64px;
+	*/
+	
+}
+
+img.logo
+{
+    float: left;
+    margin: 0px 12px 6px 0px;
+}
+
+
+.item_metadata_more
+{	
+	margin-top: 5px;
+	padding-left: 5px;
+	width: 30px;
+	cursor: pointer;
+	color: #374F5D;
+	font-size: 10px;
+}
+.ds-artifact-item-with-popup.even .item_metadata_slider table.ds-includeSet-metadata-table tr td
+{
+	background-color: white;
+	padding-top: 5px;
+}
+.ds-artifact-item-with-popup.odd .item_metadata_slider table.ds-includeSet-metadata-table tr td
+{padding-top: 5px;
+}
+table.ds-includeSet-metadata-table
+{
+	margin: 0;
+	color: #353550;
+}
+.item_metadata_slider
+{
+	margin-top: 0;
+	padding-top: 0;
+	position: relative;
+	left: 35px;
+	top: -18px;
+	width: 550px;
+	font-size: 0.85em;
+}
+
+.item_metadata_slider.hidden
+{
+	display: none;
+}
+
+#content h2.slider-files-header
+{
+	font-size: 1.1em; 
+	margin-left: 4px; 
+	margin-bottom: 8px; 
+	margin-top: 12px; 
+	padding:0;
+}
+.slider_bitstreams
+{
+	margin-left: 4px;
+	font-size: 0.85em;
+}
+#content .slider-bitstream-count
+{
+	margin-left: 4px;
+	font-size: 1.0em;
+}
+#content a.bitstream-file
+{
+	color:#343434;
+	margin-left: 4px;
+}
+#content a.bitstream-file:hover
+{
+	text-decoration: underline;
+}
+#content .bitstream-filesize
+{
+	color:#656580;
+}
+
+.item_metadata_details
+{
+	margin: 3px 0px 0px 5px;
+	padding: 4px;
+	border: 1px solid #708090;
+	background-color: #9999AA;
+	font-size: 0.7em;
+	color: white;
+	width: 34px;
+	cursor: pointer;
+}
+.item_metadata_details:hover
+{
+	background-color: white;
+	color: #555588;
+}
+
+.ds-artifact-item,
+.ds-artifact-item-with-popup
+{
+	height: auto;
+	/*width: 678px;*/
+	width: 728px;
+	position: relative;
+	vertical-align: middle;
+	padding: 20px 0 10px 0;
+}
+/* need these exceptions to the above rule due to the fact that a bug in DSpace 1.5 labels the li's in the community/collection view as having class ds-artifact-item */
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser .ds-artifact-item,
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser .ds-artifact-item-with-popup,
+#aspect_artifactbrowser_CommunityViewer_div_community-view .ds-artifact-item,
+#aspect_artifactbrowser_CommunityViewer_div_community-view .ds-artifact-item-with-popup
+{
+	height: auto;
+	width: auto;
+	position: static;
+	vertical-align: middle;
+	padding: 0 0 0 0;
+}
+
+.artifact-description
+{   
+    /* This is about as wide as we can get it without pushing the pictures (artifact-previews) down.
+       We want it was wide as possible (relative to the 620px on the ds-artifact-list and 
+       ds-artifact-item to prevent too much clear space on the right when there is no picture */
+  
+    /* float: right; */
+    /* clear: none;  */
+    
+    /* padding-right: 0px;*/
+	width: 600px;
+    
+	/* float: left;*/
+    /*padding: 3px;
+    width: 400px;
+    */
+}
+.artifact-title
+{
+	/*float: left;*/
+    /*width: 430px; */ /* this forces the artifact-info down to the next line */
+    padding: 0px 14px 5px 5px;
+	/*line-height: .95;*/
+}
+.artifact-info
+{
+	/*float: left;*/
+	/*width; 430px;*/
+	font-size: 95%;
+    /* float: left; */
+    color: #333;
+	padding: 0px 0px 0px 5px;
+}
+#content .artifact-title a
+{
+	font-weight: bold;
+	color: #374F5D;	
+}
+#content .artifact-title a:hover
+{
+	text-decoration: underline;
+}
+.artifact-preview
+{    
+    padding: 5px;
+	
+	position: absolute;
+	top: 0px;
+	left: 600px;
+	
+	width: 120px;
+}
+.artifact-preview img
+{
+	height: 62px;
+}
+.item_metadata_popup
+{
+    opacity: 0.92;
+    padding: 3px;
+    width: 550px;
+    height: auto;
+	z-index: 10;
+	font-size: 0.86em;
+	
+    position: absolute;
+    /*top: -245px;*/
+	top: -75px;
+    left: 144px;
+
+	
+    /*border: 1px solid black; */
+	border: 1px solid #708090;
+    background-color: #E1E9Fc; /*#dbe9f1;*/
+	
+	
+}
+.item_metadata_popup.hidden
+{
+	display: none;
+}
+.item_metadata_popup table .ds-table-row.even
+{
+	background-color: #E1E9Fc;
+}
+.popup-artifact-preview
+{
+    position: relative;
+    right: -227px;
+    width: 80px;
+}
+
+#aspect_artifactbrowser_ItemViewer_div_item-view .ds-table-row.even
+{
+	background-color: white;
+}
+
+
+/* Social Media snippett */
+
+div#social-links {
+    margin: 15px 5px 5px;
+}
+
+div#social-links a 
+{
+    display: block;
+    height: 24px;
+    width: 140px;
+    background: white url('../../images/share.png') no-repeat 0% 0%;
+}
+
+
+/****************
+ Advanced search page 
+ ****************/
+ /* TODO: ensure these guys got renamed to have aspect_ prefix */
+#aspect_artifactbrowser_AdvancedSearch_list_search-query,
+#aspect_artifactbrowser_AdvancedSearch_list_search-query ol li
+{
+	border: none;
+	/*background-color: white;*/
+}
+#aspect_artifactbrowser_AdvancedSearch_div_advanced-search th,
+#aspect_artifactbrowser_AdvancedSearch_div_advanced-search td
+{
+	border: none;
+}
+#aspect_artifactbrowser_AdvancedSearch_table_search-query .ds-table-row.even
+{
+	background-color: white;
+}
+
+#aspect_artifactbrowser_AdvancedSearch_field_submit
+{
+    position: relative;
+    width: 100px;
+    left: 145px;
+}
+
+
+/* on the contact page */
+#aspect_artifactbrowser_Contact_list_contact .ds-table-row.even
+{
+	background-color: white;
+}
+
+/********************************
+ *** Community View           ***
+ ********************************/
+ 
+#aspect_artifactbrowser_CollectionViewer_div_collection-search-browse,
+#aspect_artifactbrowser_CommunityViewer_div_community-search-browse
+{
+    position: relative;
+    border-radius: 12px;
+    background: transparent url('../../images/collectionBox.png') repeat-x 0 0;
+    padding: 15px 0 0 25px;
+    font-size: 12px;
+}
+
+ 
+#aspect_artifactbrowser_CommunityViewer_div_community-search-browse,
+#aspect_artifactbrowser_CommunityViewer_div_community-view
+{
+	border: none;
+}
+
+div.detail-view-rights-and-license
+{
+    margin-top: 10px;
+}
+
+#aspect_artifactbrowser_CommunityViewer_div_community-recent-submission ul.ds-artifact-list
+{
+    border: 1px solid #CCCCCC;
+	margin: 0;
+}
+
+#aspect_artifactbrowser_CommunityViewer_div_community-advanced-search,
+#aspect_artifactbrowser_CollectionViewer_div_collection-advanced-search
+{
+	font-size: small;
+	border: 1px solid #555555;
+	padding: 4px; /* TODO: consider 2px here */
+	margin: 2px;
+	width: 115px; /* necessary? */
+	height: 16px; /* necessary? */
+	cursor: pointer;
+}
+/* the Advanced Search link */
+#aspect_artifactbrowser_CommunityViewer_div_community-advanced-search p,
+#aspect_artifactbrowser_CollectionViewer_div_collection-advanced-search p,
+#aspect_artifactbrowser_CommunityViewer_div_community-search p,
+#aspect_artifactbrowser_CollectionViewer_div_collection-search p
+{
+    display: block;
+    position: relative;
+}
+
+#aspect_artifactbrowser_CommunityViewer_div_community-advanced-search p a,
+#aspect_artifactbrowser_CollectionViewer_div_collection-advanced-search p a,
+#aspect_artifactbrowser_CommunityViewer_div_community-search p a,
+#aspect_artifactbrowser_CollectionViewer_div_collection-search p a
+{
+    position: absolute;
+    left: 180px;
+    top: -19px;
+    font-size: 9pt;
+    /* border: 1px solid #555555; */
+    padding: 2px;
+    margin: 2px;
+    text-decoration: none;
+    text-transform: lowercase;
+}
+
+div.collectionBrowse {
+    position: absolute;
+    right: 35px;
+    top: 17px;    
+}
+
+div.collectionBrowse select {
+    padding-right: 10px;
+    padding-left: 4px;
+    margin-left: 6px;
+}
+
+
+#aspect_artifactbrowser_CommunityViewer_div_community-browse,
+#aspect_artifactbrowser_CollectionViewer_div_collection-browse
+{
+    display:none;
+    /*
+	border: 1px solid #bbb;
+    padding: 4px;
+	margin: 2px;
+	text-align: center;
+	position: absolute;
+	top: 16px;
+	left: 676px;
+	width: 70px;
+    */
+}
+
+
+h3.ds-head {
+	font-size: 100%;
+}
+
+
+/* edit community */
+/* TODO:  these names need to be verified */
+form#aspect_administrative_community_EditCommunityMetadataForm_div_community-metadata-edit p.ds-paragraph a,
+form#aspect_administrative_authorization_EditContainerPolicies_div_edit-container-policies p.ds-paragraph a
+{
+    text-decoration: underline;
+    color: #4060a0;
+    font-size: 110%;
+}
+fieldset#aspect_administrative_authorization_EditPolicyForm_field_action_id legend
+{
+    display: none;
+}
+
+
+/*****************************
+ ***  Collection View      ***
+ *****************************/
+#aspect_artifactbrowser_CollectionViewer_div_collection-browse
+{
+	float: right;
+	border: 1px solid #BBBBBB;
+	padding: 4px;
+	margin: 2px;
+	text-align: center;
+	position: absolute;
+	top: 11px;
+	left: 676px;
+}
+
+
+/* RSS links and such */
+
+p.feedbox 
+{
+    /*background-color: #E8E8E8;*/
+    /*border: 1px solid #CCC;*/
+    clear: both;
+    margin: 20px 25px 5px;
+    padding: 20px 10px;
+    text-align: center;
+}
+
+p.feedbox span 
+{
+    background-position: 8px 8px;
+    background-repeat: no-repeat;
+    clear: both;
+    margin: 5px 10px;
+    padding: 10px 18px 20px 33px;
+    /*font-weight: bold;*/
+}
+
+span.rsslink
+{
+    background-image: url('../../images/RSS_sm.png');
+}
+
+span.atomlink
+{
+    background-image: url('../../images/Atom_sm.png');
+}
+
+a.feedboxlink
+{
+    text-decoration: none !important;
+}
+
+
+
+
+
+/***************************************************************
+						Page Footer
+***************************************************************/
+#ds-footer {
+	clear: both;
+	height: 90px;
+	width: 100%;
+	min-width: 947px;
+	background: transparent;
+	margin: 10px 0 0 0;
+	/* position: relative;
+	left: 190px; */
+	/* padding: 20px 0 0 0; */
+}
+#giving_to_libraries {
+	float: left;
+	display: inline;
+	height: 30px;
+	margin: 0;
+	padding: 0;
+}
+
+#giving_to_libraries img, #giving_to_libraries span {
+	margin: 0;
+	padding: 0;
+}
+
+#giving_to_libraries span {
+	display: block;
+	float: left;
+}
+
+#giving_to_libraries h3, #giving_to_libraries a, #giving_to_libraries a:active, #giving_to_libraries a:visited {
+	color: #999;
+	font-size: 12px;
+	float: left;
+	margin: -5px 0 0 -20px;
+	left: -20px;
+	height: 30px;
+	padding: 10px 5px 0 25px;
+	font-weight: normal;
+}
+
+
+div#ds-footer div.footer_links  p
+{
+font-size:smaller;
+padding:5px;
+position:relative;
+right:10px;
+text-align:right;
+top:0;
+width:100%;
+}
+
+
+.footer_links {
+	float: right;
+	margin: 5px 0 0 40px;
+	padding: 0;
+	font-size: 14px;
+	position: relative;
+}
+
+.footer_links > p a[href="/feedback"] {
+display: none;
+}
+
+.footer_links br {
+	clear: left;
+}
+
+.footer_links ul {
+	margin: 0 0 15px 0;
+	padding: 0;
+	list-style: none;
+}
+
+.footer_links li {
+	/*
+	margin: 0;
+	margin-right: 45px;
+	padding: 0;
+	float: left;
+	text-align: left;
+	*/
+	margin-right: 10px;
+	display: inline;
+}
+
+.footer_links a, .footer_links a:visited {
+	color: #999;
+	/*font-size: 10px;
+	display: inline;
+	width: 100%;*/
+	font-size: 12px;
+	line-height: 15px;
+	margin: 0 0 0 40px;
+	padding: 0 0 15px;
+	text-decoration: none;
+}
+
+.footer_links a:hover {
+    color: #999;
+    text-decoration: underline;
+}
+
+
+#featured_news {
+	background: #596b78 url('../../images/nav_news_bg.png') top left repeat-x;
+	position: relative;
+	top: -15px;
+	font-size: 11px;
+	color: #fff;
+	margin: 0px 0px 15px 0px;
+	border: 1px solid #ccc; /* ccc or fff? */
+	min-width: 946px;
+}
+
+#featured_news h1 {
+	background: #596b78 url('../../images/nav_header_bg.png') top left repeat-x;
+	border-bottom: 1px solid #ccc;
+	border-top: 1px solid #ccc;
+	/* margin-top: 8px; */
+	padding: 3px 5px;
+	height: 20px;
+	font-size: 16px;
+	color: #fff;
+}
+
+#featured_news p, #featured_news div, #featured_news h1, #featured_news h2, #featured_news img
+{
+	display: inline;
+	color: #fff;
+}
+
+#featured_news p {
+	/* margin: 5px 3px 5px 0; */
+	color: #fff;
+	font-size: 12px;
+}
+
+#featured_news a {
+	text-decoration: underline;
+}
+
+#featured_news h2 {
+	margin: 5px 2px 5px 0;
+	padding: 0;
+	font-size: 17px;
+}
+
+
+
+#footer_news_more
+{
+	margin-right: 15px;
+}
+
+
+
+#poster_competition {
+	/* width: 190px; */
+	text-align: center;
+}
+
+#featured_news div.di_rss {
+	text-align: right;
+	width: 190px;
+	margin:  5px 5px 0 5px;
+	padding: 5px;
+}
+
+			
+ #footer_news_heading, #footer_news_title, #footer_news_text, #footer_news_more, #poster_competition
+{
+	position: relative;
+	top: -20px;
+	left: 15px;
+	margin-right: 15px;
+}
+
+#footer_news_rss, #footer_news_heading, #footer_news_title, #footer_news_text, #footer_news_more, #poster_competition
+{
+	position: relative;
+	top: -20px;
+	margin-right: 15px;
+}
+
+#footer_news_rss a
+{
+	position: relative;
+	left: 14px;
+}
+
+#footer_news_text
+{
+	margin-left: 15px;
+}
+
+#footer_news_title
+{
+	width: 300px;
+	height: 300px;
+}
+
+
+.news_photo {
+	/*float: left;*/
+	height: 50px;	
+}
+#footer_news_photo 
+{
+	margin: 4px;
+	position: relative;
+	left: 15px;
+	top: 4px;
+}
+
+
+
+
+
+/**************************************************************
+						Administrative Aspect
+ **************************************************************/
+/* TODO:  verify need to add aspect_ to the front of lots of these guys */
+ 
+#aspect_administrative_group_ManageGroupsMain_table_groups-search-table
+{
+	border-spacing: 6px;
+}
+
+#aspect_administrative_group_ManageGroupsMain_div_group-search tbody tr.ds-table-row td.ds-table-cell
+{
+	text-align: center;
+}
+
+
+
+
+/* on Administer Authorization Policies page, the hierarchical list of containers */
+#aspect_administrative_authorization_AuthorizationMain_list_containerList li a
+{
+	font-size: 14px;
+}
+#aspect_administrative_authorization_AuthorizationMain_div_authorization-actions
+{
+	margin-bottom: 38px;
+}
+ul#aspect_administrative_authorization_AuthorizationMain_list_containerList
+{
+	margin: 0;
+}
+ul#aspect_administrative_authorization_AuthorizationMain_list_containerList li ul
+{
+	margin: 0;
+}
+
+
+
+/** fieldsets **/
+/* fieldset for a checkbox for a policy on the edit policies page */
+#aspect_administrative_authorization_EditContainerPolicies_field_select_policy
+{
+	border: none;
+}
+#aspect_administrative_authorization_EditContainerPolicies_field_select_policy legend
+{
+	display: none;
+}
+/* fieldset for checkbox for a user on the manage e-people page*/
+#aspect_administrative_eperson_ManageEPeopleMain_field_select_eperson
+{
+	border: none;
+}	
+#aspect_administrative_eperson_ManageEPeopleMain_field_select_eperson legend
+{
+	display: none;
+}
+/* fieldset for checkbox for a metadata field on the metadata schema page */
+#aspect_administrative_registries_EditMetadataSchema_field_select_field
+{
+	border: none;
+}
+#aspect_administrative_registries_EditMetadataSchema_field_select_field legend
+{
+	display: none;
+}
+/* fieldsets for checkbox for "can log in" and "require certificate" on create a new user page */
+#aspect_administrative_eperson_AddEPersonForm_field_can_log_in,
+#aspect_administrative_eperson_AddEPersonForm_field_certificate
+{
+	position: relative;
+	height: 0px;
+	border: none;
+}
+#aspect_administrative_eperson_AddEPersonForm_field_can_log_in legend,
+#aspect_administrative_eperson_AddEPersonForm_field_certificate legend
+{
+	display: none;
+}
+#aspect_administrative_eperson_AddEPersonForm_field_can_log_in label input
+{
+	position: relative;
+	top: -25px;
+	left: 64px;
+}
+#aspect_administrative_eperson_AddEPersonForm_field_certificate label input
+{
+	position: relative;
+	top: -25px;
+	left: 110px;
+}
+
+fieldset#aspect_administrative_eperson_AddEPersonForm_list_identity ol li:nth-of-type(6) {
+display: none;
+}
+
+/* fieldset for edit item bitstream */
+#aspect_administrative_item_EditBitstreamForm_list_edit-bitstream-list li
+{
+	margin-top: 15px;
+}
+
+#aspect_administrative_group_ManageGroupsMain_table_groups-search-table fieldset.ds-checkbox-field
+{
+	border: none;
+}
+#aspect_administrative_group_ManageGroupsMain_table_groups-search-table fieldset.ds-checkbox-field legend
+{
+	display: none;
+}
+
+/* Edit EPerson page */
+#aspect_administrative_eperson_EditEPersonForm_list_form ol li
+{
+	margin: 15px;
+}
+
+#aspect_administrative_eperson_EditEPersonForm_field_can_log_in,
+#aspect_administrative_eperson_EditEPersonForm_field_certificate
+{
+	border: none;
+	position: relative;
+	height: 0px;
+}
+#aspect_administrative_eperson_EditEPersonForm_field_can_log_in legend,
+#aspect_administrative_eperson_EditEPersonForm_field_certificate legend
+{
+	position: relative;
+	height: 0px;
+	display: none;
+}
+#aspect_administrative_eperson_EditEPersonForm_field_can_log_in label input
+{
+	position: relative;
+	top: -24px;
+	left: 64px;
+}
+
+#aspect_administrative_eperson_EditEPersonForm_field_certificate label input
+{
+	position: relative;
+	top: -24px;
+	left: 109px;	
+}
+
+#aspect_administrative_registries_FormatRegistryMain_field_select_format
+{
+	border: none;
+}
+#aspect_administrative_registries_FormatRegistryMain_field_select_format legend
+{
+	display: none;
+}
+
+#aspect_administrative_registries_EditMetadataSchema_table_metadata-schema-edit-existing-fields
+{
+	border-spacing: 0px;
+}
+
+#aspect_administrative_eperson_ManageEPeopleMain_div_epeople-actions .ds-table-row.even
+{
+	background-color: white;
+}
+
+/*******************************************************************************
+    Submission Aspect
+*******************************************************************************/
+
+
+
+
+/* The submission form itself, in its various incarnations */
+#aspect_submission_StepTransformer_list_submit-initial-questions,
+#aspect_submission_StepTransformer_div_submit-describe,
+#aspect_submission_StepTransformer_div_submit-upload-new,
+#aspect_submission_StepTransformer_div_submit-review
+{
+    border: none;
+	margin-top: 15px;
+}
+
+#aspect_submission_StepTransformer_list_submit-initial-questions .field-help,
+#aspect_submission_StepTransformer_div_submit-describe .field-help,
+#aspect_submission_StepTransformer_div_submit-upload-new .field-help,
+#aspect_submission_StepTransformer_div_submit-review .field-help
+{
+    display: block;
+}
+
+/* the field for the title in the submission workflow - some titles are long! */
+input#aspect_submission_StepTransformer_field_dc_title
+{
+    width:450px;
+}
+
+
+/* put some space below the progress list */
+#aspect_submission_StepTransformer_list_submit-progress
+{
+    margin-bottom: 20px;
+}
+
+/* the current button on the progress list */
+#aspect_submission_StepTransformer_list_submit-progress li.current input.ds-button-field
+{
+	color: white;
+	background-color: #406080
+}
+
+/* and now, more specific styling for the steps of the submission workflow */
+/* Resume or Cancel - intro step when continuing a submission */
+#submission_submit_ResumeStep_list_resume-submission,
+#aspect_submission_submit_ResumeStep_list_resume-submission
+{
+	border: none;
+	margin-left: -10px;
+}
+
+/* Initial Questions */
+#aspect_submission_StepTransformer_list_submit-initial-questions ol li div.ds-form-content
+{
+	display: inline;
+}
+/*#aspect_submission_StepTransformer_field_multiple_titles,
+#aspect_submission_StepTransformer_field_published_before
+{
+	position: relative;
+	top: 17px;
+	border: none;
+	display: inline;
+}*/
+/*
+#aspect_submission_submit_InitialQuestionsStep_field_multiple-titles label input,
+#aspect_submission_submit_InitialQuestionsStep_field_published-before label input
+{
+	display: inline;
+}*/
+
+#aspect_submission_StepTransformer_list_submit-initial-questions legend/*,
+#aspect_submission_submit_InitialQuestionsStep_field_multiple-titles legend,
+#aspect_submission_submit_InitialQuestionsStep_field_published-before legend*/
+{
+	display: none;
+}
+#aspect_submission_submit_InitialQuestionsStep_list_submit-initial-questions ol li.ds-form-item.last
+{
+	margin-top: 20px;
+	margin-left: -10px;
+}
+
+
+#aspect_submission_StepTransformer_list_submit-initial-questions legend
+{
+    display: none;
+}
+#aspect_submission_StepTransformer_list_submit-initial-questions span.field-help
+{
+    position: relative;
+    top: -32px;
+    left: 28px;
+}
+
+
+/* Describe I and II */
+#aspect_submission_StepTransformer_list_submit-describe legend
+{
+    display: none;
+}
+/* #submission_submit_DescribeStep_list_submit-describe ol li */
+#aspect_submission_StepTransformer_list_submit-describe ol li
+{
+	margin: 8px 25px;
+}
+/* #submission_submit_DescribeStep_list_submit-describe .composite-help */
+#aspect_submission_StepTransformer_list_submit-describe .composite-help
+{
+	display: none;
+}
+
+
+/* Upload */
+#aspect_submission_StepTransformer_list_submit-upload-new ol li
+{
+	margin: 15px;
+}
+#aspect_submission_StepTransformer_list_submit-upload-new legend
+{
+    font-size: 130%;
+    font-weight: bold;
+    color: #1A2830;
+}
+/* Review */
+#aspect_submission_StepTransformer_list_submit-review ol li
+{
+	margin: 2px;
+}
+#aspect_submission_StepTransformer_list_submit-review legend
+{
+    display: none
+}
+#aspect_submission_StepTransformer_list_submit-review ol li fieldset.ds-form-sublist legend
+{
+    display: block;
+    font-size: 120%;
+    color: #555555;
+    font-weight: bold;
+}
+
+/* License */
+#aspect_submission_StepTransformer_list_submit-review ol li.ds-form-item div.ds-form-content fieldset
+{
+	border: none;
+}
+#aspect_submission_StepTransformer_list_submit-review ol li.ds-form-item div.ds-form-content fieldset legend
+{
+    display: none
+}
+
+
+
+/*******************************************************************************
+    EPerson aspect
+*******************************************************************************/
+#aspect_eperson_EditProfile_list_form
+
+{
+	border: none;
+}
+#aspect_eperson_PasswordLogin_list_password-login
+{
+    border: none;
+}
+
+/* maybe this should apply to more ds-interactive-div's? */
+#aspect_eperson_EditProfile_div_information legend
+{
+    font-size: 130%;
+}
+
+ul#aspect_eperson_StartRegistration_list_registration-progress
+{
+    font-size: 130%;
+    margin-bottom: 20px;
+}
+
+#aspect_eperson_EditProfile_field_subscriptions {
+	max-width: 100%;
+}
+
+
+
+
+
+/***********************
+ *** Filter Search   ***
+ ***********************/
+form#org_tdl_dspace_filtersearch_FilterSearch_div_filter-search
+{
+    padding: 12px;    
+    background-color: #EEEEEE;
+    width: 600px;
+    border: 1px solid #708090;
+}
+
+form#org_tdl_dspace_filtersearch_FilterSearch_div_filter-search .ds-table-row
+{
+    background-color: #EEEEEE;
+}
+
+div#collapsible-filter-search-fields-table-container
+{
+    /*position: relative;*/
+    margin-left: 38px;
+    margin-top: -20px;
+}
+
+div#filter-search-fulltext-field
+{
+    padding-left: 42px;
+    margin-bottom: 7px;
+}
+
+input#org_tdl_dspace_filtersearch_FilterSearch_field_ANY
+{
+    margin-left: 22px;
+}
+
+form#org_tdl_dspace_filtersearch_FilterSearch_div_filter-search p.ds-paragraph.button-list
+{
+    padding: 2px;
+}
+form#org_tdl_dspace_filtersearch_FilterSearch_div_filter-search p.ds-paragraph.button-list input.ds-button-field
+{
+    width: 200px;
+    margin-left: 190px;
+}
+form#org_tdl_dspace_filtersearch_FilterSearch_div_filter-search input.ds-text-field
+{
+    width: 300px;
+}
+
+
+div.more_text,
+div.less_text
+{
+    width: 25px;
+    padding-right: 5px;
+    cursor: pointer;
+}
+
+
+/***************************************************************
+			    Authentication Method Chooser
+***************************************************************/
+
+div#shibboleth-authentication-method,
+div#password-authentication-method {
+	float: left;
+	width: 300px;
+	padding-left: 25px;
+}
+div#password-authentication-method {
+	border-left: 1px solid #CCCCCC;
+	padding-left: 25px;
+}
+
+.authentication-item {
+	clear: both;
+	margin-left: 15px;
+}
+.authentication-item a {
+	padding: 5px;
+	background-color: #E2E2E2;
+	color: #333333 !important;
+	text-decoration: none !important;
+	border: 1px solid #999999;
+	width: 200px;
+	display: block;
+	text-align: center;
+	
+	/* CSS3 thingies */
+	background: -moz-linear-gradient(center top , #F9F9F9, #E2E2E2) repeat scroll 0 0 #F9F9F9;
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F9F9F9), to(#E2E2E2));
+	border-radius: 3px 3px 3px 3px;
+}
+.authentication-item a:hover {
+	text-decoration: none;
+	color: #000000 !important;
+	border: 1px solid #333333;
+}
+
+
+/**********************
+ *** Browsing stuff ***
+ **********************/
+.pagination-links li, .ds-simple-list.alphabet li
+{
+	display: inline;
+}
+
+.ds-simple-list.alphabet li a
+{
+	padding: 2px;
+}
+
+
+
+/**********************
+ *** Labeling stuff ***
+ **********************/
+span.ds-form-label
+{
+	/*letter-spacing: -1px;*/
+	color: #406080;
+}
+
+
+
+/*****************************
+/* Form lists and fieldsets */
+/*****************************
+/* styling for forms in lists */
+.ds-form-list li
+{
+    list-style-type: none;
+}
+fieldset.ds-checkbox-field legend
+{
+    display: none;
+}
+/* too general for the padding here*/
+li.ds-form-item span.ds-form-label
+{
+    display: inline;
+    /*padding-top: 4px;*/    
+}
+li.ds-form-item
+{
+	margin-top: 4px;
+}
+/*fieldsets */
+fieldset
+{
+    border: none;
+    text-align: left;
+    position: relative;
+    left: -8px;
+}
+fieldset.ds-checkbox-field
+{    
+    position: relative;
+    left: -4px;
+}
+/* fieldsets on the first page of item submission */
+#aspect_submission_StepTransformer_list_submit-initial-questions ol li.ds-form-item div.ds-form-content fieldset.ds-checkbox-field
+{
+    left: -8px;
+    top: -6px;
+}
+
+/*Hide the certificate option for the edit eperson view*/
+label[for="aspect_administrative_eperson_EditEPersonForm_field_certificate"].ds-form-label,input[name="certificate"],label[htmlFor="aspect_administrative_eperson_EditEPersonForm_field_certificate"].ds-form-label {
+	display: none;
+}
+
+/*********************
+ *** Table Stuff   ***
+ *********************/
+.ds-table-header-row th
+{    
+    padding: 8px 2px 6px;
+}
+.ds-table
+{
+    /* border: 1px solid #ececef; */
+    /* border-spacing: 0px; */
+	border-spacing: 2px 0px;
+}
+.ds-table.file-list /* this guy's descendants are not as well id/classed by the xsl as other tables */
+{
+    border: 1px solid #708090;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+.ds-table.file-list tr th
+{
+    text-align: center;
+	background-color: #708090;
+    padding: 7px;
+}
+.ds-table.file-list tr td
+{   
+    padding: 7px;
+    /*border: 1px solid gray;*/  /*looks a wee bit too liney */
+}
+.ds-table-header-cell
+{
+    padding: 2px;
+    text-align: center;
+}
+.ds-table-cell
+{
+    padding: 0px 4px;
+    /* border-left: 1px solid #ECECEF; */
+    /* border-top: 1px solid #ECECEF; */
+}
+
+tr.ds-table-row.even
+{
+	background-color: #F3F3F3;
+}
+tr.ds-table-row.odd
+{
+	border: 1px solid #CCCCCC;
+}
+
+.item_metadata_slider tr.ds-table-row.even,
+.item_metadata_slider tr.ds-table-row.odd
+{
+	background: transparent !important;
+}
+
+
+/**********************
+ *** Progress Lists ***
+ **********************/
+ 
+ul.ds-progress-list li
+{
+    display: inline;
+}
+ul.ds-progress-list li.current
+{
+    color: #8FAEC0;
+}
+
+
+/*********************
+ *** Lists         ***
+ *********************/
+ul.ds-bulleted-list li, ol.ds-bulleted-list li
+{
+	list-style-type: disc;
+	list-style-position: inside;
+}
+
+ul.ds-ordered-list li, ol.ds-ordered-list li
+{
+	list-style-type: decimal;
+	list-style-position: inside;
+}
+
+/* this styling serves to indent sub-lists */
+ul li ul,
+ul li ol,
+ol li ul,
+ol li ol
+{
+	position: relative;
+	left: 25px;
+}
+
+
+/*******
+ Forms 
+ *******/ 
+ fieldset ol {
+	float: left;
+	clear: both;
+}
+
+li.ds-form-item {
+	float: left;
+	clear: both;
+}
+
+div.ds-form-content {
+	float: left;
+	clear: right;
+	display: block;
+	padding: 7px;
+	width: 450px;
+}
+
+span.ds-form-label,label.ds-form-label {
+	display: block;
+	float: left;
+	clear: left;
+	padding: 5px 20px 5px 10px;
+	width: 115px;
+	font-weight: bold;
+	font-size: 110%;
+	vertical-align: middle;
+	overflow: hidden;
+}
+
+label.ds-composite-component {
+	display: block;
+	float: left;
+	padding: 0px 5px 0 0px;
+	font-size: 95%;
+	color: blue;
+	background-color: inherit;
+	text-align: left;
+}
+
+/* the following keeps the text right under the guys affected above */
+div.ds-form-content span
+{
+    display: block;
+}
+
+/*******************
+ *** Fieldsets   ***
+ *******************/
+fieldset label
+{
+	display: block;
+}
+
+#aspect_administrative_item_EditItemMetadataForm_table_editItemMetadata
+{
+	border: 1px solid #708090;
+}
+#aspect_administrative_item_EditItemMetadataForm_table_editItemMetadata fieldset.ds-checkbox-field
+{
+	border: none;
+}
+#aspect_administrative_item_EditItemMetadataForm_table_editItemMetadata fieldset.ds-checkbox-field legend
+{
+	display: none;
+}
+
+/*************************
+ *** Tabbed Navigation ***
+ *************************/
+ /* the following few entries produce the tabbed browsing effect in various contexts */
+#aspect_administrative_community_EditCommunityMetadataForm_div_community-metadata-edit,
+#aspect_administrative_community_AssignCommunityRoles_div_community-assign-roles,
+#aspect_administrative_community_CurateCommunityForm_div_community-curate,
+#aspect_administrative_collection_EditCollectionMetadataForm_div_collection-metadata-edit,
+#aspect_administrative_collection_AssignCollectionRoles_div_collection-assign-roles,
+#aspect_administrative_collection_ToggleCollectionHarvestingForm_div_collection-harvesting-setup,
+#aspect_administrative_collection_CurateCollectionForm_div_collection-curate,
+#aspect_administrative_ControlPanel_div_control-panel,
+#aspect_administrative_item_EditItemStatusForm_div_edit-item-status,
+#aspect_administrative_item_EditItemBitstreamsForm_div_edit-item-status,
+#aspect_administrative_item_EditItemMetadataForm_div_edit-item-status,
+#aspect_administrative_item_ViewItem_div_edit-item-status,
+#aspect_administrative_item_CurateItemForm_div_edit-item-status
+{
+    padding: 10px;
+    margin-top: 30px;
+    border: 1px solid black;
+	height: auto;
+}
+#content .ds-simple-list.horizontal
+{
+    position: relative;
+    left: 2px;
+    top: -26px;	
+}
+#content .ds-simple-list.horizontal li
+{
+    display: inline;    
+}
+#content .ds-simple-list.horizontal li a
+{
+    text-decoration: none;
+    padding: 2px;
+    background-color: #f8fafd;
+    border: 1px solid  black;
+}
+#content .ds-simple-list.horizontal li a:hover
+{
+    text-decoration: none;
+    background-color: #3D547D;
+    color: white;
+}
+#content .ds-simple-list.horizontal li span.bold a
+{
+    padding: 2px;
+    border: 1px solid black;
+    background-color: white;
+    border-bottom: 1px solid white;
+    
+}
+#content .ds-simple-list.horizontal li span.bold a:hover
+{
+    text-decoration: none;
+    background-color: white;
+    /*color: #0066CC;*/
+	color: #777777;
+}
+
+/********************
+ pagination
+ ********************/
+
+ .pagination
+{
+    margin: 5px 0px;
+    height: 30px;
+}
+
+.pagination-masked
+{
+    border: 1px solid black;
+    margin: 5px 0px;
+    height: 27px;
+}
+
+#content .previous-page-link
+{
+    /*border: 1px solid black;*/
+    padding: 2px;
+    
+    position: relative;
+    left: 3px;
+    top: 6px;
+	height: 18px;
+   
+}
+#content .previous-page-link:hover
+{
+    text-decoration: none;
+    background-color: #395C70;
+    color: white;
+}
+#content .next-page-link
+{
+    /*border: 1px solid black;*/
+    /*padding: 10px 4px*/
+	padding: 2px;
+    display: inline;
+    float: right;
+    
+    position: relative;
+    left: -3px;
+    /*bottom: 16px;*/
+	top: 6px;
+	height: 18px;
+}
+#content .next-page-link:hover
+{
+    text-decoration: none;
+    background-color: #395C70;
+    color: white;
+}
+.next-page-link:hover a
+{
+	color: white;
+}
+
+
+.pagination-info
+{
+    display: inline;
+    padding: 2px;  
+    
+    position: relative;
+    left: 150px;
+    top: 8px;
+    width: 200px;    
+    color: #666;
+}
+.pagination-links
+{
+    display: inline;
+    list-style-type: none;   
+    padding: 2px; 
+    
+    position: relative;
+    left: 180px;
+    top: 8px;
+    width: 200px;
+}
+.pagination-links li
+{
+    display: inline;
+}
+
+.pagination-masked.top .pagination-info
+{
+    display: none;    
+}
+
+.pagination-masked.bottom .pagination-info
+{
+    display: none;    
+}
+
+#content li.current-page-link a:hover
+{
+    color: red;
+}
+#content li.current-page-link a, #content li.current-page-link a:visited
+{
+    color: red;
+}
+
+
+
+/* next few entries deal with the A-Z browsing list above the pagination links */
+
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-title,
+#aspect_administrative_WithdrawnItems_div_browse-by-withdrawn
+{
+	margin-bottom: 20px;
+	margin-top: 0px;
+	padding: 0;
+}
+
+
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-title ul,
+aspect_administrative_WithdrawnItems_div_browse-by-withdrawn ul
+{
+	margin: 0px 0 10px 0;
+	padding: 0;
+}
+
+/*
+#aspect_artifactbrowser_BrowseTitles_list_jump-list,
+#aspect_artifactbrowser_BrowseAuthors_list_jump-list,
+#aspect_artifactbrowser_BrowseSubjects_list_jump-list
+*/
+/* had to shrink these guys down when the 0-9 link got added.*/
+#aspect_artifactbrowser_ConfigurableBrowse_list_jump-list,
+#aspect_administrative_WithdrawnItems_list_jump-list 
+{
+	margin: 20px 0px 25px 0px;
+	background: #f1eeee url('../../images/alphabet_bg.gif') repeat-x 0% 0%;
+	border: 1px solid #ccc;
+	font-weight: bold;
+	font-size: 7px/*10px*/;
+	list-style-image: none;
+	list-style-type: none;	
+	line-height: 2em;
+	height: 15px/*20px*/;
+	padding: 0;
+	width: 735px;
+}
+
+/*
+#aspect_artifactbrowser_BrowseTitles_list_jump-list li,
+#aspect_artifactbrowser_BrowseAuthors_list_jump-list li,
+#aspect_artifactbrowser_BrowseSubjects_list_jump-list li
+*/
+#aspect_artifactbrowser_ConfigurableBrowse_list_jump-list li,
+#aspect_administrative_WithdrawnItems_list_jump-list li
+{
+    display: inline;
+	/*background: none;*/
+	border-right: 1px solid #777777;
+	margin: 0;
+	padding: 0;
+}
+
+/*
+#aspect_artifactbrowser_BrowseTitles_list_jump-list li a,
+#aspect_artifactbrowser_BrowseAuthors_list_jump-list li a,
+#aspect_artifactbrowser_BrowseSubjects_list_jump-list li a
+*/
+#aspect_artifactbrowser_ConfigurableBrowse_list_jump-list li a,
+#aspect_administrative_WithdrawnItems_list_jump-list li a
+{
+	font-weight: bold;
+    margin: 0;
+    padding: 5px 6px 5px 9px;
+	width: 12px;
+}
+
+/*
+#aspect_artifactbrowser_BrowseTitles_list_jump-list li a:hover,
+#aspect_artifactbrowser_BrowseAuthors_list_jump-list li a:hover,
+#aspect_artifactbrowser_BrowseSubjects_list_jump-list li a:hover
+*/
+#aspect_artifactbrowser_ConfigurableBrowse_list_jump-list li a:hover,
+#aspect_administrative_WithdrawnItems_list_jump-list li a:hover
+{
+    color: #777777;
+    text-decoration: none;
+}
+
+
+
+
+/* input fields that need margins on the left */
+#aspect_artifactbrowser_ConfigurableBrowse_field_month,
+#aspect_artifactbrowser_ConfigurableBrowse_field_starts_with
+{
+    margin-left: 12px;
+	padding: 1px 3px;
+	width: 200px;
+}
+
+
+
+/*****************************************************************************
+				PAGINATION CONTROLS FOR CONFIGURABLE BROWSE CODE
+******************************************************************************/
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-controls
+{
+	margin: 10px 100px 5px 100px;
+	background: #f1eeee url('../../images/alphabet_bg.gif') repeat-x 0% 0%;
+	border: 1px solid #ccc;
+	font-weight: bold;
+	font-size: 10px;
+	list-style-image: none;
+	list-style-type: none;	
+	line-height: 2em;
+	height: 20px;
+	padding: 4px 20px;
+}
+#aspect_artifactbrowser_ConfigurableBrowse_p_hidden-fields
+{
+	display: none;
+}
+#pagination-info
+{
+	color: #333;
+}
+
+/***************************************************************
+							Misc
+***************************************************************/
+.float_right { float: right; }
+.float_left { float: left; }
+.center {text-align: center;}
+.small {
+	font-size: 9px;
+}
+.di_rss {
+	background: transparent url('../../images/rss_icon.png') left center no-repeat;
+}
+
+form
+{
+	display: block;
+}
+
+.spacer
+{
+	margin:0px;
+	padding:0px;
+	clear:both;
+	height: 0px;
+}
+
+div#ds-system-wide-alert
+{
+	position: absolute;
+	z-index: 100;
+	left: 441px;
+	top: 136px;
+	font-weight: bold;
+	color: red;
+	margin: 2px;
+	width: 700px;
+}
+
+div.spacer
+{
+    clear: both;
+    line-height: 0px;
+    margin: 0pt;
+    padding: 0pt;
+}
+
+span.error,
+#ds-system-wide-alert
+{
+    color: red;
+}
+
+span.field-help,
+span.composite-help
+{
+    display: none;
+    color: #8892bb;
+}
+
+.ds-form-content
+{
+	width: 620px;
+}
+
+br.simpleItemViewValueBreak
+{
+    margin-bottom: 7px;
+}
+
+div#bitstreamRestrictionNotice
+{
+    color: red;
+    margin: 4px;
+}
+
+
+/* Request copy box */
+div#org_tamu_dspace_requestcopy_RequestCopy_div_request-item, 
+div#edu_tamu_dspace_etdalumnirequest_AlumniRequestItemView_div_alumni-request-item
+{
+    background-color: #F1EEEE;
+    border: 2px solid #CCC;
+    padding: 0px 20px;
+    width: 612px;
+}
+
+div#org_tamu_dspace_requestcopy_RequestCopy_div_request-item h2
+{
+    font-size: 130%;
+}
+
+
+/*****************************************************************************
+		 					SITE TYPOGRAPHY ONLY
+******************************************************************************/
+body {
+	font-size: 11px;
+	/* TODO: changed line height to match branding.  Will this cause problems? */
+	line-height: 17.5px
+	font-family: Verdana, Lucida, Helvetica, Arial, sans-serif;
+	font-style: normal;
+    color: #535353;
+    margin: 0px auto;
+}
+
+table {
+    font-size: 100%;
+}
+
+
+
+
+a, #content a,  #content a:active {
+    color: /*#475f9d*//*#374f5d*/#1f5d85;
+    text-decoration: underline;
+}
+#content a:visited
+{
+    color: purple;
+}
+a:hover, #content a:hover, #content a:visited:hover, #content a:active:hover {
+    color: /*#475f9d*/#374f5d;
+    text-decoration: underline;
+}
+
+
+div.recent_sub
+{
+  margin: 0 0 15px 0;
+}
+
+
+h1, h2, h3, h4, h5, h6, #content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+    color: #1a2830;
+    font-family: Verdana, Lucida, Helvetica, Arial, sans-serif;
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a, h6 a, #searchTitle, .documentFirstHeading {
+    color: #1a2830;
+    text-decoration: none;
+}
+
+h1 {
+    font-size: /*200%*/ 1.60em;
+}
+
+h2 {
+    font-size: /*140%*/ 1.30em;
+	font-weight: bold;
+}
+
+h3 {
+    font-size: /*130%*/ 1.15em;
+    border-bottom: none;
+    font-weight: bold;
+}
+
+h4 {
+    font-size: /*105%*/ 1.05em;
+    border-bottom: none;
+    font-weight: bold;
+}
+
+h5 {
+
+    font-size: /*100%*/ 1em;
+    border-bottom: none;
+    font-weight: bold;
+}
+
+h6 {
+    font-size: 85%;
+    border-bottom: none;
+    font-weight: bold;
+}
+
+abbr, acronym, .explain {
+    color: #535353;
+}
+
+dt {
+    font-weight: bold;
+}
+
+q {
+    font-family: Baskerville, Georgia, serif;
+    font-style: italic;
+    font-size: 120%;
+}
+
+blockquote {
+    color: #76797c;
+}
+
+code, tt {
+    font-family: Monaco, "Courier New", Courier, monospace;
+    font-size: 120%;
+    color: #535353;
+}
+
+pre {
+    font-family: Monaco, "Courier New", Courier, monospace;
+    font-size: 100%;
+    color: #535353;
+}
+
+ins {
+    color: green;
+    text-decoration: none;
+}
+
+del {
+    color: red;
+    text-decoration: line-through;
+}
+
+/*****************************************************************************
+		 					END SITE TYPOGRAPHY
+******************************************************************************/
+
+
+
+
+
+
+/*****************************************************************************
+		 			Metadata Tree Browser Aspect styling
+******************************************************************************/
+
+#edu_tamu_metadatatreebrowser_BrowseNode_div_parent-div a {
+	color: #666666 !important;
+	text-decoration: none;
+}
+
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list {
+	list-style: none;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li {
+	float: left;
+	width: 120px;
+	height: 130px;
+	text-align: center;
+	padding: 10px;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li a {
+	text-decoration: none;
+	font-weight: bold;
+	display: block;
+	width: 100px;
+}
+
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li a img {
+	border: 1px solid #535353;
+	max-width: 100px;
+	max-height: 80px;
+	vertical-align: bottom;
+}
+
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .toggle {
+	color: #1A2830;
+	text-decoration: none;
+}
+
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .toggle:hover {
+	color: #1A2830;
+	text-decoration: none;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list {
+	padding-top: 20px;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li {
+	margin-top: 3px;
+}
+
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all {
+    background-color: #2E6DA2;
+    border-color: white;
+    border-style: outset;
+    border-width: 3px;
+    color: white;
+    cursor: pointer;
+    margin-bottom: 6px;
+    padding: 3px;
+    text-align: center;
+    width: 75px;
+    margin: 0 0 10px 0;
+    text-decoration: none;
+}
+
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all:hover,
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all:active,
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all:active:hover {
+	text-decoration: none;
+	color: white;
+}
+
+
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all:hover,
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all:visited,
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all:active,
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all:active:hover {
+	text-decoration: none !important;
+	color: white !important;
+}
+
+
+
+
+/*****************************************************************************
+		 			Bitstream repositioning buttons
+******************************************************************************/
+
+.icon-button{
+    padding:4px;
+    cursor: pointer;
+    margin: 2px;
+    background-color: #E6E6E6;
+    border: 1px solid #D3D3D3;
+    text-indent: -1000px;
+    width: 30px;
+    height: 30px;
+    display:block;
+    /*Required for IE*/
+    font-size: 0;
+    line-height: 0;
+}
+
+.icon-button.ds-button-field[disabled="disabled"],
+.icon-button.ds-button-field[disabled=""],
+.icon-button.ds-button-field.disabled {
+    opacity: 0.35
+}
+
+
+.icon-button.arrowUp{
+    background-image: url(images/arrow_up_444444_16x16.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.icon-button.arrowDown{
+    background-image: url(images/arrow_down_444444_16x16.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+
+/*****************************************************************************
+		 			General Styling
+******************************************************************************/
+
+.hidden {
+display: none;
+visibility: hidden;
+}

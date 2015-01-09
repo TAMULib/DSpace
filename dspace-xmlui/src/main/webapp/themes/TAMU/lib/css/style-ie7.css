@@ -1,0 +1,318 @@
+/* IE7 only: */
+
+/* style for the body */
+body
+{
+    position: relative;
+}
+
+/* end style for the body */
+
+
+/* styles for the header */
+#ds-user-box
+{
+    top: -2px;
+}
+div#ds-header
+{
+    margin-bottom: -1px;
+}
+p.rotating_header_clicker
+{
+    top: 30px;
+}
+
+/* end styles for the header */
+
+
+
+
+
+/* styles the searchbar  */
+	#searchbar h3#ds-search-option-head 
+	{
+		margin: 3px 50px 0 0;
+	}
+	
+	#searchbar a
+	{
+		left: 123px;
+	}
+
+	#ds-search-form
+	{
+		position: relative;
+		left: 207px;
+		top: 4px;
+	}
+	form#ds-search-form fieldset
+	{
+		top: 2px;
+		left: 9px;
+	}
+/* end style for searchbar */
+
+
+
+
+
+
+
+/* Fixing the styling of the list markers on the community/collection browser */
+/* TODO: notice he's spelled wrong! */
+/* the following occurs only on the front page whwere there is a #right_content_column*/
+div #right_content_column div#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser
+{
+    width:325px;
+}
+#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser .ds-artifact-item
+{
+    padding-top: 0;
+    vertical-align: top;
+}
+
+p.ListEmpty
+{
+    padding-left: 19px;
+}
+/* Fixing the disappearing text in IE6,7,8! */
+div#aspect_artifactbrowser_CommunityViewer_div_community-view ul.ds-artifact-list,
+div#aspect_artifactbrowser_CommunityViewer_div_community-view li.ds-artifact-item,
+div#aspect_artifactbrowser_CommunityViewer_div_community-view li.ds-artifact-item ul,
+div#aspect_artifactbrowser_CommunityViewer_div_community-home ul.ds-artifact-list,
+div#aspect_artifactbrowser_CommunityViewer_div_community-home li.ds-artifact-item,
+div#aspect_artifactbrowser_CommunityViewer_div_community-home li.ds-artifact-item ul
+{
+    min-height: 1px;
+    overflow:visible;
+}
+
+
+
+
+
+
+
+
+
+
+/* pagination and alphabetical navigation on browse-by*/
+a.previous-page-link
+{
+	top: 5px;
+}
+a.next-page-link
+{
+	padding-bottom: 2px;
+}
+#aspect_artifactbrowser_ConfigurableBrowse_list_jump-list LI A,
+.ds-simple-list.alphabet li a
+{
+	position: relative;
+	left: 10px;
+	padding: 2px 6px 5px 8px;
+}
+#aspect_artifactbrowser_ConfigurableBrowse_list_jump-list,
+#artifactbrowser_BrowseTitles_list_jump-list,
+#artifactbrowser_BrowseAuthors_list_jump-list,
+#artifactbrowser_BrowseSubjects_list_jump-list,
+#aspect_artifactbrowser_BrowseTitles_list_jump-list,
+#aspect_artifactbrowser_BrowseAuthors_list_jump-list,
+#aspect_artifactbrowser_BrowseSubjects_list_jump-list
+{
+	width: 700px;
+}
+#aspect_artifactbrowser_ConfigurableBrowse_list_jump-list li,
+#artifactbrowser_BrowseTitles_list_jump-list li,
+#artifactbrowser_BrowseAuthors_list_jump-list li,
+#artifactbrowser_BrowseSubjects_list_jump-list li,
+#aspect_artifactbrowser_BrowseTitles_list_jump-list li,
+#aspect_artifactbrowser_BrowseAuthors_list_jump-list li,
+#aspect_artifactbrowser_BrowseSubjects_list_jump-list li
+{
+	display: block;
+	float: left;
+   	
+	border-right: 1px solid #777777;
+	padding: 0 1px;
+	/*margin-top: 3px;*/
+	
+	line-height: 14px;
+}
+#aspect_artifactbrowser_ConfigurableBrowse_list_jump-list li a,
+#artifactbrowser_BrowseTitles_list_jump-list li a,
+#artifactbrowser_BrowseAuthors_list_jump-list li a,
+#artifactbrowser_BrowseSubjects_list_jump-list li a,
+#aspect_artifactbrowser_BrowseTitles_list_jump-list li a,
+#aspect_artifactbrowser_BrowseAuthors_list_jump-list li a,
+#aspect_artifactbrowser_BrowseSubjects_list_jump-list li a
+{
+	left: 0px;
+}
+/* end pagination and alphabetical navigation on browse-by*/
+
+
+
+
+
+
+
+/* styles for the administrative aspect's system-wide-alerts page */
+fieldset#aspect_administrative_ControlPanel_list_system-wide-alerts
+{
+	border: none;
+}
+
+fieldset#aspect_administrative_ControlPanel_list_system-wide-alerts legend
+{
+	display: none;
+}
+/* end system wide alerts control page */
+
+
+
+
+
+
+
+/*trying to shrink the buttons on the submission workflow so they fit on one line */
+#aspect_submission_field_submit_jump_1_1
+{
+	width: 125px;
+}
+#aspect_submission_field_submit_jump_2_1
+{
+	width: 78px;
+}
+#aspect_submission_field_submit_jump_2_2
+{
+	width: 78px;	
+}
+#aspect_submission_field_submit_jump_3_1
+{
+	width: 65px;
+}
+#aspect_submission_field_submit_jump_4_1
+{
+	width: 66px;
+}
+#aspect_submission_field_submit_jump_5_1
+{
+	width: 70px;
+}
+/* submission aspect first page checkboxes */
+#aspect_submission_StepTransformer_list_submit-initial-questions fieldset.ds-checkbox-field
+{
+	position: relative;
+	top: 5px;
+}
+/* submission first page checkbox descriptions */
+#aspect_submission_StepTransformer_list_submit-initial-questions SPAN.field-help 
+{	LEFT: 28px;
+	POSITION: relative;
+	TOP: -27px
+}
+/* day box on 2nd submission page */
+#aspect_submission_StepTransformer_field_dc_date_issued_day
+{
+    position: relative;
+    left: -186px;
+    top: 13px;
+}
+/* end submission aspect */
+
+
+
+
+
+
+
+
+
+/* pagination links */
+a.previous-page-link
+{
+	top: 5px;
+}
+a.next-page-link
+{
+	padding-bottom: 2px;
+}
+/* end pagination links */
+
+
+
+
+
+/* tabbed navigation */
+#content .ds-simple-list.horizontal
+{
+    position: relative;
+    left: 2px;
+    top: -27px;
+}
+/* end tabbed navigation */
+
+
+
+
+
+
+/* misc */
+input#org_tdl_dspace_filtersearch_FilterSearch_field_ANY
+{
+    margin-left: 25px;
+}
+div#ds-system-wide-alert
+{
+	left: 250px;
+}
+.ds-button-field
+{
+	padding: 0;
+}
+span.ds-form-label
+{
+	letter-spacing: 0px;
+	color: #406080;
+}ul.ds-artifact-list li
+{
+    overflow: hidden;
+}
+.ds-button-field
+{
+	padding: 0;
+}
+span.ds-form-label
+{
+	letter-spacing: 0px;
+	color: #406080;
+}
+
+div#navigation_inner
+{
+    padding-top: 9px;
+}
+div.footer_links
+{
+    top: -7px;
+}
+div.footer_links p
+{
+    text-align: left;
+}
+div.footer_links a
+{
+    line-height: 30px;
+}
+
+/* gets the item lists to appear without space between them and the border on the containing div */
+#content div.ds-static-div.primary UL.ds-artifact-list,
+#content .primary.ds-static-div .primary.ds-static-div UL.ds-artifact-list ,
+#content div.ds-static-div.primary .secondary.ds-static-div UL.ds-artifact-list,
+#content .primary.ds-static-div .secondary.ds-static-div UL.ds-artifact-list 
+{
+    margin-top: -1px;
+}
+

@@ -181,8 +181,17 @@
         <!-- <theme name="Test Theme 1" handle="123456789/1" path="theme1/"/>    -->
         <!-- <theme name="Test Theme 2" regex="community-list" path="theme2/"/> -->
 
+        <theme name="Better Living Collection" handle="1969.1/91004" path="TAMU/ImageGallery/"/>
+        <theme name="Wheelan Collection" handle="1969.1/590" path="TAMU/ImageGallery/"/>
+        <theme name="Vascular Plant Image Collection" handle="1969.1/97046" path="TAMU/ImageGallery/"/>
+        <theme name="Historic Maps of Cuba" handle="1969.1/86434" path="TAMU/ImageGallery/"/>
+        <theme name="WWI Post Cards" handle="1969.1/128952" path="TAMU/ImageGallery/"/>
+        <theme name="Voucher XRays" handle="1969.1/148733" path="TAMU/ImageGallery/"/>
+        <theme name="The Themiest" handle="123456789/2" path="TAMU/ImageGallery/"/>
+
         <!-- Mirage theme, @mire contributed theme, default since DSpace 3.0 -->
-        <theme name="Atmire Mirage Theme" regex=".*" path="Mirage/" />
+        <theme name="Mirage 2" regex=".*" path="Mirage2/" />
+
 
         <!-- Reference theme, the default Manakin XMLUI layout up to DSpace 1.8 -->
         <!-- <theme name="Default Reference Theme" regex=".*" path="Reference/" /> -->

@@ -1,0 +1,93 @@
+
+.image-gallery-tile-set
+{
+    width: 750px;    
+}
+
+.image-gallery-tile 
+{
+    background-color: #E8E8E8;
+    border: 1px solid #D1D1D1;
+    height: 220px;
+    width: 195px;
+    float: left;
+    position: relative;
+    margin: 0 24px 22px 0;
+    padding: 14px;
+    text-align: center;
+}
+
+.image-gallery-tile a.image-gallery-anchor
+{
+    height: 192px;
+    width: 192px;
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.image-gallery-tile img.image-gallery-thumbnail
+{
+	max-width: 192px;
+	max-height: 192px;
+}
+
+.image-gallery-tile .image-gallery-title
+{   
+	font-weight: bolder;
+    font-size: 100%;
+	margin: 8px 0 2px 0;
+    height: 1.2em;
+    overflow: hidden;
+}
+.image-gallery-tile .image-gallery-date
+{
+    font-size: 90%;
+    margin: 0 0 8px;
+}
+
+.image-gallery-tile .image-gallery-links a
+{}
+
+.image-gallery-tile .image-gallery-links a img
+{
+    padding: 0 3px 0 0;
+}
+
+.image-gallery-save-link img
+{
+    margin-left: 46px;
+}
+
+.image-gallery-save-options
+{
+    border: 1px solid #aaa;
+    border-width: 1px 1px 0;
+    display: inline-block;
+    position: relative;
+    background-color: #eee;
+    z-index: 100;
+}
+
+.image-gallery-save-options a
+{
+    display: block;
+    border-bottom: 1px solid #aaa;
+    text-decoration: none !important;
+    color: #666 !important;
+    font-size: 80%;
+    padding: 3px 6px;
+}
+
+.clear
+{
+    clear: both;
+}
+
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-dateissued-results,
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-title-results,
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-author-results,
+#aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-subject-results
+{
+	border: none;
+}
