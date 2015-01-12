@@ -192,6 +192,10 @@
         <!-- Primeros Book Reader Theme -->
         <theme name="Primeros Libros Collection" handle="1969.1/92213" path="TAMU/PrimerosLibros/"/>
 
+        <!-- Bush Capstone Themes -->
+        <theme name="Bush Capstone: MPSA" handle="1969.1/94972" path="TAMU/Capstones/"/>
+        <theme name="Bush Capstone: MPIA" handle="1969.1/94973" path="TAMU/Capstones/"/>
+   
         <!-- Mirage 2 theme, @mire contributed theme, customized for TAMU through module -->
         <theme name="Mirage 2" regex=".*" path="Mirage2/" />
 
