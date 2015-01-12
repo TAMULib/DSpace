@@ -311,6 +311,24 @@
                 <meta name="{@element}" content="{.}"></meta>
             </xsl:for-each>
 
+            <!-- Add MathJAX JS library to render scientific formulas-->
+            <xsl:if test="confman:getProperty('webui.browse.render-scientific-formulas') = 'true'">
+                <script type="text/x-mathjax-config">
+                    MathJax.Hub.Config({
+                      tex2jax: {
+                        inlineMath: [['$','$'], ['\\(','\\)']],
+                        ignoreClass: "detail-field-data|detailtable|exception"
+                      },
+                      TeX: {
+                        Macros: {
+                          AA: '{\\mathring A}'
+                        }
+                      }
+                    });
+                </script>
+                <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">&#160;</script>
+            </xsl:if>
+
         </head>
     </xsl:template>
 
@@ -668,17 +686,7 @@
             <xsl:text>1.6.2</xsl:text>
         </xsl:variable>
 
-        <xsl:variable name="protocol">
-            <xsl:choose>
-                <xsl:when test="starts-with(confman:getProperty('dspace.baseUrl'), 'https://')">
-                    <xsl:text>https://</xsl:text>
-                </xsl:when>
-                <xsl:otherwise>
-                    <xsl:text>http://</xsl:text>
-                </xsl:otherwise>
-            </xsl:choose>
-        </xsl:variable>
-        <script type="text/javascript" src="{concat($protocol, 'ajax.googleapis.com/ajax/libs/jquery/', $jqueryVersion ,'/jquery.min.js')}">&#160;</script>
+        <script type="text/javascript" src="{concat($scheme, 'ajax.googleapis.com/ajax/libs/jquery/', $jqueryVersion ,'/jquery.min.js')}">&#160;</script>
 
         <xsl:variable name="localJQuerySrc">
                 <xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
@@ -779,6 +787,16 @@
                    })();
            </xsl:text></script>
         </xsl:if>
+
+        <!-- Add a contextpath to a JS variable -->
+                <script type="text/javascript"><xsl:text>
+                         if(typeof window.orcid === 'undefined'){
+                            window.orcid={};
+                          };
+                        window.orcid.contextPath= '</xsl:text><xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/><xsl:text>';</xsl:text>
+                    <xsl:text>window.orcid.themePath= '</xsl:text><xsl:value-of select="$theme-path"/><xsl:text>';</xsl:text>
+                </script>
+
     </xsl:template>
 
 </xsl:stylesheet>

@@ -454,11 +454,11 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
                 itemName.append(item.getHandle()).append(":").append(metadataKey.toString());
 
 
-                DCValue[] itemMetadata = item.getMetadata(schema, metadataField.getElement(), metadataField.getQualifier(), Item.ANY);
+                Metadatum[] itemMetadata = item.getMetadata(schema, metadataField.getElement(), metadataField.getQualifier(), Item.ANY);
                 if(!ArrayUtils.isEmpty(itemMetadata))
                 {
                     org.dspace.app.xmlui.wing.element.List metadataFieldList = itemList.addList(itemName.toString());
-                    for (DCValue metadataValue : itemMetadata)
+                    for (Metadatum metadataValue : itemMetadata)
                     {
                         String value = metadataValue.value;
                         addMetadataField(highlightedResults, metadataKey.toString(), metadataFieldList, value);
@@ -616,8 +616,8 @@ public abstract class AbstractSearch extends AbstractDSpaceTransformer implement
                         }
                         break;
                     default:
-                        //Partial match allowed, only render the highlighted part
-                        if(value.contains(highlight.replaceAll("</?em>", "")))
+                        //Partial match allowed, only render the highlighted part (will also remove \r since this char is not indexed in solr & will cause issues
+                        if(value.replace("\r", "").contains(highlight.replaceAll("</?em>", "")))
                         {
                             value = highlight;
                         }

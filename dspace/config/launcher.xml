@@ -224,6 +224,14 @@
     </command>
 
     <command>
+        <name>rdfizer</name>
+        <description>The RDFizer manages the attached triple store if dspace-rdf is enabled</description>
+        <step>
+            <class>org.dspace.rdf.RDFizer</class>
+        </step>
+    </command>
+
+    <command>
         <name>registry-loader</name>
         <description>Load entries into a registry</description>
         <step>
@@ -348,26 +356,10 @@
     </command>
     
     <command>
-        <name>test-database</name>
-        <description>Test the DSpace database connection is OK</description>
+        <name>database</name>
+        <description>Perform database tasks like test database connection, migrate/repair database, remove database</description>
         <step>
-            <class>org.dspace.storage.rdbms.DatabaseManager</class>
-        </step>
-    </command>
-
-    <command>
-        <name>setup-database</name>
-        <description>Create the database tables</description>
-        <step>
-            <class>org.dspace.storage.rdbms.InitializeDatabase</class>
-        </step>
-    </command>
-
-    <command>
-        <name>clean-database</name>
-        <description>Remove the database tables</description>
-        <step>
-            <class>org.dspace.storage.rdbms.InitializeDatabase</class>
+            <class>org.dspace.storage.rdbms.DatabaseUtils</class>
         </step>
     </command>
 
@@ -416,6 +408,22 @@
         <description>Display the version of DSpace and other troubleshooting information</description>
         <step>
             <class>org.dspace.app.util.Version</class>
+        </step>
+    </command>
+
+    <command>
+        <name>index-authority</name>
+        <description>Indexes all metadata fields that use solr authority</description>
+        <step>
+            <class>org.dspace.authority.indexer.AuthorityIndexClient</class>
+        </step>
+    </command>
+
+    <command>
+        <name>validate-date</name>
+        <description>interactively validate date values against the multi-format date parser (good for testing custom regular expression configurations)</description>
+        <step>
+            <class>org.dspace.util.MultiFormatDateParser</class>
         </step>
     </command>
 

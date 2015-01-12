@@ -56,7 +56,7 @@ import org.dspace.search.DSIndexer;
  */
 public class MediaFilterManager
 {
-    private static Logger log = Logger.getLogger(MediaFilterManager.class);
+    private static final Logger log = Logger.getLogger(MediaFilterManager.class);
 
 	//key (in dspace.cfg) which lists all enabled filters by name
     public static final String MEDIA_FILTER_PLUGINS_KEY = "filter.plugins";
@@ -66,8 +66,6 @@ public class MediaFilterManager
     
     //suffix (in dspace.cfg) for input formats supported by each filter
     public static final String INPUT_FORMATS_SUFFIX = "inputFormats";
-    
-    static boolean updateIndex = true; // default to updating index
 
     static boolean isVerbose = false; // default to not verbose
 
@@ -85,12 +83,12 @@ public class MediaFilterManager
     
     private static FormatFilter[] filterClasses = null;
     
-    private static Map<String, List<String>> filterFormats = new HashMap<String, List<String>>();
-    
+    private static final Map<String, List<String>> filterFormats = new HashMap<>();
+
     private static List<String> skipList = null; //list of identifiers to skip during processing
 
-    private static List<String> publicFiltersClasses = null;
-    
+    private static final List<String> publicFiltersClasses = new ArrayList<>();
+
     //separator in filterFormats Map between a filter class name and a plugin name,
     //for MediaFilters which extend SelfNamedPlugin (\034 is "file separator" char)
     public static final String FILTER_PLUGIN_SEPARATOR = "\034";
@@ -99,7 +97,6 @@ public class MediaFilterManager
         String publicPermissionFilters = ConfigurationManager.getProperty("filter.org.dspace.app.mediafilter.publicPermission");
         if(publicPermissionFilters != null) {
             String[] publicPermisionFiltersArray = publicPermissionFilters.split(",");
-            publicFiltersClasses = new ArrayList<String>();
             for(String filter : publicPermisionFiltersArray) {
                 publicFiltersClasses.add(filter.trim());
             }
@@ -124,8 +121,6 @@ public class MediaFilterManager
                 "do not print anything except in the event of errors.");
         options.addOption("f", "force", false,
                 "force all bitstreams to be processed");
-        options.addOption("n", "noindex", false,
-                "do NOT update the search index after filtering bitstreams");
         options.addOption("i", "identifier", true,
         		"ONLY process bitstreams belonging to identifier");
         options.addOption("m", "maximum", true,
@@ -182,11 +177,6 @@ public class MediaFilterManager
         }
 
         isQuiet = line.hasOption('q');
-
-        if (line.hasOption('n'))
-        {
-            updateIndex = false;
-        }
 
         if (line.hasOption('f'))
         {
@@ -370,24 +360,6 @@ public class MediaFilterManager
             						applyFiltersItem(c, (Item)dso);
             						break;
             	}
-            }
-          
-            // update search index?
-            if (updateIndex)
-            {
-                if (!isQuiet)
-                {
-                    System.out.println("Updating search index:");
-                }
-                DSIndexer.setBatchProcessingMode(true);
-                try
-                {
-                    DSIndexer.updateIndex(c);
-                }
-                finally
-                {
-                    DSIndexer.setBatchProcessingMode(false);
-                }
             }
 
             c.complete();
@@ -756,15 +728,24 @@ public class MediaFilterManager
                 + " (item: " + item.getHandle() + ")");
         }
 
-        InputStream destStream = formatFilter.getDestinationStream(source.retrieve());
-        if (destStream == null)
-        {
-            if (!isQuiet)
+        InputStream destStream;
+        try {
+            System.out.println("File: " + newName);
+            destStream = formatFilter.getDestinationStream(source.retrieve());
+            if (destStream == null)
             {
-                System.out.println("SKIPPED: bitstream " + source.getID()
+                if (!isQuiet)
+                {
+                    System.out.println("SKIPPED: bitstream " + source.getID()
                         + " (item: " + item.getHandle() + ") because filtering was unsuccessful");
-            }
+                }
 
+                return false;
+            }
+        }
+        catch (OutOfMemoryError oome)
+        {
+            System.out.println("!!! OutOfMemoryError !!!");
             return false;
         }
 

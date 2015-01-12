@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.dspace</groupId>
         <artifactId>dspace-parent</artifactId>
-        <version>5.0-SNAPSHOT</version>
+        <version>5.0-rc4-SNAPSHOT</version>
     </parent>
 
     <properties>
@@ -52,7 +52,7 @@
             <artifactId>mail</artifactId>
         </dependency>
         <dependency> <!-- Keep jmockit before junit -->
-            <groupId>com.googlecode.jmockit</groupId>
+            <groupId>org.jmockit</groupId>
             <artifactId>jmockit</artifactId>
             <scope>test</scope>
         </dependency>
