@@ -8,7 +8,6 @@
  
 -->
 <map:sitemap xmlns:map="http://apache.org/cocoon/sitemap/1.0">
-<!-- bringthisback
 	<map:components>
 		<map:transformers>
 			<map:transformer name="restrictedItemsInfo" src="org.tamu.dspace.extensions.RestrictedItemsTransformer"/>	    
@@ -17,7 +16,6 @@
 			<map:action name="recordContext" src="org.tamu.dspace.extensions.RecordContextAction"/>
 		</map:actions>
 	</map:components>
--->
 	<map:pipelines>
 		<map:component-configurations>
 			<global-variables>
@@ -37,17 +35,15 @@
 			<map:match pattern="**">
 				
 			    <!-- Step 0.1:  generate interrupt request to preserve context when users navigate to login page -->
-<!-- bringthisback			    <map:act type="recordContext"/> -->
+			    <map:act type="recordContext"/>
 			    
 			    <!-- Step 1: Generate the DRI page -->
 			    <map:generate type="file" src="cocoon://DRI/{1}"/>
 			    
 			    <!-- Step 1.5: Gather info on restricted bitstreams -->
-<!-- bringthisback
 			    <map:match pattern="handle/*/*">
 			        <map:transform type="restrictedItemsInfo"/>
 			    </map:match>
--->				
 				<!-- Deliver different CSS files to different browsers  -->
 				<map:transform type="IncludePageMeta">
 					<map:parameter name="stylesheet.screen#1" value="lib/css/reset.css"/>

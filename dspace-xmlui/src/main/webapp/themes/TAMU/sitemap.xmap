@@ -9,14 +9,12 @@
 <map:sitemap xmlns:map="http://apache.org/cocoon/sitemap/1.0">
 
 	<map:components>
-<!-- bringthisback 
 		<map:transformers>
 			<map:transformer name="restrictedItemsInfo" src="org.tamu.dspace.extensions.RestrictedItemsTransformer"/>	    
 		</map:transformers>
 		<map:actions>
 			<map:action name="recordContext" src="org.tamu.dspace.extensions.RecordContextAction"/>
 		</map:actions>
--->
 	</map:components>
 	<map:pipelines>
 		
