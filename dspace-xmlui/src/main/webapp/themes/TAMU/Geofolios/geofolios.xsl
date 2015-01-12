@@ -1,17 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    geofolios.xsl
-    
-    Version: $Revision: 1.2 $
-    
-    Date: $Date: 2006/07/27 22:54:52 $    
--->
-
-<!--
-    TODO: Describe this XSL file    
-    Author: Alexey Maslov
-    
+    File: $File: geofolios.xsl $
+    Version: $Revision: 1.2.1 $    
+    Date: $Date: 2014/09/29 1:38:00 $    
+	Author: $Author: Maslov, Alexey $
 -->    
 
 <xsl:stylesheet 
@@ -22,312 +15,366 @@
     xmlns:dc="http://purl.org/dc/elements/1.1/"
     xmlns:dim="http://www.dspace.org/xmlns/dspace/dim" 
     xmlns:xlink="http://www.w3.org/TR/xlink/"
+    xmlns:confman="org.dspace.core.ConfigurationManager"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
     
     <xsl:import href="../TAMU.xsl"/>
     <xsl:output indent="yes"/>
     
-	
-	
-	
-	
-	<!-- Overriden to place the Yahoo Maps scripts past all the Jquery calls. For some reason, ymap
-	stuff breaks JQuery in IE6 and IE7. -->
-	<xsl:template match="dri:document">
-        <!-- <html debug="true"> -->
+    <xsl:template match="dri:document">
+    	<!-- <html debug="true"> -->
 		<html>
             <!-- First of all, build the HTML head element -->
             <xsl:call-template name="buildHead"/>
             <!-- Then proceed to the body -->
             <body>
-				
-                <div id="ds-main">
-                    <!-- 
-                        The header div, complete with title, subtitle, trail and other junk. The trail is 
-                        built by applying a template over pageMeta's trail children. -->
-                    <xsl:call-template name="buildHeader"/>
-                    
-                    <!-- 
-                        Goes over the document tag's children elements: body, options, meta. The body template
-                        generates the ds-body div that contains all the content. The options template generates
-                        the ds-options div that contains the navigation and action options available to the 
-                        user. The meta element is ignored since its contents are not processed directly, but 
-                        instead referenced from the different points in the document. -->
-					<div id="wrapper">
-						<xsl:apply-templates select="dri:body" />
-						<xsl:apply-templates select="dri:options" />
+				<div id="ds-main">
+                   	<!-- The header div, complete with title, subtitle, trail and other junk. The trail is 
+                   		 built by applying a template over pageMeta's trail children. -->
+                   	<xsl:call-template name="buildHeader"/>
+                   
+                   	<!-- Goes over the document tag's children elements: body, options, meta. The body template
+						 generates the ds-body div that contains all the content. The options template generates
+                      	 the ds-options div that contains the navigation and action options available to the 
+                      	 user. The meta element is ignored since its contents are not processed directly, but 
+                      	 instead referenced from the different points in the document. -->
+                    <div id="wrapper">
+                    	<xsl:apply-templates select="dri:body" />
+                    	<xsl:apply-templates select="dri:options" />
 						<div class="spacer">&#160;</div>
 					</div>
 
-                    <!-- 
-                        The footer div, dropping whatever extra information is needed on the page. It will
-                        most likely be something similar in structure to the currently given example. -->
-                    <xsl:call-template name="buildFooter"/>
+                    <!-- The footer div, dropping whatever extra information is needed on the page. It will
+                   		 most likely be something similar in structure to the currently given example. -->
+					<xsl:call-template name="buildFooter"/>
                     
-					<xsl:choose>
-						<xsl:when test="/dri:document/dri:body//dri:referenceSet[@type='detailView' and @n='collection-view']">
-							<script type="text/javascript">
-								<![CDATA[
-								
-								// Set up the map and variables 
-								var map = new YMap(document.getElementById('mapContainer'));
-								map.setMapType(YAHOO_MAP_SAT);
-								map.drawZoomAndCenter(new YGeoPoint(40.0 , -96.0), 14);
-								map.addTypeControl();
-								
-								// Add a slider zoom control 
-								map.addZoomLong(); 
-											
-								// Overlay data from XML file type GeoRSS (no worky quite right)
-								// map.addOverlay(new YGeoRSS(']]><xsl:value-of select="concat($context-path,'/themes/TAMU/Geofolios/georss.xml')"/><![CDATA['));
-								
-								var iconImg = new YImage();
-								iconImg.src = ']]><xsl:value-of select="concat($context-path,'/themes/TAMU/Geofolios/images/icon_lg.png')"/><![CDATA[';
-								iconImg.size = new YSize(28,27);
-								iconImg.offsetSmartWindow = new YCoordPoint(0,-22);
-								
-								var point;
-								var marker;
-								var _autoExpand;
-						   
-								var SW;
-								var NW;
-								var NE;
-								var SE;
+                    <script type="text/javascript">
+						<![CDATA[
 							
-								
-								]]>
+							var container = document.getElementById('popup');
+							var content = document.getElementById('popup-content');
+							var closer = document.getElementById('popup-closer');
 							
-								
+							closer.onclick = function() {
+								container.style.display = 'none';
+								closer.blur();
+								return false;
+							};
+							
+							var overlay = new ol.Overlay({
+								element: container
+							});
+
+							var folios = [[]];
+							      				               
+						]]>
+					</script>
+							
+                    <xsl:choose>
+                    	<xsl:when test="/dri:document/dri:body//dri:referenceSet[@type='detailView' and @n='collection-view']">
+
+                        	<script type="text/javascript">    
+                        		<!-- FROM HERE -->                        	             
 								<xsl:apply-templates select="document('feeds/formattedList.xml')/folios/*"/>
 
+    							<![CDATA[
+									
+									var vectorSource = new ol.source.Vector();
+									
+									var textStroke = new ol.style.Stroke({
+    									color: '#fff',
+    									width: 3
+  									});
+  									var textFill = new ol.style.Fill({
+    									color: '#000'
+  									});
+									
+									// iterate folios creating marker
+    								for(i = 1; i < folios.length; i++) {
+    									var iconFeature = new ol.Feature({
+											geometry: new ol.geom.Point(ol.proj.transform([folios[i].lon, folios[i].lat], 'EPSG:4326', 'EPSG:3857')),
+											name: i
+										});
+									
+										var iconStyle = new ol.style.Style({
+											image: new ol.style.Icon(({												
+												anchor: [0.0, 1.0],
+												anchorXUnits: 'fraction',
+												anchorYUnits: 'fraction',
+												opacity: 1.0,
+												src: ']]><xsl:value-of select="concat($context-path,'/themes/TAMU/Geofolios/images/icon_lg.png')"/><![CDATA['																								
+											})),
+											text: new ol.style.Text({
+												font: '12px Calibri,sans-serif',
+												text: i,
+												fill: textFill,
+												stroke: textStroke,
+												offsetY : -18,
+												offsetX : 13
+											})
+										});
+										
+										iconFeature.setStyle(iconStyle);
+										
+										vectorSource.addFeature(iconFeature);
+    								}
+    								
+									var vectorLayer = new ol.layer.Vector({
+										source: vectorSource
+									});
+									
+									
+									// create map and add layers and overlay
+									var map = new ol.Map({
+										layers: [
+											new ol.layer.Tile({
+												source: new ol.source.MapQuest({layer: 'sat'})
+											}),
+											new ol.layer.Image({
+    											extent: [-13884991, 2870341, -7455066, 6338219],
+    											source: new ol.source.ImageWMS({
+      												url: 'http://demo.opengeo.org/geoserver/wms',
+      												params: {'LAYERS': ' ne:ne_10m_admin_1_states_provinces_lines_shp '},
+      												serverType: 'geoserver'
+    											})
+  											}), 
+											vectorLayer
+										],
+										overlays: [overlay],
+										target: document.getElementById('map'),
+										view: new ol.View({
+											center: ol.proj.transform([-96.0, 40.0], 'EPSG:4326', 'EPSG:3857'),
+											zoom: 4
+										})
+									});
+									
+									var element = document.getElementById('popup');
+									
+									// display popup on click, create content from folios
+									map.on('click', function(evt) {
+										var feature = map.forEachFeatureAtPixel(evt.pixel,
+											function(feature, layer) {
+											return feature;
+										});
+										if (feature) {
+											var geometry = feature.getGeometry();
+											var coord = geometry.getCoordinates();
+											
+											overlay.setPosition(coord);
+											
+											var id = feature.get('name');
+											
+											content.innerHTML = '<b>Folio ' + id + '</b><br/>' + 
+															    folios[id].title + '<br/>' + 
+																folios[id].political + '<br/>' + 
+																'Published: ' + folios[id].date + '<br/>' + 
+																folios[id].lat + ', ' + 
+																folios[id].lon + '<br/>' +
+																'<a href="http://oaktrust.library.tamu.edu/' + folios[id].url + '">View complete folio</a>';
+											
+											container.style.display = 'block';
+											
+											$(element).popover({
+												'placement': 'top',
+												'html': true
+											});
+											$(element).popover('show');
+										} else {
+											$(element).popover('destroy');
+										}
+									});
+		
+									// change mouse cursor when over marker
+									$(map.getViewport()).on('mousemove', function(e) {
+										var pixel = map.getEventPixel(e.originalEvent);
+										var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+											return true;
+										});
+										if (hit) {
+											map.getTarget().style.cursor = 'pointer';
+										} else {
+											map.getTarget().style.cursor = '';
+										}
+									});
+    							]]>        						
+        
 							</script> 
 						</xsl:when>
-					    <xsl:when test="/dri:document/dri:body//dri:div[@id='aspect.artifactbrowser.SimpleSearch.div.search' or @id='aspect.artifactbrowser.AdvancedSearch.div.advanced-search']">
-							<script type="text/javascript">
-								<![CDATA[
-								
-								// Set up the map and variables 
-								var map = new YMap(document.getElementById('mapContainer'));
-								map.setMapType(YAHOO_MAP_SAT);
-								map.drawZoomAndCenter(new YGeoPoint(40.0 , -96.0), 14);
-								map.addTypeControl();
-								
-								// Add a slider zoom control 
-								map.addZoomLong(); 
-											
-								// Overlay data from XML file type GeoRSS (no worky quite right)
-								// map.addOverlay(new YGeoRSS(']]><xsl:value-of select="concat($context-path,'/themes/TAMU/Geofolios/georss.xml')"/><![CDATA['));
-								
-								var iconImg = new YImage();
-								iconImg.src = ']]><xsl:value-of select="concat($context-path,'/themes/TAMU/Geofolios/images/icon_lg.png')"/><![CDATA[';
-								iconImg.size = new YSize(27,27);
-								iconImg.offsetSmartWindow = new YCoordPoint(0,-22);
-								
-								var point;
-								var marker;
-								var _autoExpand;
-							
-								]]>
-								
-								<!-- Add the folios iteratively -->
-								<xsl:for-each select="/dri:document/dri:body//dri:div[@id='aspect.artifactbrowser.SimpleSearch.div.search' or @id='aspect.artifactbrowser.AdvancedSearch.div.advanced-search']
-										/dri:div[@n='search-results']/dri:referenceSet/dri:reference">
-								    
-								    <xsl:variable name="externalMetadataURL">
-								        <xsl:text>cocoon:/</xsl:text>
-								        <xsl:value-of select="@url"/>
-								        <!-- No options selected, render the full METS document -->
-								    </xsl:variable>
-							    
-								    <xsl:variable name="data" select="document($externalMetadataURL)/mets:METS/mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim"/>
-									<xsl:variable name="number" select="substring-after($data/dim:field[@element='identifier' and @qualifier='govdoc'],':')"/>
-									
-									<xsl:variable name="mk" select="concat('marker_', $number)"/>
-									<xsl:variable name="pop" select="concat('popup_', $number)"/>
-								    <xsl:variable name="coords_y" select="(number(substring-before(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'northlimit='),';')) + 
-								        number(substring-before(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'southlimit='),';'))) div 2.0"/>
-								    <xsl:variable name="coords_x" select="(number(substring-before(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'westlimit='),';')) + 
-								        number(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'eastlimit='))) div 2.0"/>
-									
-									<xsl:value-of select="concat('point = new YGeoPoint(', $coords_y, ', ', $coords_x, ');')"/>
-									
-									<xsl:value-of select="concat($mk,' = new YMarker(point, iconImg);')"/>
-									<xsl:value-of select="$mk"/><xsl:text><![CDATA[.setSmartWindowColor('maroon');
-										]]></xsl:text>
-									<xsl:value-of select="$mk"/><xsl:text><![CDATA[.addLabel("<span class='folio-marker'>]]></xsl:text><xsl:value-of select="$number"/><xsl:text><![CDATA[</span>");
-										]]></xsl:text>
-									
-									<xsl:text><![CDATA[_autoExpand = '<div class="folio-popup">]]></xsl:text>
-									<xsl:value-of select="concat($number, ' ', $data/dim:field[@element='title'])"/>
-									<xsl:text><![CDATA[</div>'; 
-										]]></xsl:text>
-									<xsl:value-of select="$mk"/><xsl:text><![CDATA[.addAutoExpand(_autoExpand);
-										]]></xsl:text>
-									
-									<xsl:value-of select="concat('var ', $pop, ' = ')"/>
-									<xsl:text><![CDATA['<div class="folio-desc"><span class="title">]]></xsl:text>
-									<xsl:value-of select="concat($number, ' ', $data/dim:field[@element='title'])"/>
-									<xsl:text><![CDATA[</span><br/>]]></xsl:text>
-									<xsl:value-of select="concat('Folio ', $number, ', published ', $data/dim:field[@element='date' and @qualifier='issued'])"/>
-									<xsl:text><![CDATA[<br/>]]></xsl:text>
-									<xsl:value-of select="concat('Lat: ', substring-before($data/dim:field[@element='coverage' and @qualifier='point'],'N'), '; Lon: ', substring-before(substring-after($data/dim:field[@element='coverage' and @qualifier='point'],'N'),'W'))"/>
-									<xsl:text><![CDATA[<br/><a href="]]></xsl:text>
-									<xsl:value-of select="concat($context-path, '/handle/',substring-after($data/dim:field[@element='identifier' and @qualifier='uri'],'http://hdl.handle.net/'))"/>
-									<xsl:text><![CDATA[">View complete folio</a></div>';]]></xsl:text>
-									
-									<xsl:value-of select="concat('YEvent.Capture(', $mk, ', EventsList.MouseClick, function() {', $mk, '.openSmartWindow(', $pop, ');});')"/>
-									
-									<xsl:value-of select="concat('map.addOverlay(', $mk, ');')"/>
+                        <xsl:when test="/dri:document/dri:body//dri:div[@id='aspect.discovery.CollectionSearch.div.collection-search' or @id='aspect.artifactbrowser.AdvancedSearch.div.advanced-search']">
+                                          
+                        	<script type="text/javascript">
+                                <!-- Add the folios iteratively -->
+                                
+                                <xsl:for-each select="/dri:document/dri:body//dri:div[@id='aspect.discovery.CollectionSearch.div.collection-search' or @id='aspect.artifactbrowser.AdvancedSearch.div.advanced-search'] /dri:div[@n='search-results']/dri:referenceSet/dri:reference">
+                                	<xsl:variable name="externalMetadataURL">
+                                    	<xsl:text>cocoon:/</xsl:text>
+                                    	<xsl:value-of select="@url"/>
+                                    </xsl:variable>
+                                            
+                                    <xsl:variable name="data" select="document($externalMetadataURL)/mets:METS/mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim"/>
+                                    <xsl:variable name="number" select="substring-after($data/dim:field[@element='identifier' and @qualifier='govdoc'],':')"/>
+                                    
+                                    <xsl:variable name="coords_y" select="(number(substring-before(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'northlimit='),';')) + number(substring-before(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'southlimit='),';'))) div 2.0"/>
+                                    <xsl:variable name="coords_x" select="(number(substring-before(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'westlimit='),';')) +  number(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'eastlimit='))) div 2.0"/>
+                                    
+                                    <xsl:variable name="title" select="(substring-after(title, ''))"/> 
+        							<xsl:variable name="political" select="(substring-after(coverage/political, ''))"/>
+        							<xsl:variable name="date" select="(substring-after(date, ''))"/>
+        							<xsl:variable name="url" select="(substring-after(url, ''))"/>
+        
+									<![CDATA[
+										folios.push( {
+											title: ']]><xsl:value-of select="$title" /><![CDATA[',
+											political: ']]><xsl:value-of select="$political" /><![CDATA[',
+											date: ']]><xsl:value-of select="$date" /><![CDATA[',
+											url: ']]><xsl:value-of select="$url" /><![CDATA[',
+											lat: parseFloat(']]><xsl:value-of select="$coords_y" /><![CDATA['),
+											lon: -parseFloat(']]><xsl:value-of select="$coords_x" /><![CDATA[')
+										});
+										
+									]]>
 									
 								</xsl:for-each>
-							</script>
+                            </script>
 						</xsl:when>
-					</xsl:choose>
-                </div>
+					</xsl:choose>					
+                </div>                
             </body>
-        </html>
-    </xsl:template>
-	
+        </html>	
+	</xsl:template>
 
-	
-	
-    
 	<!-- The HTML head element contains references to CSS as well as embedded JavaScript code. Most of this 
-		information is either user-provided bits of post-processing (as in the case of the JavaScript), or 
-		references to stylesheets pulled directly from the pageMeta element. -->
+    	 information is either user-provided bits of post-processing (as in the case of the JavaScript), or 
+         references to stylesheets pulled directly from the pageMeta element. -->
 	<xsl:template name="buildHead">
 		<head>
 			<meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
-			<!-- Add stylesheets -->
-			<xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='stylesheet']">
-				<link rel="stylesheet" type="text/css">
-					<xsl:attribute name="media">
-						<xsl:value-of select="@qualifier"/>
+            <!-- Add stylesheets -->
+            <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='stylesheet']">
+            	<link rel="stylesheet" type="text/css">
+                	<xsl:attribute name="media">
+                    	<xsl:value-of select="@qualifier"/>
 					</xsl:attribute>
-					<xsl:attribute name="href">
-						<xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
-						<xsl:text>/themes/</xsl:text>
-						<xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme'][@qualifier='path']"/>
-						<xsl:text>/</xsl:text>
-						<xsl:value-of select="."/>
-					</xsl:attribute>
-				</link>
+                    <xsl:attribute name="href">
+                    	<xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
+                        <xsl:text>/themes/</xsl:text>
+                        <xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme'][@qualifier='path']"/>
+                        <xsl:text>/</xsl:text>
+                        <xsl:value-of select="."/>
+                    </xsl:attribute>
+                </link>
 			</xsl:for-each>
-			
-			<!-- Add syndication feeds -->
-			<xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='feed']">
-				<link rel="alternate" type="application">
-					<xsl:attribute name="type">
-						<xsl:text>application/</xsl:text>
-						<xsl:value-of select="@qualifier"/>
-					</xsl:attribute>
-					<xsl:attribute name="href">
-						<xsl:value-of select="."/>
-					</xsl:attribute>
-				</link>
+                  
+            <!-- Add syndication feeds -->
+            <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='feed']">
+            	<link rel="alternate" type="application">
+                	<xsl:attribute name="type">
+                    	<xsl:text>application/</xsl:text>
+                        <xsl:value-of select="@qualifier"/>
+                    </xsl:attribute>
+                    <xsl:attribute name="href">
+                    	<xsl:value-of select="."/>
+                    </xsl:attribute>
+                </link>
 			</xsl:for-each>
-			
-			
-			
-			
-			<!-- the following javascript removes the default text of empty text areas when they are focused on or submitted -->
-			<script type="text/javascript">
-				function tFocus(element){if (element.value == '<i18n:text>xmlui.dri2xhtml.default.textarea.value</i18n:text>'){element.value='';}}
-				function tSubmit(form){var defaultedElements = document.getElementsByTagName("textarea");
-				for (var i=0; i != defaultedElements.length; i++){
-				if (defaultedElements[i].value == '<i18n:text>xmlui.dri2xhtml.default.textarea.value</i18n:text>'){
-				defaultedElements[i].value='';}}}
-			</script>
-			
-			
-			<!-- Add javascipt  -->
-			<xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='javascript']">
-				<script type="text/javascript">
-					<xsl:attribute name="src">
-						<xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
-						<xsl:text>/themes/</xsl:text>
-						<xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme'][@qualifier='path']"/>
-						<xsl:text>/</xsl:text>
-						<xsl:value-of select="."/>
-					</xsl:attribute>
-					&#160;   
+                  
+            <!-- the following javascript removes the default text of empty text areas when they are focused on or submitted -->
+            <script type="text/javascript">
+            	function tFocus(element){if (element.value == '<i18n:text>xmlui.dri2xhtml.default.textarea.value</i18n:text>'){element.value='';}}
+                function tSubmit(form){var defaultedElements = document.getElementsByTagName("textarea");
+                for (var i=0; i != defaultedElements.length; i++){
+                if (defaultedElements[i].value == '<i18n:text>xmlui.dri2xhtml.default.textarea.value</i18n:text>'){
+                defaultedElements[i].value='';}}}
+            </script>
+                  
+
+            <!-- Add javascipt  -->            
+            <xsl:variable name="jqueryVersion"><xsl:text>1.11.1</xsl:text></xsl:variable>
+        	<xsl:variable name="jqueryUIVersion"><xsl:text>1.10.4</xsl:text></xsl:variable>
+
+        	<xsl:variable name="protocol">
+            	<xsl:choose>
+                	<xsl:when test="starts-with(confman:getProperty('dspace.baseUrl'), 'https://')">
+                    	<xsl:text>https://</xsl:text>
+                	</xsl:when>
+                	<xsl:otherwise>
+                    	<xsl:text>http://</xsl:text>
+                	</xsl:otherwise>
+            	</xsl:choose>
+        	</xsl:variable>
+        	<script type="text/javascript" src="{concat($protocol, 'ajax.googleapis.com/ajax/libs/jquery/', $jqueryVersion ,'/jquery.min.js')}">&#160;</script>
+        	<script type="text/javascript" src="{concat($protocol, 'ajax.googleapis.com/ajax/libs/jqueryui/', $jqueryUIVersion ,'/jquery-ui.min.js')}">&#160;</script>
+		    
+            <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='javascript']">
+            	<script type="text/javascript">
+                	<xsl:attribute name="src">
+                    	<xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
+                        <xsl:text>/themes/</xsl:text>
+                        <xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme'][@qualifier='path']"/>
+                        <xsl:text>/</xsl:text>
+                        <xsl:value-of select="."/>
+                    </xsl:attribute>
+                    &#160;   
 				</script>
 			</xsl:for-each>
 			
 			<!-- Javascript for geofolio map -->
-			<script type="text/javascript" src="http://api.maps.yahoo.com/ajaxymap?v=5.0&amp;appid=adammikeal_appid">
-				<xsl:text>&#160;</xsl:text>
-			</script>
-		    
-		    <!-- Add a google analytics script if the key is present -->
-		    <xsl:if test="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']">
-		        <script src="https://www.google-analytics.com/urchin.js" type="text/javascript"><xsl:text>&#160;</xsl:text></script>
-		        <script type="text/javascript">
-		            <xsl:text>_uacct = "</xsl:text><xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']"/><xsl:text>";</xsl:text>
-		            <xsl:text>urchinTracker();</xsl:text>
-		        </script>
-		    </xsl:if>
-			
-			<!-- Add the title in -->
-			<xsl:variable name="page_title" select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='title']" />
-			<title>
-				<xsl:choose>
-					<xsl:when test="not($page_title)">
-						<xsl:text>  </xsl:text>
-					</xsl:when>
+    		<script src="http://openlayers.org/en/v3.0.0/resources/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+    		<script src="http://openlayers.org/en/v3.0.0/resources/example-behaviour.js" type="text/javascript"></script>
+            <script src="http://openlayers.org/en/v3.0.0/build/ol.js" type="text/javascript">
+            	<xsl:text>&#160;</xsl:text>
+            </script>
+            
+                
+            <!-- Add a google analytics script if the key is present -->                
+            <xsl:if test="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']">
+            	<script src="https://www.google-analytics.com/urchin.js" type="text/javascript"><xsl:text>&#160;</xsl:text></script>
+                <script type="text/javascript">                        
+                	<xsl:text>
+                    	_uacct = "</xsl:text><xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']"/><xsl:text>";
+                    </xsl:text>
+                    <xsl:text>urchinTracker();</xsl:text>
+                </script>
+			</xsl:if>
+                
+            <!-- Add the title in -->
+            <xsl:variable name="page_title" select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='title']" />
+            
+            <title>
+            	<xsl:choose>
+                	<xsl:when test="not($page_title)">
+                    	<xsl:text>  </xsl:text>
+                    </xsl:when>
 					<xsl:otherwise>
-						<xsl:copy-of select="$page_title/node()" />
+                    	<xsl:copy-of select="$page_title/node()" />
 					</xsl:otherwise>
 				</xsl:choose>
 			</title>
+			
 		</head>
+			
 	</xsl:template>
-	
-	
+		
 	<!-- Overriden to point the link to the new location -->
-	<xsl:template name="importHead">
-		<!--<xsl:apply-templates select="document('../static/header.xml')" mode="import"/>-->
-	    <!--Quick fix for the strange Xalan bug that throws an Null Pointer error for the template call above. This is probably because the
-	        the header.xml cannot be located or something like that; fix this later. -->
-	    <div id="header">		
-	        <div id="site_logo"><a href="/"><img src="{$context-path}/themes/TAMU/images/tamudl_logo.jpg" alt="Library Logo" /></a></div>
-	        <div id="page_header"><img src="{$context-path}/themes/TAMU/images/wheelan_banner.jpg" alt="Header Image" /></div>
-	    </div>
+    <xsl:template name="importHead">
+		<div id="header">         
+        	<div id="site_logo"><a href="/"><img src="{$context-path}/themes/TAMU/images/tamudl_logo.jpg" alt="Library Logo" /></a></div>
+			<div id="page_header"><img src="{$context-path}/themes/TAMU/images/wheelan_banner.jpg" alt="Header Image" /></div>
+        </div>
 	</xsl:template>
-    
-    
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-    <xsl:template match="dri:p[@rend='item-view-toggle item-view-toggle-bottom']">
-    </xsl:template>
+      
+    <xsl:template match="dri:p[@rend='item-view-toggle item-view-toggle-bottom']"> </xsl:template>
 
-    <xsl:template match="dri:div[@n='collection-recent-submission']"></xsl:template>
+    <xsl:template match="dri:div[@n='collection-recent-submission']"> </xsl:template>
     
-        
-	
-	
+    
+<!-- ============================================================================================================================================================== -->
+<!-- ============================================================================================================================================================== -->
         
     <!-- Viewing an individual folio --> 
     <xsl:template name="itemSummaryView-DIM">
         <!-- Generate the info about the item from the metadata section -->
-        <xsl:apply-templates select="./mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim"
-            mode="itemSummaryView-DIM"/>
-                
+        <xsl:apply-templates select="./mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim" mode="itemSummaryView-DIM"/>
         
         <div id="bitstreams">
             <xsl:for-each select="mets:fileSec/mets:fileGrp[@USE='CONTENT']/mets:file[@MIMETYPE='image/tiff']">
@@ -338,15 +385,11 @@
                 <div class="thumbnail">
                     <a rel="lightbox" alt="Click for a larger preview">
                         <xsl:attribute name="href">
-                            <xsl:value-of select="../../mets:fileGrp[@USE='THUMBNAIL']/mets:file[substring-before(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-')
-                                = substring-before(current()/mets:FLocat[@LOCTYPE='URL']/@xlink:title,'.') and contains(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-lg')]
-                                /mets:FLocat[@LOCTYPE='URL']/@xlink:href"/>
+                            <xsl:value-of select="../../mets:fileGrp[@USE='THUMBNAIL']/mets:file[substring-before(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-') = substring-before(current()/mets:FLocat[@LOCTYPE='URL']/@xlink:title,'.') and contains(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-lg')]/mets:FLocat[@LOCTYPE='URL']/@xlink:href"/>
                         </xsl:attribute>
                         <img alt="Click for larger version" >
                             <xsl:attribute name="src">
-                                <xsl:value-of select="../../mets:fileGrp[@USE='THUMBNAIL']/mets:file[substring-before(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-')
-                                    = substring-before(current()/mets:FLocat[@LOCTYPE='URL']/@xlink:title,'.') and contains(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-sm')]
-                                    /mets:FLocat[@LOCTYPE='URL']/@xlink:href"/>
+                                <xsl:value-of select="../../mets:fileGrp[@USE='THUMBNAIL']/mets:file[substring-before(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-') = substring-before(current()/mets:FLocat[@LOCTYPE='URL']/@xlink:title,'.') and contains(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-sm')]/mets:FLocat[@LOCTYPE='URL']/@xlink:href"/>
                             </xsl:attribute>
                         </img>
                     </a>                    
@@ -365,7 +408,8 @@
                                     <xsl:when test="./@SIZE &lt; 1000000">
                                         <xsl:value-of select="substring(string(./@SIZE div 1000),1,5)"/>
                                         <xsl:text>KB </xsl:text>
-                                    </xsl:when>-->
+                                    </xsl:when>
+                                    -->
                                     <xsl:when test="./@SIZE &lt; 1000000000">
                                         <xsl:value-of select="substring(string(./@SIZE div 1000000),1,3)"/>
                                         <xsl:text>MB </xsl:text>
@@ -427,24 +471,25 @@
             </a>
         </p>
 
-        <p class="linkbox">
+        <p class="linkbox">        
             <span>View all folios as:</span>
             <a href="{$context-path}/themes/TAMU/Geofolios/feeds/Geologic_Atlas_of_the_United_States.kmz">
                 <span class="linkboxlink" id="kmllink">
                     <xsl:text>Google Earth overlays</xsl:text>
                 </span>
             </a>
-            <!-- 
+            
             <a href="{$context-path}/themes/TAMU/Geofolios/feeds/georss.xml">
                 <span class="linkboxlink" id="georsslink">
                     <xsl:text>GeoRSS feed</xsl:text>
                 </span>
             </a>
-            -->
+            
         </p>
     </xsl:template>
     
-    
+<!-- ============================================================================================================================================================== -->
+<!-- ============================================================================================================================================================== -->    
     
     <xsl:template match="dim:dim" mode="itemSummaryView-DIM">
         <div id="metadata">
@@ -469,12 +514,11 @@
                 <xsl:value-of select="dim:field[@element='creator']"/>
                 <br />
                 <strong>Gov't Doc number: </strong>
-                <xsl:value-of select="dim:field[@element='identifier' and @qualifier='govdoc']"/>
+               <xsl:value-of select="dim:field[@element='identifier' and @qualifier='govdoc']"/>
                 <br />
                 <strong>Published by: </strong>
                 <xsl:value-of select="dim:field[@element='publisher']"/>
                 <br />
-                <!--<strong>In collection: </strong> <a href="http://txspace.tamu.edu/handle/1969.1/2490">Geologic Atlas of the United States</a> <br />-->
                 <strong>In collection: </strong> <a href="http://hdl.handle.net/1969.1/2490">Geologic Atlas of the United States</a> 
                 <br />
                 <strong>Permanent URI: </strong> 
@@ -487,13 +531,12 @@
         </div>
     </xsl:template>
     
-    
-    
-    
+<!-- ============================================================================================================================================================== -->
+<!-- ============================================================================================================================================================== -->    
     
     <!-- The templates that handle the respective cases: item, collection, and community. In the case of items
-        current Manakin build does really have a special use for detailList so the logic of summaryList is 
-        basically used in its place. --> 
+         current Manakin build does really have a special use for detailList so the logic of summaryList is 
+         basically used in its place. --> 
     <xsl:template name="itemDetailView_DS-METS-1.0-MODS">
         <xsl:variable name="data" select="./mets:METS/mets:dmdSec/mets:mdWrap/mets:xmlData/mods:mods"/>
         <xsl:variable name="context" select="."/>
@@ -517,15 +560,11 @@
                 <div class="thumbnail">
                     <a rel="lightbox" alt="Click for a larger preview">
                         <xsl:attribute name="href">
-                            <xsl:value-of select="../../mets:fileGrp[@USE='THUMBNAIL']/mets:file[substring-before(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-')
-                                = substring-before(current()/mets:FLocat[@LOCTYPE='URL']/@xlink:title,'.') and contains(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-lg')]
-                                /mets:FLocat[@LOCTYPE='URL']/@xlink:href"/>
+                            <xsl:value-of select="../../mets:fileGrp[@USE='THUMBNAIL']/mets:file[substring-before(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-') = substring-before(current()/mets:FLocat[@LOCTYPE='URL']/@xlink:title,'.') and contains(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-lg')]/mets:FLocat[@LOCTYPE='URL']/@xlink:href"/>
                         </xsl:attribute>
                         <img alt="Click for larger version" >
                             <xsl:attribute name="src">
-                                <xsl:value-of select="../../mets:fileGrp[@USE='THUMBNAIL']/mets:file[substring-before(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-')
-                                    = substring-before(current()/mets:FLocat[@LOCTYPE='URL']/@xlink:title,'.') and contains(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-sm')]
-                                    /mets:FLocat[@LOCTYPE='URL']/@xlink:href"/>
+                                <xsl:value-of select="../../mets:fileGrp[@USE='THUMBNAIL']/mets:file[substring-before(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-') = substring-before(current()/mets:FLocat[@LOCTYPE='URL']/@xlink:title,'.') and contains(mets:FLocat[@LOCTYPE='URL']/@xlink:title,'-sm')]/mets:FLocat[@LOCTYPE='URL']/@xlink:href"/>
                             </xsl:attribute>
                         </img>
                     </a>                    
@@ -608,21 +647,22 @@
                     <xsl:text>Google Earth overlays</xsl:text>
                 </span>
             </a>
-            <!--  
             <a href="{$context-path}/themes/TAMU/Geofolios/feeds/georss.xml">
                 <span class="linkboxlink" id="georsslink">
                     <xsl:text>GeoRSS feed</xsl:text>
                 </span>
             </a>
-            -->
         </p>
-        
+    
     </xsl:template>
     
+<!-- ============================================================================================================================================================== -->
+<!-- ============================================================================================================================================================== -->
+    
     <!-- The block of templates used to render the mods contents of a DRI object -->
-    <!-- The first template creates the top level table and sets the order in which the mods elements are
-        to be processed. -->
-    <xsl:template match="mods:mods" mode="detailView" priority="2">
+    <!-- The first template creates the top level table and sets the order in which the mods elements are to be processed. -->
+    <xsl:template match="mods:mods" mode="detailView" priority="2"> 
+          
         <table id="fullset">
             <xsl:apply-templates select="*[not(@type='provenance') and not(name()='mods:physicalDescription')]">
                 <xsl:sort data-type="number" order="ascending" select="
@@ -648,90 +688,56 @@
                     + number(name()='mods:extension') * 20
                     "/>
             </xsl:apply-templates>
+            
             <tr>
                 <td>Appears in Collections:</td>
                 <td></td>
                 <td>
-                    <!-- Somebody shoot me for doing this... or better yet, shoot Adam first and then shoot me. -->
                     <a>
                         <xsl:attribute name="href">
-                            <xsl:value-of select="key('DSMets1.0', /dri:document/dri:body//dri:objectInclude[@objectSource = current()/ancestor::dri:object/@objectIdentifier]
-                                /dri:includeSet/dri:objectInclude/@objectSource)/@url"/>
+                            <xsl:value-of select="key('DSMets1.0', /dri:document/dri:body//dri:objectInclude[@objectSource = current()/ancestor::dri:object/@objectIdentifier]/dri:includeSet/dri:objectInclude/@objectSource)/@url"/>
                         </xsl:attribute>
-                        <xsl:value-of select="key('DSMets1.0', /dri:document/dri:body//dri:objectInclude[@objectSource = current()/ancestor::dri:object/@objectIdentifier]
-                            /dri:includeSet/dri:objectInclude/@objectSource)/mets:METS/mets:dmdSec/mets:mdWrap/mets:xmlData
-                            /mods:mods/mods:titleInfo/mods:title"/>
+                        <xsl:value-of select="key('DSMets1.0', /dri:document/dri:body//dri:objectInclude[@objectSource = current()/ancestor::dri:object/@objectIdentifier]/dri:includeSet/dri:objectInclude/@objectSource)/mets:METS/mets:dmdSec/mets:mdWrap/mets:xmlData/mods:mods/mods:titleInfo/mods:title"/>
                     </a>
                 </td>
             </tr>
         </table>
     </xsl:template>
     
+<!-- ============================================================================================================================================================== -->
+<!-- ============================================================================================================================================================== -->
     
+    <!-- TO HERE -->
     
-    
-	<xsl:template match="folio">
-		<xsl:variable name="mk" select="concat('marker_',@number)"/>
-		<xsl:variable name="pop" select="concat('popup_',@number)"/>
-	    <xsl:variable name="poly" select="concat('poly_',@number)"/>
-		
-		
-	    <!-- Add the flags -->
-	    <xsl:variable name="coords_y" select="(number(substring-before(substring-after(coverage/box,'northlimit='),';')) + 
-	        number(substring-before(substring-after(coverage/box,'southlimit='),';'))) div 2.0"/>
-	    <xsl:variable name="coords_x" select="(number(substring-before(substring-after(coverage/box,'westlimit='),';')) + 
-	        number(substring-after(coverage/box,'eastlimit='))) div 2.0"/>
-		
-		
-		<xsl:value-of select="concat('point = new YGeoPoint(', $coords_y, ', -', $coords_x, '); ')"/>
-		
-		<!-- test lines -->
-		<!-- <xsl:value-of select="concat($mk,' = iconImg + point; ')"/> -->
-		<!-- <xsl:value-of select="concat('var ', (concat($mk,' = new YMarker(point, iconImg); ')))"/>-->
-		<!-- <xsl:text>  x = new YMarker(point, iconImg); </xsl:text> -->
-
-		<xsl:value-of select="concat($mk,' = new YMarker(point, iconImg); ')"/>
-
-
-		<xsl:value-of select="$mk"/><xsl:text><![CDATA[.setSmartWindowColor('maroon');
-			]]></xsl:text>
-		<xsl:value-of select="$mk"/><xsl:text><![CDATA[.addLabel("<span class='folio-marker'>]]></xsl:text><xsl:value-of select="@number"/><xsl:text><![CDATA[</span>");
-			]]></xsl:text>
-		
-		<xsl:text><![CDATA[_autoExpand = '<div class="folio-popup">]]></xsl:text>
-		<xsl:value-of select="concat(@number, ' ', title, ' folio, ', coverage/political)"/>
-		<xsl:text><![CDATA[</div>'; 
-			]]></xsl:text>
-		<xsl:value-of select="$mk"/><xsl:text><![CDATA[.addAutoExpand(_autoExpand);
-			]]></xsl:text>
-		
-		
-		<xsl:value-of select="concat('var ', $pop, ' = ')"/>
-		<xsl:text><![CDATA['<div class="folio-desc"><span class="title">]]></xsl:text>
-		<xsl:value-of select="concat(@number, ' ', title, ' folio, ', coverage/political)"/>
-		<xsl:text><![CDATA[</span><br/>]]></xsl:text>
-		<xsl:value-of select="concat('Folio ', @number, ', published ', date)"/>
-		<xsl:text><![CDATA[<br/>]]></xsl:text>
-		<xsl:value-of select="concat('Lat: ', substring-before(coverage/point,'N'), '; Lon: ', substring-before(substring-after(coverage/point,'N'),'W'))"/>
-		<xsl:text><![CDATA[<br/><a href="]]></xsl:text>
-		<xsl:value-of select="concat($context-path, '/', url)"/>
-		<xsl:text><![CDATA[">View complete folio</a></div>';]]></xsl:text>
-		
-		<xsl:value-of select="concat('YEvent.Capture(', $mk, ', EventsList.MouseClick, function() {', $mk, '.openSmartWindow(', $pop, ');});')"/>
-		
-		<xsl:value-of select="concat('map.addOverlay(', $mk, ');')"/>
-		
-	    <![CDATA[
-	    	    
-	    ]]>
+    <xsl:template match="folio">
+        <!-- Add the flags -->
+        <xsl:variable name="coords_y" select="(number(substring-before(substring-after(coverage/box,'northlimit='),';')) + number(substring-before(substring-after(coverage/box,'southlimit='),';'))) div 2.0"/>
+        <xsl:variable name="coords_x" select="(number(substring-before(substring-after(coverage/box,'westlimit='),';')) + number(substring-after(coverage/box,'eastlimit='))) div 2.0"/> 
+        
+        <xsl:variable name="title" select="(substring-after(title, ''))"/> 
+        <xsl:variable name="political" select="(substring-after(coverage/political, ''))"/>
+        <xsl:variable name="date" select="(substring-after(date, ''))"/>
+        <xsl:variable name="url" select="(substring-after(url, ''))"/>
+        
+		<![CDATA[
+			folios.push({
+				title: ']]><xsl:value-of select="$title" /><![CDATA[',
+				political: ']]><xsl:value-of select="$political" /><![CDATA[',
+				date: ']]><xsl:value-of select="$date" /><![CDATA[',
+				url: ']]><xsl:value-of select="$url" /><![CDATA[',
+				lat: parseFloat(']]><xsl:value-of select="$coords_y" /><![CDATA['),
+				lon: -parseFloat(']]><xsl:value-of select="$coords_x" /><![CDATA[')
+			});
+		]]>
+        
 	</xsl:template>
+	
+<!-- ============================================================================================================================================================== -->
+<!-- ============================================================================================================================================================== -->	
     
+    <xsl:template match="dri:div[@n='collection-home']/dri:head"></xsl:template>
     
-    <xsl:template match="dri:div[@n='collection-home']/dri:head">
-        <!-- Do nothing -->
-    </xsl:template>
-    
-    <xsl:template match="dri:div[@n='collection-home']/dri:head" mode="geo">
+    <xsl:template match="dri:div[@n='collection-home']/dri:head" mode="geo">    
         <xsl:variable name="head_count" select="count(ancestor::dri:div)"/>
         <!-- with the help of the font-sizing variable, the font-size of our header text is made continuously variable based on the character count -->
         <!-- first constant used to be 375, but I changed it to 325 - JSC -->
@@ -746,32 +752,84 @@
                     <xsl:attribute name="style">font-size: <xsl:value-of select="$font-sizing"/>%;</xsl:attribute>
                 </xsl:otherwise>
             </xsl:choose>
-            <xsl:call-template name="standardAttributes">
+            <xsl:call-template name="standardAttributes">            	
                 <xsl:with-param name="class">ds-div-head</xsl:with-param>
-            </xsl:call-template>            
-            <xsl:apply-templates />
-        </xsl:element>	
+            </xsl:call-template>
+            <xsl:apply-templates/>
+        </xsl:element>  
     </xsl:template>
-    
-    
     
     <!-- Rendering the main collection view (map and all) --> 
     <xsl:template name="collectionDetailView-DIM">
         <div class="detail-view">&#160;
-            
-            <div id="mapContainer"></div>
-            
-            <xsl:apply-templates select="//dri:div[@n='collection-home']/dri:head" mode="geo"/>
-            
+        
+        	<link rel="stylesheet" href="http://openlayers.org/en/v3.0.0/css/ol.css" type="text/css"></link>
+    		<style>
+      			.map {
+        			height: 400px;
+        			width: 100%;
+      			}
+				.ol-popup {
+					width: 150px;
+					display: none;
+					position: absolute;
+					background-color: white;
+					-moz-box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+					-webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+					filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+					padding: 15px;
+					border-radius: 10px;
+					border: 1px solid #cccccc;
+					bottom: 35px;
+					left: -38px;
+				}
+				.ol-popup:after, .ol-popup:before {
+					top: 100%;
+					border: solid transparent;
+					content: " ";
+					height: 0;
+					width: 0;
+					position: absolute;
+					pointer-events: none;
+				}
+				.ol-popup:after {
+					border-top-color: white;
+					border-width: 10px;
+					left: 48px;
+					margin-left: -10px;
+				}
+				.ol-popup:before {
+					border-top-color: #cccccc;
+					border-width: 11px;
+					left: 48px;
+					margin-left: -11px;
+				}
+				.ol-popup-closer {
+					text-decoration: none;
+					position: absolute;
+					top: 2px;
+					right: 8px;
+				}
+				.ol-popup-closer:after {
+					content: "X";
+				}
+    		</style>
+        
+            <div id="mapContainer">
+            	<div id="map" class="map">
+            		<div id="popup" class="ol-popup">
+                		<a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                		<div id="popup-content"></div>
+            		</div>
+            	</div>
+            </div>
+                                    
+            <xsl:apply-templates select="//dri:div[@n='collection-home']/dri:head" mode="geo"/>            
             <!-- Generate the info about the collections from the metadata section -->
-            <xsl:apply-templates select="./mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim"
-                mode="collectionDetailView-DIM"/>
-            
+            <xsl:apply-templates select="./mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim" mode="collectionDetailView-DIM"/>            
             <!-- JS script moved from here to the dri:document template -->
         </div>
     </xsl:template>
-    
-    
     
     <!-- Generate the info about the collection from the metadata section -->
     <xsl:template match="dim:dim" mode="collectionDetailView-DIM"> 
@@ -782,13 +840,12 @@
         </xsl:if>
         
         <!-- The links to all the top-level stuff -->
-        <p class="linkbox front">
+        <p class="linkbox front">         
             <a href="{$context-path}/themes/TAMU/Geofolios/feeds/Geologic_Atlas_of_the_United_States.kmz">
                 <span class="linkboxlink" id="kmllink">
                     <xsl:text>Google Earth overlays</xsl:text>
                 </span>
             </a>
-            <!-- 
             <a href="{$context-path}/themes/TAMU/Geofolios/feeds/georss.xml">
                 <span class="linkboxlink" id="georsslink">
                     <xsl:text>GeoRSS feed</xsl:text>
@@ -798,8 +855,7 @@
                 <span class="linkboxlink" id="gislink">
                     <xsl:text>GIS map data</xsl:text>
                 </span>
-            </a>
-            -->
+            </a>            
         </p>
         
         <xsl:if test="string-length(dim:field[@element='rights'][not(@qualifier)])&gt;0 or string-length(dim:field[@element='rights'][@qualifier='license'])&gt;0">
@@ -819,47 +875,20 @@
         </xsl:if>
     </xsl:template>
     
-    
-    
-    
-    
-    <xsl:template match="dri:div[@n='collection-search-browse']">
-    </xsl:template>
-    
-
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    <xsl:template match="dri:div[@n='collection-search-browse']"></xsl:template>
+  
     <xsl:template match="dri:div[@n='search-results']/dri:head">
         <h3 style="margin-bottom: 5px;"><xsl:apply-templates/></h3>
     </xsl:template>
     
-    <xsl:template match="dri:referenceSet[@n='search-results-repository']/dri:head">
-    </xsl:template>
-       
-    
-	
-    
-	
-    <xsl:template match="dri:div[@id='aspect.artifactbrowser.SimpleSearch.div.search'] | dri:div[@id='aspect.artifactbrowser.AdvancedSearch.div.advanced-search']">   
-        <div id="mapContainer"></div>
-		
-		<!-- JS script moved from here to the dri:document template -->
-		
+    <xsl:template match="dri:referenceSet[@n='search-results-repository']/dri:head"></xsl:template>
+  
+    <xsl:template match="dri:div[@id='aspect.discovery.CollectionSearch.div.collection-search'] | dri:div[@id='aspect.artifactbrowser.AdvancedSearch.div.advanced-search']">         
+        <div id="mapContainer"></div>            
+        <!-- JS script moved from here to the dri:document template -->            
         <xsl:apply-imports/>
     </xsl:template>
-	
-	
-	
-	
-	
+      
     <!-- Included here to override the default behaviour of including the collection parent -->
     <xsl:template match="dri:reference" mode="summaryView">
         <xsl:variable name="externalMetadataURL">

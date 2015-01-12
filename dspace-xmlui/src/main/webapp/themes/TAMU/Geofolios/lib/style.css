@@ -11,9 +11,8 @@ div.intro-text {
 .thumbnail p { white-space: nowrap; font-size: 8pt; margin: 0; padding: 10px 0 0 3px; }
 .thumbnail p a { color: #999; font-size: 90%; text-decoration: none; }
 
-
 p.linkbox { margin: 10px 25px 5px; padding: 20px 20px 20px 55px; border: 1px solid #ccc; background-color: #e8e8e8; clear: both; }
-p.linkbox.front { margin: 10px auto 5px; width: 260px; }
+p.linkbox.front { margin: 10px auto 5px; width: 575px; }
 p.linkbox a {text-decoration: none !important; }
 p.linkbox a:hover {text-decoration: underline !important; }
 span.linkboxlink { margin: 5px 10px; padding: 20px 20px 20px 55px; background-repeat: no-repeat; background-position: 8px 8px; clear: both; } 
@@ -24,13 +23,9 @@ span.linkboxlink a:hover { text-decoration: underline; }
 #kmllink { background-image: url(../images/Google_Earth_icon_sm_d.png); }
 #georsslink { background-image: url(../images/georss_sm.png); }
 
-
-
 table tr td {
     padding: 1px;
 }
-
-
 
 span.folio-marker { 
     font-size: 10px;
@@ -40,9 +35,6 @@ span.folio-marker {
     top: 4px;
     color: white;
 }
-
-
-
 
 div.folio-popup {
     position: relative;
@@ -81,6 +73,10 @@ div.folio-desc .title {
     text-decoration: underline;
 }
 
+p.ds-paragraph {
+    display: none;
+}
+
 p.ds-paragraph.item-view-toggle.item-view-toggle-top
 {
     background-color:#E8E8E8;
@@ -102,7 +98,3 @@ p.byline
 #content h1 {
     margin-bottom: 0;
 }
-
-
-
-

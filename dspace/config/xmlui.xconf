@@ -192,6 +192,12 @@
         <!-- Primeros Book Reader Theme -->
         <theme name="Primeros Libros Collection" handle="1969.1/92213" path="TAMU/PrimerosLibros/"/>
 
+        <!-- Geofolios -->
+        <theme name="Geofolios Collection" handle="1969.1/2490" path="TAMU/Geofolios/"/> 
+
+        <!-- ESL -->
+        <theme name="ESL Community" handle="1969.1/1656" path="TAMU/ESL/"/>  
+
         <!-- Bush Capstone Themes -->
         <theme name="Bush Capstone: MPSA" handle="1969.1/94972" path="TAMU/Capstones/"/>
         <theme name="Bush Capstone: MPIA" handle="1969.1/94973" path="TAMU/Capstones/"/>
