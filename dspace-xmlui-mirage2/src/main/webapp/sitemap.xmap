@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- TAMU Specific customization of Mirage2 sitemap.xmap
+     we had to put this in the core Mirage2 source directory instead of the module as it wasn't getting packaged from the module -->
 <!--
 
     The contents of this file are subject to the license and copyright
@@ -52,6 +54,8 @@
 
         <map:transformers>
             <transformer name="strip-namespaces" src="org.apache.cocoon.transformation.StripNameSpacesTransformer"/>
+            <!-- TAMU Customization - restricted items transformer -->
+            <transformer name="restrictedItemsInfo" src="org.tamu.dspace.extensions.RestrictedItemsTransformer"/>
         </map:transformers>
 
         <map:serializers>
@@ -173,6 +177,11 @@
                 <!-- This line actually initiates the Aspect chain. The Aspect chain will build
                      the DRI (XML) content based on which page the user is accessing. -->
                 <map:generate type="file" src="cocoon://DRI/{1}"/>
+                
+                <!-- Step 1.5: TAMU Customization - Gather info on restricted bitstreams -->
+				<map:match pattern="handle/*/*">
+					<map:transform type="restrictedItemsInfo"/>
+		 		</map:match>                
 
                 <!-- Step 2: Transform the DRI page into XHTML -->
                 <!-- This line calls the resource named 'transform-to-xhtml' (included above).

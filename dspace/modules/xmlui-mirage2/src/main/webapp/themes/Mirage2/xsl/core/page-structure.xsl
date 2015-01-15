@@ -17,6 +17,10 @@
     Author: lieven.droogmans at atmire.com
     Author: ben at atmire.com
     Author: Alexey Maslov
+    
+    TAMU Customizations by 
+    Author: James Creel
+    Author: Jason Savell
 
 -->
 
@@ -102,6 +106,8 @@
                                 <div class="row row-offcanvas row-offcanvas-right">
                                     <div class="horizontal-slider clearfix">
                                         <div class="col-xs-12 col-sm-12 col-md-9 main-content">
+                                        
+                                            <!-- TAMU Customization - Uses Restricted Items Transformer information to provide a message about bitstream restrictions -->
                                             <xsl:choose>
                                                 <xsl:when test="//dri:meta/dri:pageMeta/dri:metadata[@element='restricted'] and //dri:meta/dri:pageMeta/dri:metadata[@element='focus' and @qualifier='container']='hdl:1969.1/2'">
                                                 <div id="bitstreamRestrictionNotice">The full text of this item is not available at this time because the student has placed this item under an embargo for a period of time. The Libraries are not authorized to provide a copy of this work during the embargo period, even for Texas A&amp;M users with NetID.</div>
@@ -116,6 +122,7 @@
                                                 <div id="bitstreamRestrictionNotice">NOTE: You are not authorized to access some or all of the files below.</div>
                                                 </xsl:when>
                                             </xsl:choose>
+                                            
                                             <xsl:apply-templates select="*[not(self::dri:options)]"/>
 
                                             <div class="visible-xs visible-sm">
