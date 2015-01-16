@@ -37,7 +37,6 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
 import org.dspace.core.I18nUtil;
-import org.tamu.dspace.requestcopy.RequestCopyForm;
 import org.xml.sax.SAXException;
 
 /**
@@ -45,12 +44,12 @@ import org.xml.sax.SAXException;
  * 
  * @author Alexey Maslov
  * @author Scott Phillips
- *
+ * @author James Creel (http://www.jamescreel.net)
  */
 
 public class AlumniRequest extends AbstractDSpaceTransformer 
 {
-    private static Logger log = Logger.getLogger(RequestCopyForm.class);
+    private static Logger log = Logger.getLogger(AlumniRequest.class);
     
 
     public void setup(SourceResolver resolver, Map arg1, String arg2, Parameters arg3) 
