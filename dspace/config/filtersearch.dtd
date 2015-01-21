@@ -1,0 +1,16 @@
+<!ELEMENT filtersearch (search*)>
+<!ELEMENT search (filter+)>
+<!ATTLIST search handles CDATA #REQUIRED>
+<!ATTLIST search name CDATA #IMPLIED>
+<!ATTLIST search description CDATA #IMPLIED>
+<!ATTLIST search head CDATA #IMPLIED>
+<!ELEMENT filter (item*)>
+<!ATTLIST filter type (text|select) #REQUIRED>
+<!ATTLIST filter label CDATA #REQUIRED>
+<!ATTLIST filter index CDATA #REQUIRED>
+<!ATTLIST filter multiple (true|false) "false">
+<!ATTLIST filter size CDATA "1">
+<!ELEMENT item (#PCDATA)>
+<!ATTLIST item value CDATA #IMPLIED>
+<!ATTLIST item default (true|false) "false">
+<!ATTLIST item year CDATA #IMPLIED>

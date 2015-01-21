@@ -1,0 +1,121 @@
+<?xml version="1.0"?>
+<!DOCTYPE filtersearch SYSTEM "filtersearch.dtd">
+
+<!--
+
+The FilterSearch consists of sets of filters that define a "search". Each search 
+can be installed on one or more number of communities and collections. The search 
+consists of several filters, searches against a particular index. They can be of 
+the form of a simple text field or a drop down select box pre-field with options.
+
+"search" element
+        handles:  A comma separated list of handles to install the search filters on. 
+
+"filter" element
+        type:     Either 'text' or 'select'
+        label:    The label to display for this filter
+        index:    The search index this filter will use, it must be defined in the 
+                  dspace.cfg.
+        multiple: true or false, when of type=select this will allow the user to select 
+                  multiple options from the select box.
+        size:     when type=select, how many options to show on the screen at once.
+
+"item" element
+        value:    The value to be used when this item is selected
+        default:  Should this option be selected by default.
+        year:     display a range of years from <start year>-<end year>. Either 
+                  year may be "present" for the current year.
+
+The example below shows how a filter might be used on a collection of ETDs.
+
+        <search handles="123456789/XXXX" description="Example ETD Filter search" head="Example ETD Filter Search">      
+
+                A filter for as a replacement for the full-text search:
+                <filter type="text" label="Words in text" index="ANY"/>
+                
+                A filter for for the author/creator:
+                <filter type="text" label="Author" index="creator"/>
+
+                A filter for for the committee chair:
+                <filter type="text" label="Committee Chair" index="etdchair"/>
+                
+                A filter for possible degree levels:
+                <filter type="select" label="Degree Level" index="etdlevel">
+                        <item value="" default="true">All</item>
+                        <item value="Masters">Masters</item>
+                        <item value="Doctoral">Doctoral</item>
+                </filter>
+                
+                A filter for possible ETD granting institutions:
+                <filter type="select" label="Granting Institution" index="etdgrantor" multiple="true" size="5">
+                        <item value="" default="true">All</item>
+                        <item value="Texas A&amp;M University">Texas A&amp;M University</item>
+                        <item value="Texas Tech University">Texas Tech University</item>
+                        <item value="University of Texas at Austin">University of Texas at Austin</item>
+                        <item value="University of Texas at Arlington">University of Texas at Arlington</item>
+                </filter>
+                
+                A filter for possible graduation dates, starting in 2002:
+                <filter type="select" label="Year" index="etdsubmitted" multiple="true" size="4">
+                        <item value="" default="true">All</item>
+                        <item year="present-2002"/>
+                </filter>
+        </search>
+-->
+
+<filtersearch>                                
+        <!--
+                ======================================
+                 Texas A&M University Filter Searches
+                ======================================
+        -->
+        <search handles="1969.1/1" description="TAMU: OGS Community">
+                <filter type="text" label="Words in text"   index="ANY"/>
+                <filter type="text" label="Author"          index="etdauthor"/>
+                <filter type="text" label="Discipline"      index="etddiscipline"/>
+                <filter type="text" label="Committee Chair" index="etdchair"/>
+                <filter type="select" label="Degree Level"  index="etdlevel" multiple="false" size="1">
+                        <item value="" default="true">All</item>
+                        <item value="Masters">Masters</item>
+                        <item value="Doctoral">Doctoral</item>
+                </filter>
+                <filter type="select" label="Year" index="etdsubmitted" multiple="true" size="4">
+                        <item value="" default="true">All</item>
+                        <item year="present-1922"/>                                             
+                </filter>
+        </search>
+        
+        <search handles="1969.1/2" description="TAMU: Digital ETD Collection">
+                <filter type="text" label="Words in text"   index="ANY"/>
+                <filter type="text" label="Author"          index="etdauthor"/>
+                <filter type="text" label="Discipline"      index="etddiscipline"/>
+                <filter type="text" label="Committee Chair" index="etdchair"/>
+                <filter type="select" label="Degree Level"  index="etdlevel" multiple="false" size="1">
+                        <item value="" default="true">All</item>
+                        <item value="Masters">Masters</item>
+                        <item value="Doctoral">Doctoral</item>
+                </filter>
+                <filter type="select" label="Year" index="etdsubmitted" multiple="true" size="4">
+                        <item value="" default="true">All</item>
+                        <item year="present-2002"/>                                             
+                </filter>
+        </search>
+        
+        <search handles="1969.1/129207" description="TAMU: Retrospective scanned ETD Collection">
+                <filter type="text" label="Words in text"   index="ANY"/>
+                <filter type="text" label="Author"          index="etdauthor"/>
+                <filter type="text" label="Discipline"      index="etddiscipline"/>
+                <filter type="text" label="Committee Chair" index="etdchair"/>
+                <filter type="select" label="Degree Level"  index="etdlevel" multiple="false" size="1">
+                        <item value="" default="true">All</item>
+                        <item value="Masters">Masters</item>
+                        <item value="Doctoral">Doctoral</item>
+                </filter>
+                <filter type="select" label="Year" index="etdsubmitted" multiple="true" size="4">
+                        <item value="" default="true">All</item>
+                        <item year="2004-1922"/>                                             
+                </filter>
+        </search>
+        
+
+</filtersearch>
