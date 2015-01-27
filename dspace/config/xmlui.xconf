@@ -87,7 +87,12 @@
         <aspect name="E-Person" path="resource://aspects/EPerson/" />
         <aspect name="Submission and Workflow" path="resource://aspects/Submission/" />
 
-        <!-- ========================
+        <!-- ====================
+	     KML Aggregator - will read and combine KML metadata files for a collection 
+	     ==================== -->
+        <aspect name="AggregateKML" path="resource://aspects/AggregateKML/" />
+
+	<!-- ========================
              Usage Statistics Engines
              ======================== -->
         <!-- By default, DSpace uses a Statistics engine based on SOLR -->
