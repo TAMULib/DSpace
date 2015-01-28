@@ -63,6 +63,12 @@
                 <indent>yes</indent>
             </map:serializer>
         </map:serializers>
+
+        <!-- TAMU Customization:  Add the AggregateKMLGenerator aspect's java -->
+        <map:generators default="file">
+		<map:generator name="AggregateKMLGenerator" src="edu.tamu.dspace.aggregateKML.AggregateKMLGenerator"/>
+	</map:generators>
+
     </map:components>
 
     <!-- Define global resources that are used in multiple areas of the pipeline. -->
@@ -133,6 +139,14 @@
         <map:pipeline>
             <!-- Allow the browser to cache static content for an hour -->
             <map:parameter name="expires" value="access plus 1 hours"/>
+
+	    <!-- TAMU Customization: Add path to generator for the Georeferences as KML link -->
+            <map:match pattern="metadata/handle/*/*/georeferences.kml">
+		<map:generate type="AggregateKMLGenerator">
+			<map:parameter name="handle" value="{1}/{2}"/>
+		</map:generate>
+		<map:serialize type="xml"/>
+	    </map:match>
 
             <!-- handle static js and css -->
             <map:match pattern="themes/*/**.js">

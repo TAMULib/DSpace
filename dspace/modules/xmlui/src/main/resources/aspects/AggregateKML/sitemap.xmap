@@ -11,11 +11,6 @@ This Aspect adds a link to download an aggregated KML file in TAMU DSpace instan
 <map:sitemap xmlns:map="http://apache.org/cocoon/sitemap/1.0">
 	<map:components>
 		
-		<!-- testing putting this in at aspect in addition to global sitemap -->
-		<map:generators default="file">
-			<!-- <map:generator name="AggregateKMLGenerator" src="edu.tamu.dspace.aggregateKML.AggregateKMLGenerator"/> -->
-		</map:generators>
-		
 		<map:transformers>
 			<map:transformer name="AggregateKMLNavigation" src="edu.tamu.dspace.aggregateKML.AggregateKMLNavigation"/>
 		</map:transformers>
@@ -31,25 +26,9 @@ This Aspect adds a link to download an aggregated KML file in TAMU DSpace instan
 			<map:generate/>
 						
 			<map:match type="HandleTypeMatcher" pattern="collection">
-			
 				<map:match pattern="handle/*/*">
 				    <map:transform type="AggregateKMLNavigation"/>
 				</map:match>
-				
-				<!-- testing putting this in at aspect in addition to global sitemap -->
-				<!--
-				<map:match pattern="metadata/handle/*/*/georeferences.kml">
-					<map:generate type="AggregateKMLGenerator">
-						<map:parameter name="handle" value="{1}/{2}"/>
-					</map:generate>
-				</map:match>
-				-->
-				<map:match pattern="metadata/handle/*/*/georeferences.kml">
-					<map:generate>
-						<map:parameter name="handle" value="{1}/{2}"/>
-					</map:generate>
-				</map:match>
-				
 			</map:match>
 			
 			<!-- Not a URL we care about, so just pass it on. -->
