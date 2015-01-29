@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Scanner;
+import java.net.URL;
+import java.net.URLConnection;
+
 
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
@@ -57,7 +60,22 @@ public class PelicanGeoparserTask extends AbstractCurationTask
 
             String documentText = getTextFromDSpaceObject(item);
 
-            sb.append("Hello World - we would like to parse the text: \n" + documentText.substring(1,100));
+            
+            //Pass the text to Pelican API
+
+            String content = null;
+			URLConnection connection = null;
+			try {
+			  connection =  new URL("http://osd129.library.tamu.edu/api?"+documentText).openConnection();
+			  Scanner scanner = new Scanner(connection.getInputStream());
+			  scanner.useDelimiter("\\Z");
+			  content = scanner.next();
+			}catch ( Exception ex ) {
+			    ex.printStackTrace();
+			}
+
+			sb.append("\n\nGot JSON:\n\n"+content);
+
 
             report(sb.toString());
             setResult(sb.toString());
