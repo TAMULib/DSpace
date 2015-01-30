@@ -62,11 +62,13 @@ public class PelicanGeoparserTask extends AbstractCurationTask
 
             
             //Pass the text to Pelican API
+            String connectionString = "http://osd129.library.tamu.edu/api?"+documentText;
+            sb.append("\nConnection String:\n"+ connectionString);
 
             String content = null;
 			URLConnection connection = null;
 			try {
-			  connection =  new URL("http://osd129.library.tamu.edu/api?"+documentText).openConnection();
+			  connection =  new URL(connectionString).openConnection();
 			  Scanner scanner = new Scanner(connection.getInputStream());
 			  scanner.useDelimiter("\\Z");
 			  content = scanner.next();
