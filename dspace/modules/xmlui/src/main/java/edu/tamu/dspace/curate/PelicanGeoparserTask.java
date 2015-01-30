@@ -6,7 +6,11 @@ import java.util.List;
 import java.util.Scanner;
 import java.net.URL;
 import java.net.URLConnection;
-
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
@@ -19,6 +23,11 @@ import org.dspace.core.Constants;
 import org.dspace.curate.AbstractCurationTask;
 import org.dspace.curate.Curator;
 import org.dspace.curate.Suspendable;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 
 public class PelicanGeoparserTask extends AbstractCurationTask
 {
@@ -60,9 +69,15 @@ public class PelicanGeoparserTask extends AbstractCurationTask
 
             String documentText = getTextFromDSpaceObject(item);
 
+            String connectionString = null;
             
             //Pass the text to Pelican API
-            String connectionString = "http://osd129.library.tamu.edu/api?"+documentText;
+            try {
+				connectionString = "http://localhost:9000/api?"+URLEncoder.encode("There is a City named Omaha", "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             sb.append("\nConnection String:\n"+ connectionString);
 
             String content = null;
@@ -72,12 +87,89 @@ public class PelicanGeoparserTask extends AbstractCurationTask
 			  Scanner scanner = new Scanner(connection.getInputStream());
 			  scanner.useDelimiter("\\Z");
 			  content = scanner.next();
+			  scanner.close();
 			}catch ( Exception ex ) {
 			    ex.printStackTrace();
 			}
 
-			sb.append("\n\nGot JSON:\n\n"+content);
+			ObjectMapper mapper = new ObjectMapper();
+			JsonNode actualObj = null;
+			try {
+				actualObj = mapper.readTree(content);
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			Iterator<String> fieldNames = actualObj.fieldNames();
+			
+			Map<String, String> namesToWinners = new HashMap<String, String>();
+			
+			
+			
+			while(fieldNames.hasNext()) {
+				String name = fieldNames.next();
+				JsonNode node = actualObj.get(name);
+				System.out.println(name);
+				//System.out.println(node);
+				
+				Iterator<JsonNode> candidates = node.elements();
+				
+				String answer = "";
+				JsonNode topCandidate = null;
+				Double maxScore = Double.MIN_VALUE;
+				
+				while(candidates.hasNext()) 
+				{
+					JsonNode candidate = candidates.next();
+					
+					//System.out.println("He has score of " + candidate.get("scoreAsDouble") + " and lat " + candidate.get("position").get("lat"));
+					
+					Double myScore = candidate.get("scoreAsDouble").asDouble();
+					if(myScore > maxScore)
+					{
+						topCandidate = candidate;
+					}
+				}
+				
+				if(topCandidate != null)
+					answer += topCandidate.get("name").asText() + " (" + topCandidate.get("uri").toString().replace("\"", "") + "): " + topCandidate.get("position").get("lat") + ", " +  topCandidate.get("position").get("lon");
+				
+				namesToWinners.put(name, answer);
+				
+			}
+			
+			for(String name : namesToWinners.keySet())
+			{
+			
+				//write to the dspace item
+				sb.append("Assign field value \"" + namesToWinners.get(name) +"\"\n");
+				item.addMetadata("local", "suggested", "DCCoverageSpatial", "en", namesToWinners.get(name));
+				try
+				{
+                	item.update();
+                }
+                catch (SQLException e)
+				{
+					// Auto-generated catch block from getting the textBundle from the item's bundles
+	            	log.error("SQL exception updating item " + item.getHandle());
+					e.printStackTrace();
+					count++;
+				}
+				catch (AuthorizeException e)
+	            {
+					// Auto-generated catch block from getting the next token from the Scanner
+	            	log.error("Authorization Exception updating item " + item.getHandle());
+					e.printStackTrace();
+					count++;
+				}
+			
+			}
 
+			
 
             report(sb.toString());
             setResult(sb.toString());
