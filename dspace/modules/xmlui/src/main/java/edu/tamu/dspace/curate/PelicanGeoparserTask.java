@@ -92,11 +92,11 @@ public class PelicanGeoparserTask extends AbstractCurationTask
 			    ex.printStackTrace();
 			}
 
-			ObjectMapper mapper = new ObjectMapper();
-			JsonNode actualObj = null;
+			com.fasterxml.jackson.databind.ObjectMapper mapper = new com.fasterxml.jackson.databind.ObjectMapper();
+			com.fasterxml.jackson.databind.JsonNode actualObj = null;
 			try {
 				actualObj = mapper.readTree(content);
-			} catch (JsonProcessingException e) {
+			} catch (com.fasterxml.jackson.core.JsonProcessingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -112,19 +112,19 @@ public class PelicanGeoparserTask extends AbstractCurationTask
 			
 			while(fieldNames.hasNext()) {
 				String name = fieldNames.next();
-				JsonNode node = actualObj.get(name);
+				com.fasterxml.jackson.databind.JsonNode node = actualObj.get(name);
 				System.out.println(name);
 				//System.out.println(node);
 				
-				Iterator<JsonNode> candidates = node.elements();
+				Iterator<com.fasterxml.jackson.databind.JsonNode> candidates = node.elements();
 				
 				String answer = "";
-				JsonNode topCandidate = null;
+				com.fasterxml.jackson.databind.JsonNode topCandidate = null;
 				Double maxScore = Double.MIN_VALUE;
 				
 				while(candidates.hasNext()) 
 				{
-					JsonNode candidate = candidates.next();
+					com.fasterxml.jackson.databind.JsonNode candidate = candidates.next();
 					
 					//System.out.println("He has score of " + candidate.get("scoreAsDouble") + " and lat " + candidate.get("position").get("lat"));
 					
@@ -136,7 +136,7 @@ public class PelicanGeoparserTask extends AbstractCurationTask
 				}
 				
 				if(topCandidate != null)
-					answer += topCandidate.get("name").asText() + " (" + topCandidate.get("uri").toString().replace("\"", "") + "): " + topCandidate.get("position").get("lat") + ", " +  topCandidate.get("position").get("lon");
+					answer += topCandidate.get("name").asText() + " (" + topCandidate.get("uri").toString().replace("\"", "") + "): " + topCandidate.get("details").get("position").get("lat") + ", " +  topCandidate.get("details").get("position").get("lon");
 				
 				namesToWinners.put(name, answer);
 				
