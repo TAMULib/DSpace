@@ -40,7 +40,6 @@
   <!--<xsl:import href="../dri2xhtml-alt/dri2xhtml.xsl"/>-->
     <xsl:import href="../Mirage2/xsl/theme.xsl"/>
     <xsl:variable name="theme-path" select="concat($context-path,'/themes/Mirage2/')"/>
-<!--    <xsl:variable name="child-theme-path" select="concat($context-path,'/themes/TAMUMirage2/')"/>-->
     <xsl:output indent="yes"/>
  
 	
@@ -1494,6 +1493,20 @@
             </ul>
         </div>
     </xsl:template> 
+
+   <xsl:template name="buildChildThemeCSS">
+                <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='stylesheet']">
+                    <link rel="stylesheet" type="text/css">
+                        <xsl:attribute name="media">
+                            <xsl:value-of select="@qualifier"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="$child-theme-path"/>
+                            <xsl:value-of select="."/>
+                        </xsl:attribute>
+                    </link>
+                </xsl:for-each>
+    </xsl:template>	
 
 	<xsl:template name="addJavascript">
         <xsl:variable name="jqueryVersion">

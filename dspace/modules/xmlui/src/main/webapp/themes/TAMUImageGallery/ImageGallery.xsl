@@ -26,6 +26,7 @@
     exclude-result-prefixes="url">
     
     <xsl:import href="../TAMU/TAMU.xsl"/>
+    <xsl:variable name="child-theme-path" select="concat($context-path,'/themes/TAMUImageGallery/')" />
     <xsl:output indent="yes"/>
     
     <!-- Global variable to get the repository URL -->

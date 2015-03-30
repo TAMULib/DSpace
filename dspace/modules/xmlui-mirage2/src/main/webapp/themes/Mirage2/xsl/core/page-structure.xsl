@@ -213,6 +213,8 @@
 
             <link rel="stylesheet" href="{concat($theme-path, 'styles/main.css')}"/>
 
+            <xsl:call-template name="buildChildThemeCSS"/>
+
             <!-- Add syndication feeds -->
             <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='feed']">
                 <link rel="alternate" type="application">
@@ -335,6 +337,8 @@
         </head>
     </xsl:template>
 
+    <xsl:template name="buildChildThemeCSS">
+    </xsl:template>
 
     <!-- The header (distinct from the HTML head element) contains the title, subtitle, login box and various
         placeholders for header images -->
