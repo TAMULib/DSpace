@@ -25,8 +25,8 @@
     xmlns:url="http://www.jclark.com/xt/java/java.net.URLEncoder"
     exclude-result-prefixes="url">
     
-    <xsl:import href="../TAMU/TAMU.xsl"/>
-    <xsl:variable name="child-theme-path" select="concat($context-path,'/themes/TAMUImageGallery/')" />
+    <xsl:import href="../shared.xsl"/>
+    <xsl:variable name="child-theme-path" select="concat($context-path,'/themes/Mirage2Ext/')" />
     <xsl:output indent="yes"/>
     
     <!-- Global variable to get the repository URL -->

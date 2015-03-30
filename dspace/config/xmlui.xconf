@@ -189,7 +189,7 @@
         <!-- <theme name="Test Theme 1" handle="123456789/1" path="theme1/"/>    -->
         <!-- <theme name="Test Theme 2" regex="community-list" path="theme2/"/> -->
 
-        <theme name="Better Living Collection" handle="1969.1/91004" path="TAMUImageGallery/"/>
+        <theme name="Better Living Collection" handle="1969.1/91004" path="Mirage2Ext/ImageGallery/"/>
         <theme name="Wheelan Collection" handle="1969.1/590" path="TAMU/ImageGallery/"/>
         <theme name="Vascular Plant Image Collection" handle="1969.1/97046" path="TAMU/ImageGallery/"/>
         <theme name="Historic Maps of Cuba" handle="1969.1/86434" path="TAMU/ImageGallery/"/>

@@ -4,11 +4,10 @@
 
   Version: $Revision: 1.1 $
  
-  Date: $Date: 2009/10/04 16:06:31 $
+  Date: $Date: 2006/05/25 16:03:31 $
  
 -->
 <map:sitemap xmlns:map="http://apache.org/cocoon/sitemap/1.0">
-
 	<map:components>
 		<map:transformers>
 			<map:transformer name="restrictedItemsInfo" src="org.tamu.dspace.extensions.RestrictedItemsTransformer"/>	    
@@ -21,17 +20,18 @@
 		<map:component-configurations>
 			<global-variables>
 				<theme-path>TAMU</theme-path>
-				<theme-name>The TAMU Periodicals theme</theme-name>
+				<theme-name>The official TAMU theme Image Gallery</theme-name>
 			</global-variables>
 		</map:component-configurations>
+		
 		<map:pipeline>
 
 			<!-- Deliver static theme content -->
-			<map:match pattern="themes/*/Periodicals/**">
+			<map:match pattern="themes/*/ImageGallery/**">
 				<map:read src="{2}"/>
 			</map:match>
 			
-		    <!-- Deliver diffrent CSS files to diffrent browsers -->
+		    <!-- Generate DSpace content pages -->
 			<map:match pattern="**">
 				
 			    <!-- Step 0.1:  generate interrupt request to preserve context when users navigate to login page -->
@@ -44,34 +44,39 @@
 			    <map:match pattern="handle/*/*">
 			        <map:transform type="restrictedItemsInfo"/>
 			    </map:match>
-				
-				<!-- Step 2 Add page metadata -->
+				<!-- Deliver different CSS files to different browsers  -->
 				<map:transform type="IncludePageMeta">
-					<map:parameter name="stylesheet.screen#1" value="lib/css/reset.css"/>
-					<map:parameter name="stylesheet.screen#2" value="lib/css/style.css"/>
-					<map:parameter name="stylesheet.screen#3" value="Periodicals/lib/css/style.css"/>
+					<map:parameter name="stylesheet.screen#3" value="ImageGallery/lib/css/lightbox.css"/> 
+					<map:parameter name="stylesheet.screen#4" value="ImageGallery/ImageGallery.css"/>
 					<map:parameter name="javascript#1" value="loadJQuery.js"/>
 					<map:parameter name="javascript#2" value="lib/jquery-ui.1.8.6.min.js"/>
-					<map:parameter name="javascript#3" value="lib/tamu-menus.js"/>							
+					<map:parameter name="javascript#3" value="lib/tamu-menus.js"/>
+					<map:parameter name="javascript#4" value="ImageGallery/ImageGallery.js"/>
 					<map:parameter name="theme.path" value="{global:theme-path}"/>
 					<map:parameter name="theme.name" value="{global:theme-name}"/>
+				    <map:parameter name="theme.image-server" value="https://djatoka.library.tamu.edu/"/>
 				</map:transform>
 				
-				<map:match type="request" pattern="XML">
-					<map:serialize type="xml"/>
-				</map:match>
-				
-				<map:transform src="Periodicals.xsl"/>
-				
-				<map:act type="locale">
+				<!-- Deliver the DRI when requested  -->
+    			<map:match type="request" pattern="XML">
+    			  <map:serialize type="xml"/>
+    			</map:match>
+    			
+    			<!-- Here's the call to the main stylesheet -->
+    			<map:transform src="ImageGallery.xsl"/>
+    			
+    			<!-- Localization stuff... -->
+    			<map:act type="locale">
 					<map:transform type="i18n">
 						<map:parameter name="locale" value="{locale}"/>						
 					</map:transform>
 				</map:act>
 				
-				<!-- <map:transform type="stylesheet" src="themes/dri2xhtml.xsl"/> -->
+				<!-- The default serialization method -->
 				<map:serialize type="html"/>
+				
 			</map:match>
+			
 		</map:pipeline>
 	</map:pipelines>
 </map:sitemap>
