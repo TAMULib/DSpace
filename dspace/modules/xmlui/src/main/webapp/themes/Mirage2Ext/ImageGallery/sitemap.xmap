@@ -19,7 +19,7 @@
 	<map:pipelines>
 		<map:component-configurations>
 			<global-variables>
-				<theme-path>TAMU</theme-path>
+				<theme-path>Mirage2Ext</theme-path>
 				<theme-name>The official TAMU theme Image Gallery</theme-name>
 			</global-variables>
 		</map:component-configurations>

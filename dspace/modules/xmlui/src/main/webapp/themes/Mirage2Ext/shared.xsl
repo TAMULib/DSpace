@@ -34,9 +34,9 @@
 	exclude-result-prefixes="i18n dri mets xlink xsl dim xhtml mods dc">
     
     <xsl:import href="../dri2xhtml.xsl"/>
-	<xsl:import href="../TAMU/lib/xsl/date.month-name.template.xsl"/>
-    <xsl:import href="../TAMU/lib/xsl/date.day-in-month.template.xsl"/>
-    <xsl:import href="../TAMU/lib/xsl/date.year.template.xsl"/>
+	<xsl:import href="../Mirage2Ext/lib/xsl/date.month-name.template.xsl"/>
+    <xsl:import href="../Mirage2Ext/lib/xsl/date.day-in-month.template.xsl"/>
+    <xsl:import href="../Mirage2Ext/lib/xsl/date.year.template.xsl"/>
   <!--<xsl:import href="../dri2xhtml-alt/dri2xhtml.xsl"/>-->
     <xsl:import href="../Mirage2/xsl/theme.xsl"/>
     <xsl:variable name="theme-path" select="concat($context-path,'/themes/Mirage2/')"/>
