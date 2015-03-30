@@ -213,7 +213,8 @@
 
             <link rel="stylesheet" href="{concat($theme-path, 'styles/main.css')}"/>
 
-            <xsl:call-template name="buildChildThemeCSS"/>
+            <!-- allow any descendant themes to inject content into the head of the document-->
+            <xsl:call-template name="appendHead"/>
 
             <!-- Add syndication feeds -->
             <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='feed']">
@@ -337,7 +338,8 @@
         </head>
     </xsl:template>
 
-    <xsl:template name="buildChildThemeCSS">
+    <!-- empty by default, but allows any descendant themes to inject content into the head of the document by overriding -->
+    <xsl:template name="appendHead">
     </xsl:template>
 
     <!-- The header (distinct from the HTML head element) contains the title, subtitle, login box and various

@@ -40,34 +40,24 @@
   <!--<xsl:import href="../dri2xhtml-alt/dri2xhtml.xsl"/>-->
     <xsl:import href="../Mirage2/xsl/theme.xsl"/>
     <xsl:variable name="theme-path" select="concat($context-path,'/themes/Mirage2/')"/>
+    <xsl:variable name="child-theme-path" select="concat($context-path,'/themes/Mirage2Ext/')"/>
     <xsl:output indent="yes"/>
  
-	
-	
-		<!--
-        The starting point of any XSL processing is matching the root element. In DRI the root element is document, 
-        which contains a version attribute and three top level elements: body, options, meta (in that order). 
-        
-        This template creates the html document, giving it a head and body. A title and the CSS style reference
-        are placed in the html head, while the body is further split into several divs. The top-level div
-        directly under html body is called "ds-main". It is further subdivided into:
-            "ds-header"  - the header div containing title, subtitle, trail and other front matter
-            "ds-body"    - the div containing all the content of the page; built from the contents of dri:body
-            "ds-options" - the div with all the navigation and actions; built from the contents of dri:options
-            "ds-footer"  - optional footer div, containing misc information
-        
-        The order in which the top level divisions appear may have some impact on the design of CSS and the 
-        final appearance of the DSpace page. While the layout of the DRI schema does favor the above div 
-        arrangement, nothing is preventing the designer from changing them around or adding new ones by 
-        overriding the dri:document template.   
-    -->
-
-
-
-	
-	
-	
-	
+	<!-- inject child theme content into Mirage2 generated document head -->
+   <xsl:template name="appendHead">
+				<!-- generate child theme css -->
+                <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='stylesheet']">
+                    <link rel="stylesheet" type="text/css">
+                        <xsl:attribute name="media">
+                            <xsl:value-of select="@qualifier"/>
+                        </xsl:attribute>
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="$child-theme-path"/>
+                            <xsl:value-of select="."/>
+                        </xsl:attribute>
+                    </link>
+                </xsl:for-each>
+    </xsl:template>		
 	
 	<!-- following two templates are used to put the context path in place of
 	 a "%contextPath% placeholder string that we use in some external xml (xhtml) that
