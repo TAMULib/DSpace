@@ -15,6 +15,15 @@
 		<map:actions>
 			<map:action name="recordContext" src="org.tamu.dspace.extensions.RecordContextAction"/>
 		</map:actions>
+        <map:serializers>
+            <map:serializer name="html-no-doctype" logger="sitemap.serializer.xhtml"
+                            src="org.apache.cocoon.serialization.HTMLSerializer"
+                            mime-type="text/html; charset=utf-8"
+                            pool-grow="2" pool-max="64" pool-min="2">
+                <encoding>UTF-8</encoding>
+                <indent>yes</indent>
+            </map:serializer>
+        </map:serializers>
 	</map:components>
 	<map:pipelines>
 		<map:component-configurations>
@@ -72,8 +81,8 @@
 					</map:transform>
 				</map:act>
 				
-				<!-- The default serialization method -->
-				<map:serialize type="html"/>
+                <!-- Step 3: Serialize to the browser (sends final HTML to user's browser) -->
+                <map:serialize type="html-no-doctype"/>
 				
 			</map:match>
 			
