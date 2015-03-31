@@ -40,19 +40,6 @@
     <!-- Global variable to get the URL to the Djatoka image server from the metadata -->
     <xsl:variable name="image-server-url" select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme' and @qualifier='image-server'][1]/node()"/>
     
-    <!-- Overriden to point the link to the new location -->
-	<xsl:template name="importHead">
-		<!--<xsl:apply-templates select="document('../static/header.xml')" mode="import"/>-->
-	    <!--Quick fix for the strange Xalan bug that throws an Null Pointer error for the template call above. This is probably because the
-	        the header.xml cannot be located or something like that; fix this later. -->
-	    <div id="header">		
-	        <div id="site_logo"><a href="/"><img src="{$context-path}/themes/TAMU/images/tamudl_logo.jpg" alt="Library Logo" /></a></div>
-	        <div id="page_header"><img src="{$context-path}/themes/TAMU/images/wheelan_banner.jpg" alt="Header Image" /></div>
-	    </div>
-	</xsl:template>
-	
-	
-	
 	<!-- Override the template that decides what to do with the list of items
 		  (we want to change the <ul> that the TAMU theme normally generates
 		   into a collection of <div>s) -->
@@ -341,6 +328,22 @@
         </tr>
     </xsl:template>
 	 
-    
+    <xsl:template name="getFileIcon">
+        <xsl:param name="mimetype"/>
+            <i aria-hidden="true">
+                <xsl:attribute name="class">
+                <xsl:text>glyphicon </xsl:text>
+                <xsl:choose>
+                    <xsl:when test="contains(mets:FLocat[@LOCTYPE='URL']/@xlink:href,'isAllowed=n')">
+                        <xsl:text> glyphicon-lock</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text> glyphicon-file</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+                </xsl:attribute>
+            </i>
+        <xsl:text> </xsl:text>
+    </xsl:template> 
 
 </xsl:stylesheet>
