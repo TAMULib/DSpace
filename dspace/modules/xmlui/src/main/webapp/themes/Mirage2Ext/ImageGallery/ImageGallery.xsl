@@ -27,6 +27,16 @@
     
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
+
+    <xsl:template name="appendHead">
+        <link rel="stylesheet" href="{concat($child-theme-path, 'ImageGallery/ImageGallery.css')}"/>
+    </xsl:template>
+
+    <!-- inject child theme content into Mirage2 generated document head -->
+   <xsl:template name="appendJavaScript">
+        <script src="{concat($child-theme-path,'lib/jquery-ui.1.8.6.min.js')}"></script>
+        <script src="{concat($child-theme-path,'ImageGallery/ImageGallery.js')}"></script>
+    </xsl:template>   
     
     <!-- Global variable to get the repository URL -->
     <xsl:variable name="repository-url">

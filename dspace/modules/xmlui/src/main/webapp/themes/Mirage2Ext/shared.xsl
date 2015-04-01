@@ -33,13 +33,11 @@
     exclude-result-prefixes="i18n dri mets xlink xsl dim xhtml mods dc">
     
     <xsl:import href="../Mirage2/xsl/theme.xsl"/>
-    <xsl:variable name="theme-path" select="concat($context-path,'/themes/Mirage2/')"/>
     <xsl:variable name="child-theme-path" select="concat($context-path,'/themes/Mirage2Ext/')"/>
 
- 
-	<!-- inject child theme content into Mirage2 generated document head -->
+    <!-- inject child theme content into Mirage2 generated document head -->
    <xsl:template name="appendHead">
-				<!-- generate child theme css -->
+                <!-- generate child theme css -->
                 <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='stylesheet']">
                     <link rel="stylesheet" type="text/css">
                         <xsl:attribute name="media">
@@ -51,7 +49,7 @@
                         </xsl:attribute>
                     </link>
                 </xsl:for-each>
-    </xsl:template>		
+    </xsl:template> 	
 	    
     <xsl:template match="mets:METS[mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']]" mode="metadataPopup">
 		<xsl:choose>
