@@ -343,7 +343,7 @@
     </xsl:template>
 
     <!-- empty by default, but allows any descendant themes to inject content into the addJavascript template -->
-    <xsl:template name="appendJavascript">
+    <xsl:template name="appendJavaScript">
     </xsl:template>
 
     <!-- The header (distinct from the HTML head element) contains the title, subtitle, login box and various
