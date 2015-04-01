@@ -342,6 +342,10 @@
     <xsl:template name="appendHead">
     </xsl:template>
 
+    <!-- empty by default, but allows any descendant themes to inject content into the addJavascript template -->
+    <xsl:template name="appendJavascript">
+    </xsl:template>
+
     <!-- The header (distinct from the HTML head element) contains the title, subtitle, login box and various
         placeholders for header images -->
     <xsl:template name="buildHeader">
@@ -879,6 +883,8 @@
         <xsl:if test="dri:body/dri:div[@n='lookup']">
             <xsl:call-template name="choiceLookupPopUpSetup"/>
         </xsl:if>
+
+        <xsl:call-template name="appendJavaScript"/>
 
         <!-- Add a google analytics script if the key is present -->
         <xsl:if test="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']">
