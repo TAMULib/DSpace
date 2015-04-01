@@ -1,66 +1,51 @@
 
-.image-gallery-tile-set
-{
-    width: 750px;    
-}
-
-.image-gallery-tile 
-{
+.image-gallery-tile {
     background-color: #E8E8E8;
     border: 1px solid #D1D1D1;
-    height: 220px;
-    width: 195px;
-    float: left;
+    height: 260px;
+    display: inline-block;
     position: relative;
-    margin: 0 24px 22px 0;
+    margin: 12px 12px;
+    margin-left: 18px;
     padding: 14px;
     text-align: center;
 }
 
-.image-gallery-tile a.image-gallery-anchor
-{
-    height: 192px;
-    width: 192px;
+.image-gallery-tile a.image-gallery-anchor {
+    height: 200px;
+    width: 200px;
     display: table-cell;
     text-align: center;
     vertical-align: middle;
 }
 
-.image-gallery-tile img.image-gallery-thumbnail
-{
-	max-width: 192px;
-	max-height: 192px;
+.image-gallery-tile img.image-gallery-thumbnail {
+    border: 1px solid #D1D1D1;
+    max-width: 200px;
+    max-height: 200px;
 }
 
-.image-gallery-tile .image-gallery-title
-{   
-	font-weight: bolder;
+.image-gallery-tile .image-gallery-title {   
+    font-weight: bolder;
     font-size: 100%;
-	margin: 8px 0 2px 0;
     height: 1.2em;
     overflow: hidden;
 }
-.image-gallery-tile .image-gallery-date
-{
+
+.image-gallery-tile .image-gallery-date {
     font-size: 90%;
     margin: 0 0 8px;
 }
 
-.image-gallery-tile .image-gallery-links a
-{}
-
-.image-gallery-tile .image-gallery-links a img
-{
+.image-gallery-tile .image-gallery-links a img {
     padding: 0 3px 0 0;
 }
 
-.image-gallery-save-link img
-{
+.image-gallery-save-link img {
     margin-left: 46px;
 }
 
-.image-gallery-save-options
-{
+.image-gallery-save-options {
     border: 1px solid #aaa;
     border-width: 1px 1px 0;
     display: inline-block;
@@ -69,8 +54,7 @@
     z-index: 100;
 }
 
-.image-gallery-save-options a
-{
+.image-gallery-save-options a {
     display: block;
     border-bottom: 1px solid #aaa;
     text-decoration: none !important;
@@ -79,8 +63,7 @@
     padding: 3px 6px;
 }
 
-.clear
-{
+.clear {
     clear: both;
 }
 
@@ -89,5 +72,12 @@
 #aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-author-results,
 #aspect_artifactbrowser_ConfigurableBrowse_div_browse-by-subject-results
 {
-	border: none;
+    border: none;
+}
+
+.detail-view .ds-logo-wrapper {
+    border: 1px solid #D1D1D1;
+    float: left;
+    margin: 24px;
+    margin-right: 32px;
 }
