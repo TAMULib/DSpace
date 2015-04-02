@@ -4,7 +4,7 @@
     File: $File: geofolios.xsl $
     Version: $Revision: 1.2.1 $    
     Date: $Date: 2014/09/29 1:38:00 $    
-	Author: $Author: Maslov, Alexey $
+    Author: $Author: Maslov, Alexey $
 -->    
 
 <xsl:stylesheet 
@@ -25,205 +25,202 @@
         <link rel="stylesheet" href="{concat($child-theme-path, 'Geofolios/lib/style.css')}"/>
     </xsl:template>
     
-	<xsl:template name="appendJavaScript">
+    <xsl:template name="appendJavaScript">
             <!-- Add javascipt  -->            
-            <xsl:variable name="jqueryVersion"><xsl:text>1.11.1</xsl:text></xsl:variable>
-        	<xsl:variable name="jqueryUIVersion"><xsl:text>1.10.4</xsl:text></xsl:variable>
+            <xsl:variable name="jqueryUIVersion"><xsl:text>1.10.4</xsl:text></xsl:variable>
 
-        	<xsl:variable name="protocol">
-            	<xsl:choose>
-                	<xsl:when test="starts-with(confman:getProperty('dspace.baseUrl'), 'https://')">
-                    	<xsl:text>https://</xsl:text>
-                	</xsl:when>
-                	<xsl:otherwise>
-                    	<xsl:text>http://</xsl:text>
-                	</xsl:otherwise>
-            	</xsl:choose>
-        	</xsl:variable>
-        	<script type="text/javascript" src="{concat($protocol, 'ajax.googleapis.com/ajax/libs/jquery/', $jqueryVersion ,'/jquery.min.js')}">&#160;</script>
-        	<script type="text/javascript" src="{concat($protocol, 'ajax.googleapis.com/ajax/libs/jqueryui/', $jqueryUIVersion ,'/jquery-ui.min.js')}">&#160;</script>
-		    
+            <xsl:variable name="protocol">
+                <xsl:choose>
+                    <xsl:when test="starts-with(confman:getProperty('dspace.baseUrl'), 'https://')">
+                        <xsl:text>https://</xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <xsl:text>http://</xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:variable>
+            <script type="text/javascript" src="{concat($protocol, 'ajax.googleapis.com/ajax/libs/jqueryui/', $jqueryUIVersion ,'/jquery-ui.min.js')}">&#160;</script>
+            
             <xsl:for-each select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='javascript']">
-            	<script type="text/javascript">
-                	<xsl:attribute name="src">
-                    	<xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
+                <script type="text/javascript">
+                    <xsl:attribute name="src">
+                        <xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath'][not(@qualifier)]"/>
                         <xsl:text>/themes/</xsl:text>
                         <xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme'][@qualifier='path']"/>
                         <xsl:text>/</xsl:text>
                         <xsl:value-of select="."/>
                     </xsl:attribute>
                     &#160;   
-				</script>
-			</xsl:for-each>
-			
-			<!-- Javascript for geofolio map -->
-    		<script src="http://openlayers.org/en/v3.0.0/resources/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
-    		<script src="http://openlayers.org/en/v3.0.0/resources/example-behaviour.js" type="text/javascript"></script>
+                </script>
+            </xsl:for-each>
+            
+            <!-- Javascript for geofolio map -->
+            <script src="http://openlayers.org/en/v3.0.0/resources/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
+            <script src="http://openlayers.org/en/v3.0.0/resources/example-behaviour.js" type="text/javascript"></script>
             <script src="http://openlayers.org/en/v3.0.0/build/ol.js" type="text/javascript">
-            	<xsl:text>&#160;</xsl:text>
+                <xsl:text>&#160;</xsl:text>
             </script>
                     
                     <script type="text/javascript">
-						<![CDATA[
-							
-							var container = document.getElementById('popup');
-							var content = document.getElementById('popup-content');
-							var closer = document.getElementById('popup-closer');
-							
-							closer.onclick = function() {
-								container.style.display = 'none';
-								closer.blur();
-								return false;
-							};
-							
-							var overlay = new ol.Overlay({
-								element: container
-							});
+                        <![CDATA[
+                            
+                            var container = document.getElementById('popup');
+                            var content = document.getElementById('popup-content');
+                            var closer = document.getElementById('popup-closer');
+                            if (closer) {
+                                closer.onclick = function() {
+                                    container.style.display = 'none';
+                                    closer.blur();
+                                    return false;
+                                };
+                            
+                                var overlay = new ol.Overlay({
+                                    element: container
+                                });
 
-							var folios = [[]];
-							      				               
-						]]>
-					</script>
-							
+                                var folios = [[]];
+                            }                                                              
+                        ]]>
+                    </script>
+                            
                     <xsl:choose>
-                    	<xsl:when test="/dri:document/dri:body//dri:referenceSet[@type='detailView' and @n='collection-view']">
+                        <xsl:when test="/dri:document/dri:body//dri:referenceSet[@type='detailView' and @n='collection-view']">
+                            <script type="text/javascript">    
+                                <!-- FROM HERE -->                                       
+                                <xsl:apply-templates select="document('feeds/formattedList.xml')/folios/*"/>
+                                <![CDATA[
+                                    var baseUrl = ']]><xsl:value-of select="$context-path" />/<![CDATA[';
 
-                        	<script type="text/javascript">    
-                        		<!-- FROM HERE -->                        	             
-								<xsl:apply-templates select="document('feeds/formattedList.xml')/folios/*"/>
-
-    							<![CDATA[
-									
-									var vectorSource = new ol.source.Vector();
-									
-									var textStroke = new ol.style.Stroke({
-    									color: '#fff',
-    									width: 3
-  									});
-  									var textFill = new ol.style.Fill({
-    									color: '#000'
-  									});
-									
-									// iterate folios creating marker
-    								for(i = 1; i < folios.length; i++) {
-    									var iconFeature = new ol.Feature({
-											geometry: new ol.geom.Point(ol.proj.transform([folios[i].lon, folios[i].lat], 'EPSG:4326', 'EPSG:3857')),
-											name: i
-										});
-									
-										var iconStyle = new ol.style.Style({
-											image: new ol.style.Icon(({												
-												anchor: [0.0, 1.0],
-												anchorXUnits: 'fraction',
-												anchorYUnits: 'fraction',
-												opacity: 1.0,
-												src: ']]><xsl:value-of select="concat($context-path,'/themes/TAMU/Geofolios/images/icon_lg.png')"/><![CDATA['																								
-											})),
-											text: new ol.style.Text({
-												font: '12px Calibri,sans-serif',
-												text: i,
-												fill: textFill,
-												stroke: textStroke,
-												offsetY : -18,
-												offsetX : 13
-											})
-										});
-										
-										iconFeature.setStyle(iconStyle);
-										
-										vectorSource.addFeature(iconFeature);
-    								}
-    								
-									var vectorLayer = new ol.layer.Vector({
-										source: vectorSource
-									});
-									
-									
-									// create map and add layers and overlay
-									var map = new ol.Map({
-										layers: [
-											new ol.layer.Tile({
-												source: new ol.source.MapQuest({layer: 'sat'})
-											}),
-											new ol.layer.Image({
-    											extent: [-13884991, 2870341, -7455066, 6338219],
-    											source: new ol.source.ImageWMS({
-      												url: 'http://demo.opengeo.org/geoserver/wms',
-      												params: {'LAYERS': ' ne:ne_10m_admin_1_states_provinces_lines_shp '},
-      												serverType: 'geoserver'
-    											})
-  											}), 
-											vectorLayer
-										],
-										overlays: [overlay],
-										target: document.getElementById('map'),
-										view: new ol.View({
-											center: ol.proj.transform([-96.0, 40.0], 'EPSG:4326', 'EPSG:3857'),
-											zoom: 4
-										})
-									});
-									
-									var element = document.getElementById('popup');
-									
-									// display popup on click, create content from folios
-									map.on('click', function(evt) {
-										var feature = map.forEachFeatureAtPixel(evt.pixel,
-											function(feature, layer) {
-											return feature;
-										});
-										if (feature) {
-											var geometry = feature.getGeometry();
-											var coord = geometry.getCoordinates();
-											
-											overlay.setPosition(coord);
-											
-											var id = feature.get('name');
-											
-											content.innerHTML = '<b>Folio ' + id + '</b><br/>' + 
-															    folios[id].title + '<br/>' + 
-																folios[id].political + '<br/>' + 
-																'Published: ' + folios[id].date + '<br/>' + 
-																folios[id].lat + ', ' + 
-																folios[id].lon + '<br/>' +
-																'<a href="http://oaktrust.library.tamu.edu/' + folios[id].url + '">View complete folio</a>';
-											
-											container.style.display = 'block';
-											
-											$(element).popover({
-												'placement': 'top',
-												'html': true
-											});
-											$(element).popover('show');
-										} else {
-											$(element).popover('destroy');
-										}
-									});
-		
-									// change mouse cursor when over marker
-									$(map.getViewport()).on('mousemove', function(e) {
-										var pixel = map.getEventPixel(e.originalEvent);
-										var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
-											return true;
-										});
-										if (hit) {
-											map.getTarget().style.cursor = 'pointer';
-										} else {
-											map.getTarget().style.cursor = '';
-										}
-									});
-    							]]>        						
+                                    var vectorSource = new ol.source.Vector();
+                                    
+                                    var textStroke = new ol.style.Stroke({
+                                        color: '#fff',
+                                        width: 3
+                                    });
+                                    var textFill = new ol.style.Fill({
+                                        color: '#000'
+                                    });
+                                    
+                                    // iterate folios creating marker
+                                    for(i = 1; i < folios.length; i++) {
+                                        var iconFeature = new ol.Feature({
+                                            geometry: new ol.geom.Point(ol.proj.transform([folios[i].lon, folios[i].lat], 'EPSG:4326', 'EPSG:3857')),
+                                            name: i
+                                        });
+                                    
+                                        var iconStyle = new ol.style.Style({
+                                            image: new ol.style.Icon(({                                             
+                                                anchor: [0.0, 1.0],
+                                                anchorXUnits: 'fraction',
+                                                anchorYUnits: 'fraction',
+                                                opacity: 1.0,
+                                                src: ']]><xsl:value-of select="concat($context-path,'/themes/TAMU/Geofolios/images/icon_lg.png')"/><![CDATA['                                                                                               
+                                            })),
+                                            text: new ol.style.Text({
+                                                font: '12px Calibri,sans-serif',
+                                                text: i,
+                                                fill: textFill,
+                                                stroke: textStroke,
+                                                offsetY : -18,
+                                                offsetX : 13
+                                            })
+                                        });
+                                        
+                                        iconFeature.setStyle(iconStyle);
+                                        
+                                        vectorSource.addFeature(iconFeature);
+                                    }
+                                    
+                                    var vectorLayer = new ol.layer.Vector({
+                                        source: vectorSource
+                                    });
+                                    
+                                    
+                                    // create map and add layers and overlay
+                                    var map = new ol.Map({
+                                        layers: [
+                                            new ol.layer.Tile({
+                                                source: new ol.source.MapQuest({layer: 'sat'})
+                                            }),
+                                            new ol.layer.Image({
+                                                extent: [-13884991, 2870341, -7455066, 6338219],
+                                                source: new ol.source.ImageWMS({
+                                                    url: 'http://demo.opengeo.org/geoserver/wms',
+                                                    params: {'LAYERS': ' ne:ne_10m_admin_1_states_provinces_lines_shp '},
+                                                    serverType: 'geoserver'
+                                                })
+                                            }), 
+                                            vectorLayer
+                                        ],
+                                        overlays: [overlay],
+                                        target: document.getElementById('map'),
+                                        view: new ol.View({
+                                            center: ol.proj.transform([-96.0, 40.0], 'EPSG:4326', 'EPSG:3857'),
+                                            zoom: 4
+                                        })
+                                    });
+                                    
+                                    var element = document.getElementById('popup');
+                                    
+                                    // display popup on click, create content from folios
+                                    map.on('click', function(evt) {
+                                        var feature = map.forEachFeatureAtPixel(evt.pixel,
+                                            function(feature, layer) {
+                                            return feature;
+                                        });
+                                        if (feature) {
+                                            var geometry = feature.getGeometry();
+                                            var coord = geometry.getCoordinates();
+                                            
+                                            overlay.setPosition(coord);
+                                            
+                                            var id = feature.get('name');
+                                            
+                                            content.innerHTML = '<b>Folio ' + id + '</b><br/>' + 
+                                                                folios[id].title + '<br/>' + 
+                                                                folios[id].political + '<br/>' + 
+                                                                'Published: ' + folios[id].date + '<br/>' + 
+                                                                folios[id].lat + ', ' + 
+                                                                folios[id].lon + '<br/>' +
+                                                                '<a href="'+baseUrl+folios[id].url + '">View complete folio</a>';
+                                            
+                                            container.style.display = 'block';
+                                            
+                                            $(element).popover({
+                                                'placement': 'top',
+                                                'html': true
+                                            });
+                                            $(element).popover('show');
+                                        } else {
+                                            $(element).popover('destroy');
+                                        }
+                                    });
         
-							</script> 
-						</xsl:when>
+                                    // change mouse cursor when over marker
+                                    $(map.getViewport()).on('mousemove', function(e) {
+                                        var pixel = map.getEventPixel(e.originalEvent);
+                                        var hit = map.forEachFeatureAtPixel(pixel, function(feature, layer) {
+                                            return true;
+                                        });
+                                        if (hit) {
+                                            map.getTarget().style.cursor = 'pointer';
+                                        } else {
+                                            map.getTarget().style.cursor = '';
+                                        }
+                                    });
+                                ]]>                             
+        
+                            </script> 
+                        </xsl:when>
                         <xsl:when test="/dri:document/dri:body//dri:div[@id='aspect.discovery.CollectionSearch.div.collection-search' or @id='aspect.artifactbrowser.AdvancedSearch.div.advanced-search']">
                                           
-                        	<script type="text/javascript">
+                            <script type="text/javascript">
                                 <!-- Add the folios iteratively -->
                                 
                                 <xsl:for-each select="/dri:document/dri:body//dri:div[@id='aspect.discovery.CollectionSearch.div.collection-search' or @id='aspect.artifactbrowser.AdvancedSearch.div.advanced-search'] /dri:div[@n='search-results']/dri:referenceSet/dri:reference">
-                                	<xsl:variable name="externalMetadataURL">
-                                    	<xsl:text>cocoon:/</xsl:text>
-                                    	<xsl:value-of select="@url"/>
+                                    <xsl:variable name="externalMetadataURL">
+                                        <xsl:text>cocoon:/</xsl:text>
+                                        <xsl:value-of select="@url"/>
                                     </xsl:variable>
                                             
                                     <xsl:variable name="data" select="document($externalMetadataURL)/mets:METS/mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim"/>
@@ -233,27 +230,27 @@
                                     <xsl:variable name="coords_x" select="(number(substring-before(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'westlimit='),';')) +  number(substring-after($data/dim:field[@element='coverage' and @qualifier='box'],'eastlimit='))) div 2.0"/>
                                     
                                     <xsl:variable name="title" select="(substring-after(title, ''))"/> 
-        							<xsl:variable name="political" select="(substring-after(coverage/political, ''))"/>
-        							<xsl:variable name="date" select="(substring-after(date, ''))"/>
-        							<xsl:variable name="url" select="(substring-after(url, ''))"/>
+                                    <xsl:variable name="political" select="(substring-after(coverage/political, ''))"/>
+                                    <xsl:variable name="date" select="(substring-after(date, ''))"/>
+                                    <xsl:variable name="url" select="(substring-after(url, ''))"/>
         
-									<![CDATA[
-										folios.push( {
-											title: ']]><xsl:value-of select="$title" /><![CDATA[',
-											political: ']]><xsl:value-of select="$political" /><![CDATA[',
-											date: ']]><xsl:value-of select="$date" /><![CDATA[',
-											url: ']]><xsl:value-of select="$url" /><![CDATA[',
-											lat: parseFloat(']]><xsl:value-of select="$coords_y" /><![CDATA['),
-											lon: -parseFloat(']]><xsl:value-of select="$coords_x" /><![CDATA[')
-										});
-										
-									]]>
-									
-								</xsl:for-each>
+                                    <![CDATA[
+                                        folios.push( {
+                                            title: ']]><xsl:value-of select="$title" /><![CDATA[',
+                                            political: ']]><xsl:value-of select="$political" /><![CDATA[',
+                                            date: ']]><xsl:value-of select="$date" /><![CDATA[',
+                                            url: ']]><xsl:value-of select="$url" /><![CDATA[',
+                                            lat: parseFloat(']]><xsl:value-of select="$coords_y" /><![CDATA['),
+                                            lon: -parseFloat(']]><xsl:value-of select="$coords_x" /><![CDATA[')
+                                        });
+                                        
+                                    ]]>
+                                    
+                                </xsl:for-each>
                             </script>
-						</xsl:when>
-					</xsl:choose>					
-	</xsl:template>
+                        </xsl:when>
+                    </xsl:choose>                   
+    </xsl:template>
 
      
     <xsl:template match="dri:p[@rend='item-view-toggle item-view-toggle-bottom']"> </xsl:template>
@@ -612,21 +609,21 @@
         <xsl:variable name="date" select="(substring-after(date, ''))"/>
         <xsl:variable name="url" select="(substring-after(url, ''))"/>
         
-		<![CDATA[
-			folios.push({
-				title: ']]><xsl:value-of select="$title" /><![CDATA[',
-				political: ']]><xsl:value-of select="$political" /><![CDATA[',
-				date: ']]><xsl:value-of select="$date" /><![CDATA[',
-				url: ']]><xsl:value-of select="$url" /><![CDATA[',
-				lat: parseFloat(']]><xsl:value-of select="$coords_y" /><![CDATA['),
-				lon: -parseFloat(']]><xsl:value-of select="$coords_x" /><![CDATA[')
-			});
-		]]>
+        <![CDATA[
+            folios.push({
+                title: ']]><xsl:value-of select="$title" /><![CDATA[',
+                political: ']]><xsl:value-of select="$political" /><![CDATA[',
+                date: ']]><xsl:value-of select="$date" /><![CDATA[',
+                url: ']]><xsl:value-of select="$url" /><![CDATA[',
+                lat: parseFloat(']]><xsl:value-of select="$coords_y" /><![CDATA['),
+                lon: -parseFloat(']]><xsl:value-of select="$coords_x" /><![CDATA[')
+            });
+        ]]>
         
-	</xsl:template>
-	
+    </xsl:template>
+    
 <!-- ============================================================================================================================================================== -->
-<!-- ============================================================================================================================================================== -->	
+<!-- ============================================================================================================================================================== --> 
     
     <xsl:template match="dri:div[@n='collection-home']/dri:head"></xsl:template>
     
@@ -645,7 +642,7 @@
                     <xsl:attribute name="style">font-size: <xsl:value-of select="$font-sizing"/>%;</xsl:attribute>
                 </xsl:otherwise>
             </xsl:choose>
-            <xsl:call-template name="standardAttributes">            	
+            <xsl:call-template name="standardAttributes">               
                 <xsl:with-param name="class">ds-div-head</xsl:with-param>
             </xsl:call-template>
             <xsl:apply-templates/>
@@ -656,65 +653,65 @@
     <xsl:template name="collectionDetailView-DIM">
         <div class="detail-view">&#160;
         
-        	<link rel="stylesheet" href="http://openlayers.org/en/v3.0.0/css/ol.css" type="text/css"></link>
-    		<style>
-      			.map {
-        			height: 400px;
-        			width: 100%;
-      			}
-				.ol-popup {
-					width: 150px;
-					display: none;
-					position: absolute;
-					background-color: white;
-					-moz-box-shadow: 0 1px 4px rgba(0,0,0,0.2);
-					-webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-					filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
-					padding: 15px;
-					border-radius: 10px;
-					border: 1px solid #cccccc;
-					bottom: 35px;
-					left: -38px;
-				}
-				.ol-popup:after, .ol-popup:before {
-					top: 100%;
-					border: solid transparent;
-					content: " ";
-					height: 0;
-					width: 0;
-					position: absolute;
-					pointer-events: none;
-				}
-				.ol-popup:after {
-					border-top-color: white;
-					border-width: 10px;
-					left: 48px;
-					margin-left: -10px;
-				}
-				.ol-popup:before {
-					border-top-color: #cccccc;
-					border-width: 11px;
-					left: 48px;
-					margin-left: -11px;
-				}
-				.ol-popup-closer {
-					text-decoration: none;
-					position: absolute;
-					top: 2px;
-					right: 8px;
-				}
-				.ol-popup-closer:after {
-					content: "X";
-				}
-    		</style>
+            <link rel="stylesheet" href="http://openlayers.org/en/v3.0.0/css/ol.css" type="text/css"></link>
+            <style>
+                .map {
+                    height: 400px;
+                    width: 100%;
+                }
+                .ol-popup {
+                    width: 150px;
+                    display: none;
+                    position: absolute;
+                    background-color: white;
+                    -moz-box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+                    -webkit-filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+                    filter: drop-shadow(0 1px 4px rgba(0,0,0,0.2));
+                    padding: 15px;
+                    border-radius: 10px;
+                    border: 1px solid #cccccc;
+                    bottom: 35px;
+                    left: -38px;
+                }
+                .ol-popup:after, .ol-popup:before {
+                    top: 100%;
+                    border: solid transparent;
+                    content: " ";
+                    height: 0;
+                    width: 0;
+                    position: absolute;
+                    pointer-events: none;
+                }
+                .ol-popup:after {
+                    border-top-color: white;
+                    border-width: 10px;
+                    left: 48px;
+                    margin-left: -10px;
+                }
+                .ol-popup:before {
+                    border-top-color: #cccccc;
+                    border-width: 11px;
+                    left: 48px;
+                    margin-left: -11px;
+                }
+                .ol-popup-closer {
+                    text-decoration: none;
+                    position: absolute;
+                    top: 2px;
+                    right: 8px;
+                }
+                .ol-popup-closer:after {
+                    content: "X";
+                }
+            </style>
         
             <div id="mapContainer">
-            	<div id="map" class="map">
-            		<div id="popup" class="ol-popup">
-                		<a href="#" id="popup-closer" class="ol-popup-closer"></a>
-                		<div id="popup-content"></div>
-            		</div>
-            	</div>
+                <div id="map" class="map">
+                    <div id="popup" class="ol-popup">
+                        <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+                        <div id="popup-content"></div>
+                    </div>
+                </div>
             </div>
                                     
             <xsl:apply-templates select="//dri:div[@n='collection-home']/dri:head" mode="geo"/>            
