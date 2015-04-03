@@ -52,6 +52,10 @@
             <map:reader name="ConcatenationReader" src="org.dspace.app.xmlui.cocoon.ConcatenationReader"/>
         </map:readers>
 
+        <map:actions>
+            <map:action name="recordContext" src="org.tamu.dspace.extensions.RecordContextAction"/>
+        </map:actions>
+
         <map:transformers>
             <transformer name="strip-namespaces" src="org.apache.cocoon.transformation.StripNameSpacesTransformer"/>
             <!-- TAMU Customization - restricted items transformer -->
@@ -172,6 +176,9 @@
             <map:parameter name="expires" value="now"/>
 
             <map:match pattern="**">
+
+                <!-- Step 0.1:  TAMU Customization - generate interrupt request to preserve context when users navigate to login page -->
+                <map:act type="recordContext"/>
 
                 <!-- Step 1: Generate the DRI page -->
                 <!-- This line actually initiates the Aspect chain. The Aspect chain will build
