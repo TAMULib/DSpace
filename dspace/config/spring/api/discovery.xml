@@ -109,6 +109,7 @@
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
+                <ref bean="searchFilterSeries" />
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -214,6 +215,7 @@
                 <ref bean="searchFilterAuthor" />
                 <ref bean="searchFilterSubject" />
                 <ref bean="searchFilterIssued" />
+                <ref bean="searchFilterSeries" />
             </list>
         </property>
         <!--The sort filters for the discovery search (same as defaultConfiguration above)-->
@@ -294,70 +296,70 @@
     </bean>
     
     <bean id="tagCloudConfiguration" class="org.dspace.discovery.configuration.TagCloudConfiguration">
-		<!-- Should display the score of each tag next to it? Default: false -->
-		<!-- <property name="displayScore" value="true"/> -->
-		
-		<!-- Should display the tag as center aligned in the page or left aligned? Possible values: true | false. Default: true  -->
-		<!-- <property name="shouldCenter" value="true"/> -->
-		
-		<!-- How many tags will be shown. Value -1 means all of them. Default: -1 -->
-		<!--<property name="totalTags" value="-1"/> -->
-		
-		<!-- The letter case of the tags. 
-			 Possible values: Case.LOWER | Case.UPPER | Case.CAPITALIZATION | Case.PRESERVE_CASE | Case.CASE_SENSITIVE
-			 Default: Case.PRESERVE_CASE -->
-		<!--<property name="cloudCase" value="Case.PRESERVE_CASE"/> -->
-		
-		<!-- If the 3 colors of the tag cloud should be independent of score (random=yes) or based on the score. Possible values: true | false . Default: true-->
-		<!-- <property name="randomColors" value="true"/> -->
+        <!-- Should display the score of each tag next to it? Default: false -->
+        <!-- <property name="displayScore" value="true"/> -->
+        
+        <!-- Should display the tag as center aligned in the page or left aligned? Possible values: true | false. Default: true  -->
+        <!-- <property name="shouldCenter" value="true"/> -->
+        
+        <!-- How many tags will be shown. Value -1 means all of them. Default: -1 -->
+        <!--<property name="totalTags" value="-1"/> -->
+        
+        <!-- The letter case of the tags. 
+             Possible values: Case.LOWER | Case.UPPER | Case.CAPITALIZATION | Case.PRESERVE_CASE | Case.CASE_SENSITIVE
+             Default: Case.PRESERVE_CASE -->
+        <!--<property name="cloudCase" value="Case.PRESERVE_CASE"/> -->
+        
+        <!-- If the 3 colors of the tag cloud should be independent of score (random=yes) or based on the score. Possible values: true | false . Default: true-->
+        <!-- <property name="randomColors" value="true"/> -->
 
-		<!-- The font size (in em) for the tag with the lowest score. Possible values: any decimal. Default: 1.1 -->
-		<!-- <property name="fontFrom" value="1.1"/>-->
-		
-		<!-- The font size (in em) for the tag with the lowest score. Possible values: any decimal. Default: 3.2 -->
-		<!-- <property name="fontTo" value="3.2"/>-->
-		
-		<!-- The score that tags with lower than that will not appear in the rag cloud. Possible values: any integer from 1 to infinity. Default: 0 -->
-		<!-- <property name="cuttingLevel" value="0"/>-->
+        <!-- The font size (in em) for the tag with the lowest score. Possible values: any decimal. Default: 1.1 -->
+        <!-- <property name="fontFrom" value="1.1"/>-->
+        
+        <!-- The font size (in em) for the tag with the lowest score. Possible values: any decimal. Default: 3.2 -->
+        <!-- <property name="fontTo" value="3.2"/>-->
+        
+        <!-- The score that tags with lower than that will not appear in the rag cloud. Possible values: any integer from 1 to infinity. Default: 0 -->
+        <!-- <property name="cuttingLevel" value="0"/>-->
 
-		<!-- The ordering of the tags (based either on the name or the score of the tag)
-			 Possible values: Tag.NameComparatorAsc | Tag.NameComparatorDesc | Tag.ScoreComparatorAsc | Tag.ScoreComparatorDesc
-			 Default: Tag.NameComparatorAsc  -->
-		<!-- <property name="ordering" value="Tag.NameComparatorAsc"/>-->	
+        <!-- The ordering of the tags (based either on the name or the score of the tag)
+             Possible values: Tag.NameComparatorAsc | Tag.NameComparatorDesc | Tag.ScoreComparatorAsc | Tag.ScoreComparatorDesc
+             Default: Tag.NameComparatorAsc  -->
+        <!-- <property name="ordering" value="Tag.NameComparatorAsc"/>-->   
     </bean>
     
     <!-- The tag cloud parameters for the tag clouds that appear in the browse pages -->
     <bean id="browseTagCloudConfiguration" class="org.dspace.discovery.configuration.TagCloudConfiguration">
-		<!-- Should display the score of each tag next to it? Default: false -->
-		<!-- <property name="displayScore" value="true"/> -->
-		
-		<!-- Should display the tag as center aligned in the page or left aligned? Possible values: true | false. Default: true  -->
-		<!-- <property name="shouldCenter" value="true"/> -->
-		
-		<!-- How many tags will be shown. Value -1 means all of them. Default: -1 -->
-		<!--<property name="totalTags" value="-1"/> -->
-		
-		<!-- The letter case of the tags. 
-			 Possible values: Case.LOWER | Case.UPPER | Case.CAPITALIZATION | Case.PRESERVE_CASE | Case.CASE_SENSITIVE
-			 Default: Case.PRESERVE_CASE -->
-		<!--<property name="cloudCase" value="Case.PRESERVE_CASE"/> -->
-		
-		<!-- If the 3 colors of the tag cloud should be independent of score (random=yes) or based on the score. Possible values: true | false . Default: true-->
-		<!-- <property name="randomColors" value="true"/> -->
+        <!-- Should display the score of each tag next to it? Default: false -->
+        <!-- <property name="displayScore" value="true"/> -->
+        
+        <!-- Should display the tag as center aligned in the page or left aligned? Possible values: true | false. Default: true  -->
+        <!-- <property name="shouldCenter" value="true"/> -->
+        
+        <!-- How many tags will be shown. Value -1 means all of them. Default: -1 -->
+        <!--<property name="totalTags" value="-1"/> -->
+        
+        <!-- The letter case of the tags. 
+             Possible values: Case.LOWER | Case.UPPER | Case.CAPITALIZATION | Case.PRESERVE_CASE | Case.CASE_SENSITIVE
+             Default: Case.PRESERVE_CASE -->
+        <!--<property name="cloudCase" value="Case.PRESERVE_CASE"/> -->
+        
+        <!-- If the 3 colors of the tag cloud should be independent of score (random=yes) or based on the score. Possible values: true | false . Default: true-->
+        <!-- <property name="randomColors" value="true"/> -->
 
-		<!-- The font size (in em) for the tag with the lowest score. Possible values: any decimal. Default: 1.1 -->
-		<!-- <property name="fontFrom" value="1.1"/>-->
-		
-		<!-- The font size (in em) for the tag with the lowest score. Possible values: any decimal. Default: 3.2 -->
-		<!-- <property name="fontTo" value="3.2"/>-->
-		
-		<!-- The tags with score lower than this will not appear in the tag cloud. Possible values: any integer from 1 to infinity. Default: 0 -->
-		<!-- <property name="cuttingLevel" value="0"/>-->
-	
-		<!-- The ordering of the tags (based either on the name or the score of the tag)
-			 Possible values: Tag.NameComparatorAsc | Tag.NameComparatorDesc | Tag.ScoreComparatorAsc | Tag.ScoreComparatorDesc
-			 Default: Tag.NameComparatorAsc  -->
-		<!-- <property name="ordering" value="Tag.NameComparatorAsc"/>-->	
+        <!-- The font size (in em) for the tag with the lowest score. Possible values: any decimal. Default: 1.1 -->
+        <!-- <property name="fontFrom" value="1.1"/>-->
+        
+        <!-- The font size (in em) for the tag with the lowest score. Possible values: any decimal. Default: 3.2 -->
+        <!-- <property name="fontTo" value="3.2"/>-->
+        
+        <!-- The tags with score lower than this will not appear in the tag cloud. Possible values: any integer from 1 to infinity. Default: 0 -->
+        <!-- <property name="cuttingLevel" value="0"/>-->
+    
+        <!-- The ordering of the tags (based either on the name or the score of the tag)
+             Possible values: Tag.NameComparatorAsc | Tag.NameComparatorDesc | Tag.ScoreComparatorAsc | Tag.ScoreComparatorDesc
+             Default: Tag.NameComparatorAsc  -->
+        <!-- <property name="ordering" value="Tag.NameComparatorAsc"/>-->   
     </bean>
     
     <!--Search filter configuration beans-->
@@ -403,6 +405,17 @@
         </property>
         <property name="type" value="date"/>
         <property name="sortOrder" value="VALUE"/>
+    </bean>
+
+    <bean id="searchFilterSeries" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="Series"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.relation.ispartofseries</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="10"/>
+        <property name="sortOrder" value="COUNT"/>
     </bean>
 
     <!--Sort properties-->
