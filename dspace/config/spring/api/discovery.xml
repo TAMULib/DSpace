@@ -408,7 +408,7 @@
     </bean>
 
     <bean id="searchFilterSeries" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
-        <property name="indexFieldName" value="Series"/>
+        <property name="indexFieldName" value="series"/>
         <property name="metadataFields">
             <list>
                 <value>dc.relation.ispartofseries</value>
