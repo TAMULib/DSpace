@@ -222,6 +222,7 @@
 	<message key="xmlui.ArtifactBrowser.CommunityBrowser.trail">Community List</message>
 	<message key="xmlui.ArtifactBrowser.CommunityBrowser.head">Communities in DSpace</message>
 	<message key="xmlui.ArtifactBrowser.CommunityBrowser.select">Select a community to browse its collections.</message>
+	<message key="xmlui.ArtifactBrowser.CommunityBrowser.tree_head">Contents of this community</message>
 
 	<!-- org.dspace.app.xmlui.artifactbrowser.CommunityViewer.java -->
 	<message key="xmlui.ArtifactBrowser.CommunityViewer.search_scope">Search Scope</message>
@@ -235,7 +236,6 @@
 	<message key="xmlui.ArtifactBrowser.CommunityViewer.head_sub_communities">Sub-communities within this community</message>
 	<message key="xmlui.ArtifactBrowser.CommunityViewer.head_sub_collections">Collections in this community</message>
 	<message key="xmlui.ArtifactBrowser.CommunityViewer.head_recent_submissions">Recent Submissions</message>
-
 
 	<!-- org.dspace.app.xmlui.artifactbrowser.Contact.java -->
 	<message key="xmlui.ArtifactBrowser.Contact.title">Contact us</message>
