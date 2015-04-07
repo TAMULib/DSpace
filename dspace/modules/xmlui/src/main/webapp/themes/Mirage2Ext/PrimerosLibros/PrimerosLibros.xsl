@@ -264,15 +264,6 @@
                                     <xsl:value-of select="substring-before(substring($image-title,15),'.')" />
                                 </div>
                                 <div class="image-gallery-links">
-                                    <a>
-                                        <xsl:attribute name="href">
-                                            <xsl:value-of select="$django-app-url"/>
-                                            <xsl:value-of select="substring-after(ancestor::mets:METS/@ID,':')"/>
-                                            <xsl:text>/pages/?sequence=</xsl:text>
-                                            <xsl:value-of select="substring-before(substring($image-title,15),'.')"/>
-                                        </xsl:attribute>
-                                        <img src="{$child-theme-path}/PrimerosLibros/imgs/filmstrip_icon.png" alt="Detailed view of this page" title="Detailed view of this page" />
-                                    </a>
                                     <!--
                                         <a target="_new">
                                         <xsl:attribute name="href">
@@ -322,6 +313,15 @@
                                         -->
                                         <img src="{$child-theme-path}/PrimerosLibros/imgs/save_icon.jpg" alt="Download image" title="Download image" />
                                     </span>
+                                    <a>
+                                        <xsl:attribute name="href">
+                                            <xsl:value-of select="$django-app-url"/>
+                                            <xsl:value-of select="substring-after(ancestor::mets:METS/@ID,':')"/>
+                                            <xsl:text>/pages/?sequence=</xsl:text>
+                                            <xsl:value-of select="substring-before(substring($image-title,15),'.')"/>
+                                        </xsl:attribute>
+                                        <img src="{$child-theme-path}/PrimerosLibros/imgs/filmstrip_icon.png" alt="Detailed view of this page" title="Detailed view of this page" />
+                                    </a>
                                 </div><!-- end of image gallery links -->
                             </div><!-- end of image gallery tile content -->
                         </div><!-- end of image gallery tile -->
@@ -608,15 +608,6 @@
                     <xsl:value-of select="$image-title" />
                 </div> -->
                 <div class="image-gallery-links">
-                    <a>
-                        <xsl:attribute name="href">
-                            <xsl:value-of select="$django-app-url"/>
-                            <xsl:value-of select="substring-after(ancestor::mets:METS/@ID,':')"/>
-                            <xsl:text>/pages/?sequence=</xsl:text>
-                            <xsl:value-of select="substring-before(substring($image-title,15),'.')"/>
-                        </xsl:attribute>
-                        <img src="{$child-theme-path}/PrimerosLibros/imgs/filmstrip_icon.png" alt="Detailed view of this page" title="Detailed view of this page" />
-                    </a>
                     <span class="image-gallery-save-link"> 
                         <img src="{$child-theme-path}/PrimerosLibros/imgs/save_icon.jpg" alt="Download image" title="Download image" />
                     </span>
@@ -635,6 +626,15 @@
                             <xsl:text>Download JPEG derivative</xsl:text>
                         </a>
                     </span>
+                     <a>
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="$django-app-url"/>
+                            <xsl:value-of select="substring-after(ancestor::mets:METS/@ID,':')"/>
+                            <xsl:text>/pages/?sequence=</xsl:text>
+                            <xsl:value-of select="substring-before(substring($image-title,15),'.')"/>
+                        </xsl:attribute>
+                        <img src="{$child-theme-path}/PrimerosLibros/imgs/filmstrip_icon.png" alt="Detailed view of this page" title="Detailed view of this page" />
+                    </a>
                 </div><!-- end of image gallery links -->
             </div><!-- end of image gallery tile content -->
         </div><!-- end of image gallery tile -->

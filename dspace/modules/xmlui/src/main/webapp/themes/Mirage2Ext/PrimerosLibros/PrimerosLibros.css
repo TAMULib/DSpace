@@ -2,19 +2,22 @@
     background-color: #E8E8E8;
     border: 1px solid #D1D1D1;
     height: 260px;
-    margin: 12px 12px;
+    margin: 10px 5px;
     margin-left: 18px;
     display: inline-block;
     vertical-align:top;
     padding: 14px;
+    padding-top: 17px;
     text-align: center;
     position: relative;
+    min-width: 175px;
+    max-width: 175px;
 }
 
 .image-gallery-tile img.image-gallery-thumbnail {
     border: 1px solid #D1D1D1;
-    max-width: 150px;
-    max-height: 150px;
+    max-width: 200px;
+    max-height: 200px;
 }
 
 .image-gallery-tile .image-gallery-title {   
@@ -96,9 +99,8 @@
 p.linkbox {
   border: 1px solid #CCCCCC;
   background-color: #E8E8E8;
-  clear: both;
-  margin: 5px 20px 20px 179px;
-  padding: 20px 20px 20px 0;
+  margin: 25px auto;
+  padding: 25px 0px;
   font-weight: bolder;
   width: 311px;
 }
