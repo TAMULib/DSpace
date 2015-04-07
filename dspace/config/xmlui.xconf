@@ -211,8 +211,8 @@
         <theme name="17th News Collection" handle="1969.1/94990" path="Mirage2Ext/Periodicals/"/>  
 
         <!-- Bush Capstone Themes -->
-        <theme name="Bush Capstone: MPSA" handle="1969.1/94972" path="TAMU/Capstones/"/>
-        <theme name="Bush Capstone: MPIA" handle="1969.1/94973" path="TAMU/Capstones/"/>
+        <theme name="Bush Capstone: MPSA" handle="1969.1/94972" path="Mirage2Ext/Capstones/"/>
+        <theme name="Bush Capstone: MPIA" handle="1969.1/94973" path="Mirage2Ext/Capstones/"/>
    
         <!-- Mirage 2 theme, @mire contributed theme, customized for TAMU through module -->
         <theme name="Mirage 2" regex=".*" path="Mirage2/" />
