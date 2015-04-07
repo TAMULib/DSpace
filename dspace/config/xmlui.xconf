@@ -204,7 +204,11 @@
         <theme name="Geofolios Collection" handle="1969.1/2490" path="Mirage2Ext/Geofolios/"/> 
 
         <!-- ESL -->
-        <theme name="ESL Community" handle="1969.1/1656" path="TAMU/ESL/"/>  
+        <theme name="ESL Community" handle="1969.1/1656" path="TAMU/ESL/"/>
+
+        <!-- Periodicals Theme -->
+        <theme name="Tx H20 Collection" handle="1969.1/6062" path="Mirage2Ext/Periodicals/"/>
+        <theme name="17th News Collection" handle="1969.1/94990" path="Mirage2Ext/Periodicals/"/>  
 
         <!-- Bush Capstone Themes -->
         <theme name="Bush Capstone: MPSA" handle="1969.1/94972" path="TAMU/Capstones/"/>
