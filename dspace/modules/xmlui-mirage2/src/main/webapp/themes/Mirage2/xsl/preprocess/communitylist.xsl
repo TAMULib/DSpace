@@ -41,14 +41,14 @@
     </xsl:template>
 
     <!-- TAMU customization for community level expanding/collapsing browser -->
-    <xsl:template match="dri:referenceSet[@id='org.tdl.dspace.communityview.ExpandingCollapsingBrowser.referenceSet.community-browser']">
+    <xsl:template match="dri:referenceSet[@id='org.tdl.dspace.communityview.ExpandingCollapsingBrowser.referenceSet.community-browser']/dri:reference/dri:referenceSet">
         <div id="{@id}" rend="community-browser-wrapper">
             <xsl:apply-templates mode="exp-browser"/>
         </div>
     </xsl:template>
 
     <!-- TAMU customization for community level expanding/collapsing browser -->
-    <xsl:template match="dri:reference/dri:referenceSet/dri:reference" mode="exp-browser">
+    <xsl:template match="dri:reference" mode="exp-browser">
         <xsl:variable name="handle">
             <xsl:call-template name="get-handle-class-from-url">
                 <xsl:with-param name="url" select="@url"/>
