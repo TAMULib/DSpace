@@ -44,7 +44,7 @@
     <xsl:template match="dri:referenceSet[@id='org.tdl.dspace.communityview.ExpandingCollapsingBrowser.referenceSet.community-browser']/dri:reference/dri:referenceSet">
         <!-- preserve the section header -->
         <xsl:apply-templates select="dri:head"/>
-        <div id="{@id}" rend="community-browser-wrapper">
+        <div id="{ancestor::dri:referenceSet[@id='org.tdl.dspace.communityview.ExpandingCollapsingBrowser.referenceSet.community-browser']/@id}" rend="community-browser-wrapper">
             <xsl:apply-templates mode="exp-browser"/>
         </div>
     </xsl:template>
