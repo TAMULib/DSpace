@@ -37,15 +37,18 @@
     <xsl:template match="dri:referenceSet[@id='aspect.artifactbrowser.CommunityBrowser.referenceSet.community-browser']">
         <div id="{@id}" rend="community-browser-wrapper">
             <!-- TAMU Customization - Provide expand/collapse all buttons for the browser -->
-            <div rend="community-browser-expander">
-                <xref target="#" rend="expand-all btn btn-default btn-sm">
-                    <xsl:text>Expand All</xsl:text>
-                </xref> 
-                <span><xsl:text>&#160;</xsl:text></span>
-                <xref target="#" rend="close-all btn btn-default btn-sm">
-                    <xsl:text>Close All</xsl:text>
-                </xref>
-            </div>
+            <!-- don't render the expand/collapse buttons if we're on the home page -->
+            <xsl:if test="(/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='request' and @qualifier='URI'])!=''">
+                <p rend="community-browser-expander">
+                    <xref target="#" rend="expand-all btn btn-default btn-sm">
+                        <xsl:text>Expand All</xsl:text>
+                    </xref> 
+                    <span><xsl:text>&#160;</xsl:text></span>
+                    <xref target="#" rend="close-all btn btn-default btn-sm">
+                        <xsl:text>Close All</xsl:text>
+                    </xref>
+                </p>
+            </xsl:if>
             <xsl:apply-templates mode="community-browser"/>
         </div>
     </xsl:template>
@@ -56,7 +59,7 @@
         <xsl:apply-templates select="dri:head"/>
         <div id="{ancestor::dri:referenceSet[@id='org.tdl.dspace.communityview.ExpandingCollapsingBrowser.referenceSet.community-browser']/@id}" rend="community-browser-wrapper">
             <!-- TAMU Customization - Provide expand/collapse all buttons for the browser -->
-            <div rend="community-browser-expander">
+            <p rend="community-browser-expander">
                 <xref target="#" rend="expand-all btn btn-default btn-sm">
                     <xsl:text>Expand All</xsl:text>
                 </xref> 
@@ -64,7 +67,7 @@
                 <xref target="#" rend="close-all btn btn-default btn-sm">
                     <xsl:text>Close All</xsl:text>
                 </xref>
-            </div>
+            </p>
             <xsl:apply-templates mode="exp-browser"/>
         </div>
     </xsl:template>
