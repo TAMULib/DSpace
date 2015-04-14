@@ -87,13 +87,13 @@
         <aspect name="E-Person" path="resource://aspects/EPerson/" />
         <aspect name="Submission and Workflow" path="resource://aspects/Submission/" />
 
-        <!-- ===================
-             Local Customization
-             =================== -->
-    	<aspect name="TDL" path="resource://aspects/TexasDigitalLibrary/" />
-    	<aspect name="AlumReq" path="resource://aspects/ETDAlumniRequest/" />
-             ==================== -->
+        <!-- ============
+             TAMU ASPECTS
+             ============ -->
 
+        <aspect name="TDL" path="resource://aspects/TexasDigitalLibrary/" />
+        <aspect name="AlumReq" path="resource://aspects/ETDAlumniRequest/" />
+        <aspect name="Metadata Tree Browser" path="resource://aspects/MetadataTreeBrowser/" />
 
         <!-- ========================
              Usage Statistics Engines
