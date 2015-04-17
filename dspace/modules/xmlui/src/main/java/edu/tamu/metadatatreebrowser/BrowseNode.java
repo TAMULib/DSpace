@@ -17,7 +17,9 @@ import java.util.*;
 import org.apache.cocoon.caching.CacheableProcessingComponent;
 import org.apache.cocoon.environment.ObjectModelHelper;
 import org.apache.cocoon.environment.Request;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.dspace.app.xmlui.cocoon.AbstractDSpaceTransformer;
 import org.dspace.app.xmlui.utils.HandleUtil;
 import org.dspace.app.xmlui.utils.UIException;
@@ -27,6 +29,7 @@ import org.dspace.app.xmlui.wing.element.*;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.*;
 import org.dspace.core.ConfigurationManager;
+import org.dspace.core.Constants;
 import org.dspace.discovery.*;
 import org.dspace.discovery.configuration.DiscoveryConfiguration;
 import org.dspace.discovery.configuration.DiscoverySearchFilter;
@@ -43,8 +46,18 @@ import org.xml.sax.SAXException;
  * @author Adán Román Ruiz <aroman@arvo.es> (Bugfix)
  */
 public class BrowseNode extends AbstractSearch implements CacheableProcessingComponent {
+		private static final Logger log = Logger.getLogger(BrowseNode.class);
 	
 		private MetadataTreeNode node;
+		
+	    private static final Message T_head1_community =
+	            message("xmlui.Discovery.AbstractSearch.head1_community");
+
+	    private static final Message T_head1_collection =
+	            message("xmlui.Discovery.AbstractSearch.head1_collection");
+	    
+	    private static final Message T_head1_none =
+	            message("xmlui.Discovery.AbstractSearch.head1_none");
 
 		private static final Message T_title =
 	            message("xmlui.ArtifactBrowser.SimpleSearch.title");
@@ -125,125 +138,312 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 
 		node = root.findById(Integer.valueOf(nodeString));
 
+		if (node == null)
+			return;
+		
+		String baseURL = contextPath + "/handle/" + currentScope.getHandle()+ "/mdbrowse";
+		
+		// Display the Parent bread crumb
+		Division div = body.addDivision("metadata-tree-browser-node","primary");
+		
+		
+		// Nested parent list
+		Division parentDiv = div.addDivision("parent-div");
+		org.dspace.app.xmlui.wing.element.List parentList = parentDiv.addList("parent-list");
+		parentList.addItemXref(contextPath + "/handle/" + currentScope.getHandle(), currentScope instanceof org.dspace.content.Collection ? "Collection Home" : "Community Home");
 
-        // Build the DRI Body
-        Division search = body.addDivision("search", "primary");
-        search.setHead(T_head);
-        String searchUrl = ConfigurationManager.getProperty("dspace.url") + "/JSON/discovery/search";
+		if (! (node.getParent() == null || node.getParent().isRoot())) {
+			parentList = parentList.addList("parent-sub-list");
 
-        search.addHidden("discovery-json-search-url").setValue(searchUrl);
 
-        if(currentScope != null){
-            search.addHidden("discovery-json-scope").setValue(currentScope.getHandle());
+			for(MetadataTreeNode parent : node.getParents()) {
+
+				if (!parent.isRoot()) {
+					String nodeURL = baseURL + "?node=" + parent.getId();
+
+					parentList.addItemXref(nodeURL, parent.getName());
+					parentList = parentList.addList("parent-sub-list");
+				}
+			}
+		}
+		
+		
+		Division contentDiv = div.addDivision("node-content-div","primary");
+		contentDiv.setHead(node.getName());
+		
+		// Display any children
+		if (node.hasChildren()) {
+			Division childDiv = contentDiv.addDivision("child-div");
+			org.dspace.app.xmlui.wing.element.List childList = childDiv.addList("child-list");
+			for(MetadataTreeNode child : node.getChildren()) {
+				
+				Bitstream thumbnail = Bitstream.find(context, child.getThumbnailId());
+				String thumbnailURL = contextPath + "/bitstream/id/"+thumbnail.getID()+"/?sequence="+thumbnail.getSequenceID();
+				String nodeURL = baseURL + "?node=" + child.getId();
+
+				org.dspace.app.xmlui.wing.element.Item item = childList.addItem();
+				item.addFigure(thumbnailURL, nodeURL, "node-thumbnail");
+				item.addXref(nodeURL, child.getName(),"node-label");
+			}
+		}
+		
+        // Add the result division
+		// Display any items
+		if (node.hasContent()) {
+			try {
+	            buildSearchResultsDivision(contentDiv);
+	        } catch (SearchServiceException e) {
+	            throw new UIException(e.getMessage(), e);
+	        }
+		}
+		
+		
+		
+    }
+    
+    
+  /**
+     * Attach a division to the given search division named "search-results"
+     * which contains results for this search query.
+     *
+     * @param search The search division to contain the search-results division.
+     */
+    /*
+    protected void buildSearchResultsDivision(Division search)
+            throws IOException, SQLException, WingException, SearchServiceException {
+
+        try {
+            if (queryResults == null) {
+
+                DSpaceObject scope = getScope();
+                this.performSearch(scope);
+            }
         }
-        search.addHidden("contextpath").setValue(contextPath);
-
-        Map<String, String[]> fqs = getParameterFilterQueries();
-
-        Division searchBoxDivision = search.addDivision("discovery-search-box", "discoverySearchBox");
-
-        Division mainSearchDiv = searchBoxDivision.addInteractiveDivision("general-query",
-                "discover", Division.METHOD_GET, "discover-search-box");
-
-        org.dspace.app.xmlui.wing.element.List searchList = mainSearchDiv.addList("primary-search",  org.dspace.app.xmlui.wing.element.List.TYPE_FORM);
-
-//        searchList.setHead(T_search_label);
-        if (variableScope())
-        {
-            Select scope = searchList.addItem().addSelect("scope");
-            scope.setLabel(T_search_scope);
-            buildScopeList(scope);
+        catch (RuntimeException e) {
+            log.error(e.getMessage(), e);
+            queryResults = null;
+        }
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
+            queryResults = null;
         }
 
-        org.dspace.app.xmlui.wing.element.Item searchBoxItem = searchList.addItem();
-        Text text = searchBoxItem.addText("query");
-        text.setValue(queryString);
-        searchBoxItem.addButton("submit", "search-icon").setValue(T_go);
-        if(queryResults != null && StringUtils.isNotBlank(queryResults.getSpellCheckQuery()))
+        Division results = search.addDivision("search-results", "primary");
+        buildSearchControls(results);
+
+
+        DSpaceObject searchScope = getScope();
+
+        int displayedResults;
+        long totalResults;
+        float searchTime;
+
+        if(queryResults != null && 0 < queryResults.getTotalSearchResults())
         {
-        	org.dspace.app.xmlui.wing.element.Item didYouMeanItem = searchList.addItem("did-you-mean", "didYouMean");
-            didYouMeanItem.addContent(T_did_you_mean);
-            didYouMeanItem.addXref(getSuggestUrl(queryResults.getSpellCheckQuery()), queryResults.getSpellCheckQuery(), "didYouMean");
-        }
+            displayedResults = queryResults.getDspaceObjects().size();
+            totalResults = queryResults.getTotalSearchResults();
+            searchTime = ((float) queryResults.getSearchTime() / 1000) % 60;
 
-        DSpaceObject dso = HandleUtil.obtainHandle(objectModel);
-        DiscoveryConfiguration discoveryConfiguration = SearchUtils.getDiscoveryConfiguration(dso);
-        java.util.List<DiscoverySearchFilter> filterFields = discoveryConfiguration.getSearchFilters();
-        java.util.List<String> filterTypes = DiscoveryUIUtils.getRepeatableParameters(request, "filtertype");
-        java.util.List<String> filterOperators = DiscoveryUIUtils.getRepeatableParameters(request, "filter_relational_operator");
-        java.util.List<String> filterValues = DiscoveryUIUtils.getRepeatableParameters(request,  "filter");
-
-        if(0 < filterFields.size() && filterTypes.size() == 0)
-        {
-            //Display the add filters url ONLY if we have no filters selected & filters can be added
-            searchList.addItem().addXref("display-filters", T_filters_show);
-        }
-        addHiddenFormFields("search", request, fqs, mainSearchDiv);
-
-
-        if(0 < filterFields.size())
-        {
-            Division searchFiltersDiv = searchBoxDivision.addInteractiveDivision("search-filters",
-                    "discover", Division.METHOD_GET, "discover-filters-box " + (0 < filterTypes.size() ? "" : "hidden"));
-
-            Division filtersWrapper = searchFiltersDiv.addDivision("discovery-filters-wrapper");
-            filtersWrapper.setHead(T_filter_label);
-            filtersWrapper.addPara(T_filter_help);
-            Table filtersTable = filtersWrapper.addTable("discovery-filters", 1, 4, "discovery-filters");
-
-
-            //If we have any filters, show them
-            if(filterTypes.size() > 0)
+            if (searchScope instanceof Community)
             {
+                Community community = (Community) searchScope;
+                String communityName = community.getMetadata("name");
+                results.setHead(T_head1_community.parameterize(displayedResults, totalResults, communityName, searchTime));
+            } else if (searchScope instanceof Collection){
+                Collection collection = (Collection) searchScope;
+                String collectionName = collection.getMetadata("name");
+                results.setHead(T_head1_collection.parameterize(displayedResults, totalResults, collectionName, searchTime));
+            } else {
+                results.setHead(T_head1_none.parameterize(displayedResults, totalResults, searchTime));
+            }
+        }
 
-                filtersTable.addRow(Row.ROLE_HEADER).addCell("", Cell.ROLE_HEADER, 1, 4, "new-filter-header").addContent(T_filter_current_filters);
-                for (int i = 0; i <  filterTypes.size(); i++)
+        if (queryResults != null && 0 < queryResults.getDspaceObjects().size())
+        {
+
+            // Pagination variables.
+            int itemsTotal = (int) queryResults.getTotalSearchResults();
+            int firstItemIndex = (int) this.queryResults.getStart() + 1;
+            int lastItemIndex = (int) this.queryResults.getStart() + queryResults.getDspaceObjects().size();
+
+            //if (itemsTotal < lastItemIndex)
+            //    lastItemIndex = itemsTotal;
+            int currentPage = this.queryResults.getStart() / this.queryResults.getMaxResults() + 1;
+            int pagesTotal = (int) ((this.queryResults.getTotalSearchResults() - 1) / this.queryResults.getMaxResults()) + 1;
+            Map<String, String> parameters = new HashMap<String, String>();
+            parameters.put("page", "{pageNum}");
+            String pageURLMask = generateURL(parameters);
+            pageURLMask = addFilterQueriesToUrl(pageURLMask);
+
+            results.setMaskedPagination(itemsTotal, firstItemIndex,
+                    lastItemIndex, currentPage, pagesTotal, pageURLMask);
+
+            // Look for any communities or collections in the mix
+            org.dspace.app.xmlui.wing.element.List dspaceObjectsList = null;
+
+            // Put it on the top of level search result list
+            dspaceObjectsList = results.addList("search-results-repository",
+                    org.dspace.app.xmlui.wing.element.List.TYPE_DSO_LIST, "repository-search-results");
+
+            List<DSpaceObject> commCollList = new ArrayList<DSpaceObject>();
+            List<Item> itemList = new ArrayList<Item>();
+            for (DSpaceObject resultDso : queryResults.getDspaceObjects())
+            {
+                if(resultDso.getType() == Constants.COMMUNITY || resultDso.getType() == Constants.COLLECTION)
                 {
-                    String filterType = filterTypes.get(i);
-                    String filterValue = filterValues.get(i);
-                    String filterOperator = filterOperators.get(i);
-
-                    if(StringUtils.isNotBlank(filterValue))
-                    {
-                        Row row = filtersTable.addRow("used-filters-" + i+1, Row.ROLE_DATA, "search-filter used-filter");
-                        addFilterRow(filterFields, i+1, row, filterType, filterOperator, filterValue);
-                    }
+                    commCollList.add(resultDso);
+                }else
+                if(resultDso.getType() == Constants.ITEM)
+                {
+                    itemList.add((Item) resultDso);
                 }
-                filtersTable.addRow("filler-row", Row.ROLE_DATA, "search-filter filler").addCell(1, 4).addContent("");
-                filtersTable.addRow(Row.ROLE_HEADER).addCell("", Cell.ROLE_HEADER, 1, 4, "new-filter-header").addContent(T_filter_new_filters);
             }
 
+            if(CollectionUtils.isNotEmpty(commCollList))
+            {
+                org.dspace.app.xmlui.wing.element.List commCollWingList = dspaceObjectsList.addList("comm-coll-result-list");
+                commCollWingList.setHead(T_result_head_2);
+                for (DSpaceObject dso : commCollList)
+                {
+                    DiscoverResult.DSpaceObjectHighlightResult highlightedResults = queryResults.getHighlightedResults(dso);
+                    if(dso.getType() == Constants.COMMUNITY)
+                    {
+                        //Render our community !
+                        org.dspace.app.xmlui.wing.element.List communityMetadata = commCollWingList.addList(dso.getHandle() + ":community");
 
-            int index = filterTypes.size() + 1;
-            Row row = filtersTable.addRow("filter-new-" + index, Row.ROLE_DATA, "search-filter");
+                        renderCommunity((Community) dso, highlightedResults, communityMetadata);
+                    }else
+                    if(dso.getType() == Constants.COLLECTION)
+                    {
+                        //Render our collection !
+                        org.dspace.app.xmlui.wing.element.List collectionMetadata = commCollWingList.addList(dso.getHandle() + ":collection");
 
-            addFilterRow(filterFields, index, row, null, null, null);
+                        renderCollection((Collection) dso, highlightedResults, collectionMetadata);
+                    }
+                }
+            }
 
-            Row filterControlsItem = filtersTable.addRow("filter-controls", Row.ROLE_DATA, "apply-filter");
-//            filterControlsItem.addCell(1, 3).addContent("");
-            filterControlsItem.addCell(1, 4).addButton("submit_apply_filter", "discovery-apply-filter-button").setValue(T_filter_controls_apply);
+            if(CollectionUtils.isNotEmpty(itemList))
+            {
+                org.dspace.app.xmlui.wing.element.List itemWingList = dspaceObjectsList.addList("item-result-list");
+                if(CollectionUtils.isNotEmpty(commCollList))
+                {
+                    itemWingList.setHead(T_result_head_3);
 
-            addHiddenFormFields("filter", request, fqs, searchFiltersDiv);
+                }
+                for (Item resultDso : itemList)
+                {
+                    DiscoverResult.DSpaceObjectHighlightResult highlightedResults = queryResults.getHighlightedResults(resultDso);
+                    renderItem(itemWingList, resultDso, highlightedResults);
+                }
+            }
 
+        } else {
+            results.addPara(T_no_results);
         }
-
-
-//        query.addPara(null, "button-list").addButton("submit").setValue(T_go);
-
-        // Build the DRI Body
-        //Division results = body.addDivision("results", "primary");
-        //results.setHead(T_head);
-        buildMainForm(search);
-
-        // Add the result division
-        try {
-            buildSearchResultsDivision(search);
-        } catch (SearchServiceException e) {
-            throw new UIException(e.getMessage(), e);
-        }
-
+        //}// Empty query
     }
+*/    
+     
 
+    /**
+    * 
+    * Attach a division to the given search division named "search-results"
+    * which contains results for this search query.
+    * 
+    * @param search
+    *            The search division to contain the search-results division.
+    */
+   @Override 
+   protected void buildSearchResultsDivision(Division search)
+		   throws IOException, SQLException, WingException, SearchServiceException
+   {
+       try {
+           if (queryResults == null) {
+
+               DSpaceObject scope = getScope();
+               this.performSearch(scope);
+           }
+       }
+       catch (RuntimeException e) {
+           log.error(e.getMessage(), e);
+           queryResults = null;
+       }
+       catch (Exception e) {
+           log.error(e.getMessage(), e);
+           queryResults = null;
+       }	   
+	   
+       Division results = search.addDivision("search-results","primary");
+       
+       DSpaceObject searchScope = getScope();
+
+       int displayedResults;
+       long totalResults;
+       float searchTime;
+       
+       if(queryResults != null && 0 < queryResults.getTotalSearchResults())
+       {
+           displayedResults = queryResults.getDspaceObjects().size();
+           totalResults = queryResults.getTotalSearchResults();
+           searchTime = ((float) queryResults.getSearchTime() / 1000) % 60;
+
+           if (searchScope instanceof org.dspace.content.Community)
+           {
+        	   org.dspace.content.Community community = (org.dspace.content.Community) searchScope;
+               String communityName = community.getMetadata("name")+" Tester!";
+               results.setHead(T_head1_community.parameterize(displayedResults, totalResults, communityName, searchTime));
+           } else if (searchScope instanceof org.dspace.content.Collection){
+        	   org.dspace.content.Collection collection = (org.dspace.content.Collection) searchScope;
+               String collectionName = collection.getMetadata("name")+" Testee!";
+               results.setHead(T_head1_collection.parameterize(displayedResults, totalResults, collectionName, searchTime));
+           } else {
+               results.setHead(T_head1_none.parameterize(displayedResults, totalResults, searchTime));
+           }
+       }
+       
+       
+       
+       /*
+       if (queryResults.getHitCount() > 0)
+       {
+           // Pagination variables.
+           int itemsTotal = queryResults.getHitCount();
+           int firstItemIndex = queryResults.getStart() + 1;
+           int lastItemIndex = queryResults.getStart()
+                   + queryResults.getPageSize();
+           if (itemsTotal < lastItemIndex)
+           {
+               lastItemIndex = itemsTotal;
+           }
+           int currentPage = (queryResults.getStart() / queryResults
+                   .getPageSize()) + 1;
+           int pagesTotal = ((queryResults.getHitCount() - 1) / queryResults
+                   .getPageSize()) + 1;
+           Map<String, String> parameters = new HashMap<String, String>();
+           parameters.put("page", "{pageNum}");
+           String pageURLMask = generateURL(parameters);
+
+           results.setMaskedPagination(itemsTotal, firstItemIndex,
+                   lastItemIndex, currentPage, pagesTotal, pageURLMask);
+
+           ReferenceSet referenceSet = results.addReferenceSet("search-results-repository", ReferenceSet.TYPE_SUMMARY_LIST,null,"repository-search-results");;            
+           @SuppressWarnings("unchecked") // This cast is correct
+           java.util.List<String> itemHandles = queryResults.getHitHandles();
+           for (String handle : itemHandles) {
+               DSpaceObject resultDSO = HandleManager.resolveToObject( context, handle);
+               referenceSet.addReference(resultDSO);
+           }
+           
+       }
+       else
+       {
+           results.addPara("No content found.");
+       }
+       */
+   }
+       
+    
     protected void addFilterRow(java.util.List<DiscoverySearchFilter> filterFields, int index, Row row, String selectedFilterType, String relationalOperator, String value) throws WingException {
         Select select = row.addCell("", Cell.ROLE_DATA, "selection").addSelect("filtertype_" + index);
 
@@ -326,55 +526,7 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 //   	return super.generateURL("mdbrowse", parameters);
    }
 
-    /**
-     * Generate a url to the simple search url.
-     *
-    protected String generateURL(Map<String, String> parameters)
-            throws UIException {
-        String query = getQuery();
-        if (!"".equals(query) && parameters.get("query") == null)
-        {
-            parameters.put("query", encodeForURL(query));
-        }
-
-        if (parameters.get("page") == null)
-        {
-            parameters.put("page", String.valueOf(getParameterPage()));
-        }
-
-        if (parameters.get("rpp") == null)
-        {
-            parameters.put("rpp", String.valueOf(getParameterRpp()));
-        }
-
-
-        if (parameters.get("group_by") == null)
-        {
-            parameters.put("group_by", String.valueOf(this.getParameterGroup()));
-        }
-
-        if (parameters.get("sort_by") == null && getParameterSortBy() != null)
-        {
-            parameters.put("sort_by", String.valueOf(getParameterSortBy()));
-        }
-
-        if (parameters.get("order") == null && getParameterOrder() != null)
-        {
-            parameters.put("order", getParameterOrder());
-        }
-
-        if (parameters.get("etal") == null)
-        {
-            parameters.put("etal", String.valueOf(getParameterEtAl()));
-        }
-        if(parameters.get("scope") == null && getParameterScope() != null)
-        {
-            parameters.put("scope", getParameterScope());
-        }
-
-        return AbstractDSpaceTransformer.generateURL("discover", parameters);
-    }
-*/
+  
     /**
      * Since the layout is creating separate forms for each search part
      * this method will add hidden fields containing the values from other form parts
