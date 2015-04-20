@@ -50,12 +50,6 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 	
 		private MetadataTreeNode node;
 		
-	    private static final Message T_head1_community =
-	            message("xmlui.Discovery.AbstractSearch.head1_community");
-
-	    private static final Message T_head1_collection =
-	            message("xmlui.Discovery.AbstractSearch.head1_collection");
-	    
 	    private static final Message T_head1_none =
 	            message("xmlui.Discovery.AbstractSearch.head1_none");
 
@@ -73,6 +67,12 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 
 	    private static final Message T_head =
 	            message("xmlui.ArtifactBrowser.SimpleSearch.head");
+
+	    private static final Message T_no_results =
+	            message("xmlui.ArtifactBrowser.AbstractSearch.no_results");
+	    
+	    private static final Message T_result_head_3 = message("xmlui.Discovery.AbstractSearch.head3");
+	    private static final Message T_result_head_2 = message("xmlui.Discovery.AbstractSearch.head2");
 
 //	    private static final Message T_search_label =
 //	            message("xmlui.discovery.SimpleSearch.search_label");
@@ -391,16 +391,101 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
            if (searchScope instanceof org.dspace.content.Community)
            {
         	   org.dspace.content.Community community = (org.dspace.content.Community) searchScope;
-               String communityName = community.getMetadata("name")+" Tester!";
-               results.setHead(T_head1_community.parameterize(displayedResults, totalResults, communityName, searchTime));
+               String communityName = community.getMetadata("name");
            } else if (searchScope instanceof org.dspace.content.Collection){
         	   org.dspace.content.Collection collection = (org.dspace.content.Collection) searchScope;
-               String collectionName = collection.getMetadata("name")+" Testee!";
-               results.setHead(T_head1_collection.parameterize(displayedResults, totalResults, collectionName, searchTime));
+               String collectionName = collection.getMetadata("name");
            } else {
                results.setHead(T_head1_none.parameterize(displayedResults, totalResults, searchTime));
            }
        }
+
+       if (queryResults != null && 0 < queryResults.getDspaceObjects().size())
+       {
+
+           // Pagination variables.
+           int itemsTotal = (int) queryResults.getTotalSearchResults();
+           int firstItemIndex = (int) this.queryResults.getStart() + 1;
+           int lastItemIndex = (int) this.queryResults.getStart() + queryResults.getDspaceObjects().size();
+           
+           
+
+           //if (itemsTotal < lastItemIndex)
+           //    lastItemIndex = itemsTotal;
+           int currentPage = this.queryResults.getStart() / this.queryResults.getMaxResults() + 1;
+           int pagesTotal = (int) ((this.queryResults.getTotalSearchResults() - 1) / this.queryResults.getMaxResults()) + 1;
+           Map<String, String> parameters = new HashMap<String, String>();
+           parameters.put("page", "{pageNum}");
+           String pageURLMask = generateURL(parameters);
+           pageURLMask = addFilterQueriesToUrl(pageURLMask);
+
+           results.setMaskedPagination(itemsTotal, firstItemIndex,
+                   lastItemIndex, currentPage, pagesTotal, pageURLMask);
+
+           // Look for any communities or collections in the mix
+           org.dspace.app.xmlui.wing.element.List dspaceObjectsList = null;
+
+           // Put it on the top of level search result list
+           dspaceObjectsList = results.addList("search-results-repository",
+                   org.dspace.app.xmlui.wing.element.List.TYPE_DSO_LIST, "repository-search-results");
+
+           java.util.List<DSpaceObject> commCollList = new ArrayList<DSpaceObject>();
+           java.util.List<org.dspace.content.Item> itemList = new ArrayList<org.dspace.content.Item>();
+           for (DSpaceObject resultDso : queryResults.getDspaceObjects())
+           {
+               if(resultDso.getType() == Constants.COMMUNITY || resultDso.getType() == Constants.COLLECTION)
+               {
+                   commCollList.add(resultDso);
+               }else
+               if(resultDso.getType() == Constants.ITEM)
+               {
+                   itemList.add((org.dspace.content.Item) resultDso);
+               }
+           }
+
+           if(CollectionUtils.isNotEmpty(commCollList))
+           {
+               org.dspace.app.xmlui.wing.element.List commCollWingList = dspaceObjectsList.addList("comm-coll-result-list");
+               commCollWingList.setHead(T_result_head_2);
+               for (DSpaceObject dso : commCollList)
+               {
+                   DiscoverResult.DSpaceObjectHighlightResult highlightedResults = queryResults.getHighlightedResults(dso);
+                   if(dso.getType() == Constants.COMMUNITY)
+                   {
+                       //Render our community !
+                       org.dspace.app.xmlui.wing.element.List communityMetadata = commCollWingList.addList(dso.getHandle() + ":community");
+
+                       renderCommunity((Community) dso, highlightedResults, communityMetadata);
+                   }else
+                   if(dso.getType() == Constants.COLLECTION)
+                   {
+                       //Render our collection !
+                       org.dspace.app.xmlui.wing.element.List collectionMetadata = commCollWingList.addList(dso.getHandle() + ":collection");
+
+                       renderCollection((org.dspace.content.Collection) dso, highlightedResults, collectionMetadata);
+                   }
+               }
+           }
+
+           if(CollectionUtils.isNotEmpty(itemList))
+           {
+               org.dspace.app.xmlui.wing.element.List itemWingList = dspaceObjectsList.addList("item-result-list");
+               if(CollectionUtils.isNotEmpty(commCollList))
+               {
+                   itemWingList.setHead(T_result_head_3);
+
+               }
+               for (org.dspace.content.Item resultDso : itemList)
+               {
+                   DiscoverResult.DSpaceObjectHighlightResult highlightedResults = queryResults.getHighlightedResults(resultDso);
+                   renderItem(itemWingList, resultDso, highlightedResults);
+               }
+           }
+
+       } else {
+           results.addPara(T_no_results);
+       }
+       //}// Empty query
        
        
        
