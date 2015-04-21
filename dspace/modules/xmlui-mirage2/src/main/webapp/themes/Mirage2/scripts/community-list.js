@@ -26,10 +26,6 @@ $(document).ready(function() {
         return null;
     }
 
-    $("#aspect_artifactbrowser_CommunityBrowser_div_comunity-browser p.ds-paragraph:first-child").append("<div>"+
-                                                                                                            "<a href=\"#\" class=\"expand-all btn btn-default btn-sm\">Expand All</a> "+
-                                                                                                            "<a href=\"#\" class=\"close-all btn btn-default btn-sm\">Close All</a>"+
-                                                                                                        "</div>");
     $(".toggler").click(function(e) {
         e.preventDefault();
         parentid = $(this).attr("data-target");

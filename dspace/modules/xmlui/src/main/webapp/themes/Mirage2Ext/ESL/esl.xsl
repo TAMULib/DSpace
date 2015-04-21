@@ -16,36 +16,6 @@
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
     
-
-   <!-- Non-interactive divs get turned into HTML div tags.  This template excludes the flat community list in 
-        favor of the expanding/collapsing community list on the community view page -->
-    <xsl:template match="dri:div[@id='aspect.artifactbrowser.CommunityViewer.div.community-view']" priority="2">
-        <xsl:apply-templates select="dri:head"/>
-        <xsl:apply-templates select="@pagination">
-            <xsl:with-param name="position">top</xsl:with-param>
-        </xsl:apply-templates>
-        <div>
-            <xsl:call-template name="standardAttributes">
-                <xsl:with-param name="class">ds-static-div</xsl:with-param>
-            </xsl:call-template>
-            <xsl:choose>
-                <!--  does this element have any children -->
-                <xsl:when test="child::node()">
-                    <xsl:apply-templates select="*[not(name()='head')][not(@id='aspect.artifactbrowser.CommunityViewer.referenceSet.community-view')]"/>
-                    <!-- <xsl:apply-templates select="*[not(name()='head')]" mode='communityTreeExcludesOtherSummaryLists'/> -->
-                        
-                </xsl:when>
-                <!-- if no children are found we add a space to eliminate self closing tags -->
-                <xsl:otherwise>
-                    &#160;
-                </xsl:otherwise>
-            </xsl:choose>
-        </div>
-        <xsl:apply-templates select="@pagination">
-            <xsl:with-param name="position">bottom</xsl:with-param>
-        </xsl:apply-templates>
-    </xsl:template>
-
     <!--borrowed from DIM-Handler.xsl
         *********************************************
         OpenURL COinS Rendering Template
