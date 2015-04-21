@@ -19,8 +19,10 @@ import org.apache.cocoon.environment.ObjectModelHelper;
 import org.apache.cocoon.environment.Request;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.excalibur.source.SourceValidity;
 import org.apache.log4j.Logger;
 import org.dspace.app.xmlui.cocoon.AbstractDSpaceTransformer;
+import org.dspace.app.xmlui.utils.DSpaceValidity;
 import org.dspace.app.xmlui.utils.HandleUtil;
 import org.dspace.app.xmlui.utils.UIException;
 import org.dspace.app.xmlui.wing.Message;
@@ -32,7 +34,10 @@ import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.discovery.*;
 import org.dspace.discovery.configuration.DiscoveryConfiguration;
+import org.dspace.discovery.configuration.DiscoveryHitHighlightFieldConfiguration;
 import org.dspace.discovery.configuration.DiscoverySearchFilter;
+import org.dspace.discovery.configuration.DiscoverySortConfiguration;
+import org.dspace.discovery.configuration.DiscoverySortFieldConfiguration;
 import org.dspace.utils.DSpace;
 import org.xml.sax.SAXException;
 
@@ -95,12 +100,92 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
     private static final Message T_did_you_mean = message("xmlui.Discovery.SimpleSearch.did_you_mean");
 
     private SearchService searchService = null;
+    
+    /**
+     * Cached validity object
+     */
+    private SourceValidity validity;
 
-    public BrowseNode() {
+
+    public BrowseNode() throws UIException {
         DSpace dspace = new DSpace();
         searchService = dspace.getServiceManager().getServiceByName(SearchService.class.getName(),SearchService.class);
+/*        
+        try {
+	        Request request = ObjectModelHelper.getRequest(objectModel);
+		    String nodeString = getQuery();
+		    
+			MetadataTreeNode root = MetadataTreeNode.generateBrowseTree(context, getScope());
+		
+			node = root.findById(Integer.valueOf(nodeString));
+        } catch (UIException e) {
+            log.error(e.getMessage(), e);
+        } catch (SQLException e) {
+            log.error(e.getMessage(), e);
+        }
+*/
     }
+    
+    /**
+     * Generate the cache validity object.
+     * <p/>
+     * This validity object should never "over cache" because it will
+     * perform the search, and serialize the results using the
+     * DSpaceValidity object.
+     */
+    public SourceValidity getValidity() {
+        if (this.validity == null) {
+            try {
+                DSpaceValidity validity = new DSpaceValidity();
 
+                DSpaceObject scope = getScope();
+
+                Request request = ObjectModelHelper.getRequest(objectModel);
+    		    String nodeString = getQuery();
+    		    
+    			MetadataTreeNode root = MetadataTreeNode.generateBrowseTree(context, scope);
+    		
+    			node = root.findById(Integer.valueOf(nodeString));
+                
+                validity.add(scope);
+
+                performSearch(scope);
+
+                java.util.List<DSpaceObject> results = this.queryResults.getDspaceObjects();
+
+                if (results != null) {
+                    validity.add("total:"+this.queryResults.getTotalSearchResults());
+                    validity.add("start:"+this.queryResults.getStart());
+                    validity.add("size:" + results.size());
+
+                    for (DSpaceObject dso : results) {
+                        validity.add(dso);
+                    }
+                }
+
+                Map<String, java.util.List<DiscoverResult.FacetResult>> facetResults = this.queryResults.getFacetResults();
+                for(String facetField : facetResults.keySet()){
+                	java.util.List<DiscoverResult.FacetResult> facetValues = facetResults.get(facetField);
+                    for (DiscoverResult.FacetResult facetResult : facetValues)
+                    {
+                        validity.add(facetField + facetResult.getAsFilterQuery() + facetResult.getCount());
+                    }
+                }
+
+                this.validity = validity.complete();
+            } catch (RuntimeException re) {
+                throw re;
+            }
+            catch (Exception e) {
+                this.validity = null;
+            }
+
+            // add log message that we are viewing the item
+            // done here, as the serialization may not occur if the cache is valid
+            logSearch();
+        }
+        return this.validity;
+    }
 
     /**
      * Add Page metadata.
@@ -125,18 +210,9 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
     public void addBody(Body body) throws SAXException, WingException,
             SQLException, IOException, AuthorizeException {
 
-        Request request = ObjectModelHelper.getRequest(objectModel);
-        String queryString = getQuery();
-        
-		String nodeString = request.getParameter("node");
-		
         DSpaceObject currentScope = getScope();
-		
-		MetadataTreeNode root = MetadataTreeNode.generateBrowseTree(context, currentScope);
 
-		node = root.findById(Integer.valueOf(nodeString));
-
-		if (node == null)
+    	if (node == null)
 			return;
 		
 		String baseURL = contextPath + "/handle/" + currentScope.getHandle()+ "/mdbrowse";
@@ -213,7 +289,6 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
    {
        try {
            if (queryResults == null) {
-
                DSpaceObject scope = getScope();
                this.performSearch(scope);
            }
@@ -376,6 +451,124 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
    		parameters.put("page", request.getParameter("page"));
 
    		return AbstractDSpaceTransformer.generateURL("mdbrowse", parameters);
+   }
+   
+   /**
+    * Query DSpace for a list of all items / collections / or communities that
+    * match the given search query.
+    *
+    *
+    * @param scope the dspace object parent
+    */
+   public void performSearch(DSpaceObject scope) throws UIException, SearchServiceException {
+
+       if (queryResults != null)
+       {
+           return;
+       }
+       
+
+       String query = getQuery();
+
+       //DSpaceObject scope = getScope();
+
+       int page = getParameterPage();
+
+       java.util.List<String> filterQueries = new ArrayList<String>();
+
+       String[] fqs = getFilterQueries();
+
+       if (fqs != null)
+       {
+           filterQueries.addAll(Arrays.asList(fqs));
+       }
+
+       this.queryArgs = new DiscoverQuery();
+
+       //Add the configured default filter queries
+       DiscoveryConfiguration discoveryConfiguration = SearchUtils.getDiscoveryConfiguration(scope);
+       java.util.List<String> defaultFilterQueries = discoveryConfiguration.getDefaultFilterQueries();
+       queryArgs.addFilterQueries(defaultFilterQueries.toArray(new String[defaultFilterQueries.size()]));
+
+       if (filterQueries.size() > 0) {
+           queryArgs.addFilterQueries(filterQueries.toArray(new String[filterQueries.size()]));
+       }
+
+
+       queryArgs.setMaxResults(getParameterRpp());
+
+       String sortBy = ObjectModelHelper.getRequest(objectModel).getParameter("sort_by");
+       DiscoverySortConfiguration searchSortConfiguration = discoveryConfiguration.getSearchSortConfiguration();
+       if(sortBy == null){
+           //Attempt to find the default one, if none found we use SCORE
+           sortBy = "(ispartof: \""+node.getFieldValue()+"\")";
+           if(searchSortConfiguration != null){
+               for (DiscoverySortFieldConfiguration sortFieldConfiguration : searchSortConfiguration.getSortFields()) {
+                   if(sortFieldConfiguration.equals(searchSortConfiguration.getDefaultSort())){
+                       sortBy = SearchUtils.getSearchService().toSortFieldIndex(sortFieldConfiguration.getMetadataField(), sortFieldConfiguration.getType());
+                   }
+               }
+           }
+       }
+       String sortOrder = ObjectModelHelper.getRequest(objectModel).getParameter("order");
+       if(sortOrder == null && searchSortConfiguration != null){
+           sortOrder = searchSortConfiguration.getDefaultSortOrder().toString();
+       }
+
+       if (sortOrder == null || sortOrder.equalsIgnoreCase("ASC"))
+       {
+           queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.desc);
+       }
+       else
+       {
+           queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.asc);
+       }
+
+
+       String groupBy = ObjectModelHelper.getRequest(objectModel).getParameter("group_by");
+
+
+       // Enable groupBy collapsing if designated
+       if (groupBy != null && !groupBy.equalsIgnoreCase("none")) {
+           /** Construct a Collapse Field Query */
+           queryArgs.addProperty("collapse.field", groupBy);
+           queryArgs.addProperty("collapse.threshold", "1");
+           queryArgs.addProperty("collapse.includeCollapsedDocs.fl", "handle");
+           queryArgs.addProperty("collapse.facet", "before");
+
+           //queryArgs.a  type:Article^2
+
+           // TODO: This is a hack to get Publications (Articles) to always be at the top of Groups.
+           // TODO: I think that can be more transparently done in the solr solrconfig.xml with DISMAX and boosting
+           /** sort in groups to get publications to top */
+           queryArgs.setSortField("dc.type", DiscoverQuery.SORT_ORDER.asc);
+
+       }
+
+
+       queryArgs.setQuery(query != null && !query.trim().equals("") ? query : null);
+
+       if (page > 1)
+       {
+           queryArgs.setStart((page - 1) * queryArgs.getMaxResults());
+       }
+       else
+       {
+           queryArgs.setStart(0);
+       }
+
+       if(discoveryConfiguration.getHitHighlightingConfiguration() != null)
+       {
+           java.util.List<DiscoveryHitHighlightFieldConfiguration> metadataFields = discoveryConfiguration.getHitHighlightingConfiguration().getMetadataFields();
+           for (DiscoveryHitHighlightFieldConfiguration fieldConfiguration : metadataFields)
+           {
+               queryArgs.addHitHighlightingField(new DiscoverHitHighlightingField(fieldConfiguration.getField(), fieldConfiguration.getMaxSize(), fieldConfiguration.getSnippets()));
+           }
+       }
+
+       queryArgs.setSpellCheck(discoveryConfiguration.isSpellCheckEnabled());
+
+       this.queryResults = SearchUtils.getSearchService().search(context, scope, queryArgs);
    }
 
 }

@@ -208,12 +208,13 @@ public class MetadataTreeNode {
 		
 		// Find all distinct text_values for the metadata field in the given collection. And select 
 		String query = "SELECT mv.text_value, MAX(b2b.bitstream_id) AS bitstream_id "
-			+ "FROM metadatavalue mv, item i, collection2item c2i, item2bundle i2b, bundle b, bundle2bitstream b2b "
+			+ "FROM metadatavalue mv, item i, collection2item c2i, item2bundle i2b, bundle b,metadatavalue tmv, bundle2bitstream b2b "
 			+ "WHERE mv.resource_id = i.item_id "
 			+ "AND i.item_id = c2i.item_id "
 			+ "AND i.item_id = i2b.item_id "
 			+ "AND i2b.bundle_id = b2b.bundle_id "
 			+ "AND b2b.bundle_id = b.bundle_id "
+			+ "AND (tmv.text_value = 'THUMBNAIL' AND b.bundle_id=tmv.resource_id)"
 			+ "AND c2i.collection_id = ? "
 			+ "AND mv.metadata_field_id = ? "
 			+ "GROUP BY mv.text_value "
@@ -223,18 +224,19 @@ public class MetadataTreeNode {
 			
 			// The same query as above but searches through a community and all lower collections as well.
 			query = "SELECT mv.text_value, max(b2b.bitstream_id) AS bitstream_id"
-				+ "FROM metadatavalue mv, item i, collection2item c2i, community2collection c2c, item2bundle i2b, bundle b, bundle2bitstream b2b "
+				+ "FROM metadatavalue mv, item i, collection2item c2i, community2collection c2c, item2bundle i2b, bundle b,metadatavalue tmv, bundle2bitstream b2b "
 				+ "WHERE mv.resource_id = i.item_id "
 				+ "AND i.item_id = c2i.item_id "
 				+ "AND c2i.collection_id = c2c.collection_id "
 				+ "AND i.item_id = i2b.item_id "
 				+ "AND i2b.bundle_id = b2b.bundle_id "
 				+ "AND b2b.bundle_id = b.bundle_id "
+				+ "AND (tmv.text_value = 'THUMBNAIL' AND b.bundle_id=tmv.resource_id)"
 				+ "AND c2c.community_id = ? "
 				+ "AND mv.metadata_field_id = ? "
 				+ "GROUP BY mv.text_value "
 				+ "ORDER BY mv.text_value";
-			}
+		}
 		
 		TableRowIterator rowItr = DatabaseManager.query(context, query, dsoId, fieldId);
 		while (rowItr.hasNext()) {
