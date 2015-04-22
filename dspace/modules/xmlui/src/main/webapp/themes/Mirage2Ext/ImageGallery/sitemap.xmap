@@ -1,0 +1,187 @@
+<?xml version="1.0"?>
+<!--
+  sitemap.xmap
+
+  Version: $Revision: 1.1 $
+ 
+  Date: $Date: 2006/05/25 16:03:31 $
+ 
+-->
+<map:sitemap xmlns:map="http://apache.org/cocoon/sitemap/1.0">
+    <map:components>
+        <map:transformers>
+            <transformer name="strip-namespaces" src="org.apache.cocoon.transformation.StripNameSpacesTransformer"/>
+            <map:transformer name="restrictedItemsInfo" src="org.tamu.dspace.extensions.RestrictedItemsTransformer"/>       
+        </map:transformers>
+        <map:actions>
+            <map:action name="recordContext" src="org.tamu.dspace.extensions.RecordContextAction"/>
+        </map:actions>
+        <map:serializers>
+            <map:serializer name="html-no-doctype" logger="sitemap.serializer.xhtml"
+                            src="org.apache.cocoon.serialization.HTMLSerializer"
+                            mime-type="text/html; charset=utf-8"
+                            pool-grow="2" pool-max="64" pool-min="2">
+                <encoding>UTF-8</encoding>
+                <indent>yes</indent>
+            </map:serializer>
+        </map:serializers>
+    </map:components>
+   <!-- Define global resources that are used in multiple areas of the pipeline. -->
+    <map:resources>
+
+        <!--
+             This "transform-to-xhtml" resource is in charge of transforming DRI to XHTML.
+             It expects a pre-generated DRI page. It adds needed CSS/JS references to that DRI,
+             and then transforms it to XHTML using the Theme's XSLT(s).
+             Please note: this Sitemap 'resource' can be called from multiple places (almost like a function).
+        -->
+        <map:resource name="transform-to-xhtml">
+
+            <!-- Fix some overly convoluted DRI constructs in
+                DSpace code without having to change java code and
+                interfere with other themes -->
+            <map:transform src="../../Mirage2/xsl/preprocess.xsl"/>
+
+            <!-- Add page metadata to DRI -->
+            <map:transform type="IncludePageMeta">
+                <map:parameter name="theme.path" value="{global:theme-path}/"/>
+                <map:parameter name="child.theme.path" value="Mirage2Ext/"/>
+                <map:parameter name="theme.name" value="{global:theme-name}/"/>
+            </map:transform>
+
+            <!-- Debugging output (this is only called when ?XML is passed on querystring) -->
+            <!-- It allows developers to view the final DRI XML, in order to build/debug theme XSLTs -->
+            <map:match type="request" pattern="XML">
+                <map:serialize type="xml"/>
+            </map:match>
+
+            <!-- Transform DRI to XHTML using the Theme's XSLT(s) -->
+            <map:transform src="ImageGallery.xsl"/>
+
+            <!-- Localize the XHTML page (by replacing i18n tags) -->
+            <map:act type="locale">
+                <map:transform type="i18n">
+                    <map:parameter name="locale" value="{locale}"/>
+                </map:transform>
+            </map:act>
+
+            <!-- Remove all namespaces in the output xhtml-->
+            <map:transform type="strip-namespaces" />
+        </map:resource>
+    </map:resources>
+    <map:pipelines>
+        <map:component-configurations>
+            <global-variables>
+                <theme-path>Mirage2/</theme-path>
+                <child-theme-path>Mirage2Ext</child-theme-path>
+                <theme-name>The official TAMU theme Image Gallery</theme-name>
+            </global-variables>
+        </map:component-configurations>
+
+        <!--
+             Caching Pipeline: This caching pipeline handles access to static content (css, js, etc)
+             which is used by this Theme. These static files are simply passed directly to
+             the user's browser without any proccesing.
+        -->
+        <map:pipeline>
+            <!-- Allow the browser to cache static content for an hour -->
+            <map:parameter name="expires" value="access plus 1 hours"/>
+
+            <!-- handle static js and css -->
+            <map:match pattern="themes/*/**.js">
+                <map:read type="ConcatenationReader" src="{2}.js">
+                    <map:parameter name="requestQueryString" value="{request:queryString}"/>
+                </map:read>
+            </map:match>
+            <map:match pattern="themes/*/**.css">
+                <map:read type="ConcatenationReader" src="{2}.css">
+                    <map:parameter name="requestQueryString" value="{request:queryString}"/>
+                </map:read>
+            </map:match>
+            <map:match pattern="themes/*/**.json">
+                <map:read type="ConcatenationReader" src="{2}.json">
+                    <map:parameter name="requestQueryString" value="{request:queryString}"/>
+                </map:read>
+            </map:match>
+
+            <!-- Static content -->
+            <map:match pattern="themes/*/**">
+                <map:read src="{2}"/>
+            </map:match>
+            <!-- Deliver static theme content -->
+            <map:match pattern="themes/*/ImageGallery/**">
+                <map:read src="{2}"/>
+            </map:match>
+        </map:pipeline>
+        
+        <map:pipeline>
+            <!-- Never allow the browser to cache dynamic content -->
+            <map:parameter name="expires" value="now"/>
+            
+            <!-- Generate DSpace content pages -->
+            <map:match pattern="**">
+                <!-- Step 0.1:  generate interrupt request to preserve context when users navigate to login page -->
+                <map:act type="recordContext"/>
+
+                <!-- Step 1: Generate the DRI page -->
+                <!-- This line actually initiates the Aspect chain. The Aspect chain will build
+                     the DRI (XML) content based on which page the user is accessing. -->
+                <map:generate type="file" src="cocoon://DRI/{1}"/>
+                
+                <!-- Step 1.5: TAMU Customization - Gather info on restricted bitstreams -->
+                <map:match pattern="handle/*/*">
+                    <map:transform type="restrictedItemsInfo"/>
+                </map:match>          
+                <map:transform type="IncludePageMeta">
+                    <map:parameter name="theme.path" value="{global:theme-path}"/>
+                    <map:parameter name="child.theme.path" value="{global:child-theme-path}"/>
+                    <map:parameter name="theme.name" value="{global:theme-name}"/>
+                    <map:parameter name="theme.image-server" value="https://djatoka.library.tamu.edu/"/>
+                </map:transform>
+
+                <!-- Step 2: Transform the DRI page into XHTML -->
+                <!-- This line calls the resource named 'transform-to-xhtml' (included above).
+                     That resource is in charge of tranforming this DRI content into HTML -->
+                <map:call resource="transform-to-xhtml"/>
+
+                <!-- Step 3: Serialize to the browser (sends final HTML to user's browser) -->
+                <map:serialize type="html-no-doctype"/>
+            </map:match>
+        </map:pipeline>
+
+        <!--
+            Handle any errors which are thrown during any step in the above pipelines.
+            This would include simple invalid URL errors (404 page not found), as well as
+            any errors that may occur from the Aspect chain, or from the Theme itself.
+        -->
+        <map:handle-errors>
+            <!-- Step 1: Tell Cocoon to generate an XML formatted exception message -->
+            <map:generate type="exception"/>
+
+            <!-- Step 2: Transform that Cocoon XML exception into valid DRI (using exception2dri.xslt)-->
+            <map:transform src="../../exception2dri.xslt">
+                <map:parameter name="contextPath" value="{request:contextPath}"/>
+            </map:transform>
+
+            <!-- Step 3: Transform that DRI formatted exception into XHTML (using our Theme) -->
+            <map:call resource="transform-to-xhtml"/>
+
+            <!-- Step 4: Serialize XHTML page to user's brower. Based on the type of error,
+                         provide a different HTTP response code. -->
+            <map:select type="exception">
+                <!-- HTTP 400 Bad Request -->
+                <map:when test="bad-request">
+                    <map:serialize type="html-no-doctype" status-code="400"/>
+                </map:when>
+                <!-- HTTP 404 Page Not Found -->
+                <map:when test="not-found">
+                    <map:serialize type="html-no-doctype" status-code="404"/>
+                </map:when>
+                <!-- All other errors (HTTP 500 Internal Server Error) -->
+                <map:otherwise>
+                    <map:serialize type="html-no-doctype" status-code="500"/>
+                </map:otherwise>
+            </map:select>
+        </map:handle-errors>
+    </map:pipelines>
+</map:sitemap>
