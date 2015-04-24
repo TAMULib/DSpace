@@ -40,7 +40,7 @@ jQuery(document).ready(function() {
    }
    
    // Add the expand all button
-   jQuery("#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview").prepend("<a class=\"expand-all\" href=\"javascript: void(0);\">Expand All</a>");
+   jQuery("#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview").prepend("<a class=\"expand-all ds-button-field btn btn-default\" href=\"javascript: void(0);\">Expand All</a>");
    jQuery("#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .expand-all").click(function() {
       if (jQuery(this).text().indexOf('Expand') > -1) { 
          // Expand all Children

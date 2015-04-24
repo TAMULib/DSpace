@@ -44,3 +44,73 @@ header .navbar-brand img {
 {
     display: none
 }
+
+
+/*****************************************************************************
+                    Metadata Tree Browser Aspect styling
+******************************************************************************/
+
+#edu_tamu_metadatatreebrowser_BrowseNode_div_parent-div a {
+    color: #666666 !important;
+    text-decoration: none;
+}
+
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list {
+    list-style: none;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li {
+    background-color: #efefef;
+    display: inline-block;
+    vertical-align: top;
+    width: 180px;
+    height: 170px;
+    text-align: center;
+    padding: 10px;
+    margin: 8px;
+    font-size: .9em;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li a {
+    text-decoration: none;
+    font-weight: bold;
+    display: block;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li a.node-thumbnail {
+    background-color: #EDE8E8;
+    min-height: 100px;
+    margin-bottom: 15px;
+    padding: 10px;
+}
+
+
+ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li a img {
+    width: 100px;
+    height: auto;
+    vertical-align: bottom;
+}
+
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .toggle {
+    color: #1A2830;
+    text-decoration: none;
+}
+
+#edu_tamu_metadatatreebrowser_BrowseOverview_div_metadata-tree-browser-overview .toggle:hover {
+    color: #1A2830;
+    text-decoration: none;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list {
+    padding-top: 20px;
+    list-style: none;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list ul {
+    list-style: none;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li {
+    margin-top: 3px;
+}
