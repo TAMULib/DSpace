@@ -114,3 +114,16 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list ul {
 ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li {
     margin-top: 3px;
 }
+
+ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li.ds-simple-list-item a:last-child {
+    margin-left: 12px;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list > li.ds-simple-list-item a:last-child {
+    font-size: 1.1em;
+}
+
+ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list {
+    margin-left: 16px;
+}
+
