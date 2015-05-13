@@ -501,7 +501,7 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
        DiscoverySortConfiguration searchSortConfiguration = discoveryConfiguration.getSearchSortConfiguration();
        if(sortBy == null){
            //Attempt to find the default one, if none found we use SCORE
-           sortBy = "(ispartof: \""+node.getFieldValue()+"\")";
+           sortBy = "score";
            if(searchSortConfiguration != null){
                for (DiscoverySortFieldConfiguration sortFieldConfiguration : searchSortConfiguration.getSortFields()) {
                    if(sortFieldConfiguration.equals(searchSortConfiguration.getDefaultSort())){
@@ -515,7 +515,7 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
            sortOrder = searchSortConfiguration.getDefaultSortOrder().toString();
        }
 
-       if (sortOrder == null || sortOrder.equalsIgnoreCase("ASC"))
+       if (sortOrder == null || sortOrder.equalsIgnoreCase("DESC"))
        {
            queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.desc);
        }
@@ -545,8 +545,7 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 
        }
 
-
-       queryArgs.setQuery(query != null && !query.trim().equals("") ? query : null);
+       queryArgs.setQuery("dc.relation.ispartof: \""+node.getFieldValue()+"\"");
 
        if (page > 1)
        {
