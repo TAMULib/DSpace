@@ -497,54 +497,9 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 
        queryArgs.setMaxResults(getParameterRpp());
 
-       String sortBy = ObjectModelHelper.getRequest(objectModel).getParameter("sort_by");
+       String sortBy = "dc.title_sort";
        DiscoverySortConfiguration searchSortConfiguration = discoveryConfiguration.getSearchSortConfiguration();
-       if(sortBy == null){
-           //Attempt to find the default one, if none found we use SCORE
-           sortBy = "score";
-           if(searchSortConfiguration != null){
-               for (DiscoverySortFieldConfiguration sortFieldConfiguration : searchSortConfiguration.getSortFields()) {
-                   if(sortFieldConfiguration.equals(searchSortConfiguration.getDefaultSort())){
-                       sortBy = SearchUtils.getSearchService().toSortFieldIndex(sortFieldConfiguration.getMetadataField(), sortFieldConfiguration.getType());
-                   }
-               }
-           }
-       }
-       String sortOrder = ObjectModelHelper.getRequest(objectModel).getParameter("order");
-       if(sortOrder == null && searchSortConfiguration != null){
-           sortOrder = searchSortConfiguration.getDefaultSortOrder().toString();
-       }
-
-       if (sortOrder == null || sortOrder.equalsIgnoreCase("DESC"))
-       {
-           queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.desc);
-       }
-       else
-       {
-           queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.asc);
-       }
-
-
-       String groupBy = ObjectModelHelper.getRequest(objectModel).getParameter("group_by");
-
-
-       // Enable groupBy collapsing if designated
-       if (groupBy != null && !groupBy.equalsIgnoreCase("none")) {
-           /** Construct a Collapse Field Query */
-           queryArgs.addProperty("collapse.field", groupBy);
-           queryArgs.addProperty("collapse.threshold", "1");
-           queryArgs.addProperty("collapse.includeCollapsedDocs.fl", "handle");
-           queryArgs.addProperty("collapse.facet", "before");
-
-           //queryArgs.a  type:Article^2
-
-           // TODO: This is a hack to get Publications (Articles) to always be at the top of Groups.
-           // TODO: I think that can be more transparently done in the solr solrconfig.xml with DISMAX and boosting
-           /** sort in groups to get publications to top */
-           queryArgs.setSortField("dc.type", DiscoverQuery.SORT_ORDER.asc);
-
-       }
-
+       queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.asc);
        queryArgs.setQuery("dc.relation.ispartof: \""+node.getFieldValue()+"\"");
 
        if (page > 1)
@@ -554,15 +509,6 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
        else
        {
            queryArgs.setStart(0);
-       }
-
-       if(discoveryConfiguration.getHitHighlightingConfiguration() != null)
-       {
-           java.util.List<DiscoveryHitHighlightFieldConfiguration> metadataFields = discoveryConfiguration.getHitHighlightingConfiguration().getMetadataFields();
-           for (DiscoveryHitHighlightFieldConfiguration fieldConfiguration : metadataFields)
-           {
-               queryArgs.addHitHighlightingField(new DiscoverHitHighlightingField(fieldConfiguration.getField(), fieldConfiguration.getMaxSize(), fieldConfiguration.getSnippets()));
-           }
        }
 
        queryArgs.setSpellCheck(discoveryConfiguration.isSpellCheckEnabled());
