@@ -110,83 +110,9 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
     public BrowseNode() throws UIException {
         DSpace dspace = new DSpace();
         searchService = dspace.getServiceManager().getServiceByName(SearchService.class.getName(),SearchService.class);
-/*        
-        try {
-	        Request request = ObjectModelHelper.getRequest(objectModel);
-		    String nodeString = getQuery();
-		    
-			MetadataTreeNode root = MetadataTreeNode.generateBrowseTree(context, getScope());
-		
-			node = root.findById(Integer.valueOf(nodeString));
-        } catch (UIException e) {
-            log.error(e.getMessage(), e);
-        } catch (SQLException e) {
-            log.error(e.getMessage(), e);
-        }
-*/
     }
     
-    /**
-     * Generate the cache validity object.
-     * <p/>
-     * This validity object should never "over cache" because it will
-     * perform the search, and serialize the results using the
-     * DSpaceValidity object.
-     */
-    public SourceValidity getValidity() {
-        if (this.validity == null) {
-            try {
-                DSpaceValidity validity = new DSpaceValidity();
-
-                DSpaceObject scope = getScope();
-
-                Request request = ObjectModelHelper.getRequest(objectModel);
-    		    String nodeString = getQuery();
-    		    
-    			MetadataTreeNode root = MetadataTreeNode.generateBrowseTree(context, scope);
-    		
-    			node = root.findById(Integer.valueOf(nodeString));
-                
-                validity.add(scope);
-
-                performSearch(scope);
-
-                java.util.List<DSpaceObject> results = this.queryResults.getDspaceObjects();
-
-                if (results != null) {
-                    validity.add("total:"+this.queryResults.getTotalSearchResults());
-                    validity.add("start:"+this.queryResults.getStart());
-                    validity.add("size:" + results.size());
-
-                    for (DSpaceObject dso : results) {
-                        validity.add(dso);
-                    }
-                }
-
-                Map<String, java.util.List<DiscoverResult.FacetResult>> facetResults = this.queryResults.getFacetResults();
-                for(String facetField : facetResults.keySet()){
-                	java.util.List<DiscoverResult.FacetResult> facetValues = facetResults.get(facetField);
-                    for (DiscoverResult.FacetResult facetResult : facetValues)
-                    {
-                        validity.add(facetField + facetResult.getAsFilterQuery() + facetResult.getCount());
-                    }
-                }
-
-                this.validity = validity.complete();
-            } catch (RuntimeException re) {
-                throw re;
-            }
-            catch (Exception e) {
-                this.validity = null;
-            }
-
-            // add log message that we are viewing the item
-            // done here, as the serialization may not occur if the cache is valid
-            logSearch();
-        }
-        return this.validity;
-    }
-
+  
     /**
      * Add Page metadata.
      */
@@ -467,10 +393,24 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
            return;
        }
        
+       try {
+	        Request request = ObjectModelHelper.getRequest(objectModel);
+		    String nodeString = getQuery();
+		    
+			MetadataTreeNode root = MetadataTreeNode.generateBrowseTree(context, scope);
+		
+			node = root.findById(Integer.valueOf(nodeString));
+       } catch (AuthorizeException e) {
+    	   log.error(e.getMessage(), e);
+       } catch (UIException e) {
+           log.error(e.getMessage(), e);
+       } catch (SQLException e) {
+           log.error(e.getMessage(), e);
+       }
+
+       
 
        String query = getQuery();
-
-       //DSpaceObject scope = getScope();
 
        int page = getParameterPage();
 
@@ -497,9 +437,45 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 
        queryArgs.setMaxResults(getParameterRpp());
 
-       String sortBy = "dc.title_sort";
+       String sortBy = ObjectModelHelper.getRequest(objectModel).getParameter("sort_by");
        DiscoverySortConfiguration searchSortConfiguration = discoveryConfiguration.getSearchSortConfiguration();
-       queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.asc);
+       if(sortBy == null){
+           //Attempt to find the default one, if none found we use SCORE
+           sortBy = "dc.title_sort";
+           if(searchSortConfiguration != null){
+               for (DiscoverySortFieldConfiguration sortFieldConfiguration : searchSortConfiguration.getSortFields()) {
+                   if(sortFieldConfiguration.equals(searchSortConfiguration.getDefaultSort())){
+                       sortBy = SearchUtils.getSearchService().toSortFieldIndex(sortFieldConfiguration.getMetadataField(), sortFieldConfiguration.getType());
+                   }
+               }
+           }
+       }
+       String sortOrder = ObjectModelHelper.getRequest(objectModel).getParameter("order");
+       if(sortOrder == null || sortOrder.equalsIgnoreCase("ASC")) {
+           queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.asc);
+       } else {
+           queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.desc);
+       }
+
+       String groupBy = ObjectModelHelper.getRequest(objectModel).getParameter("group_by");
+
+       // Enable groupBy collapsing if designated
+       if (groupBy != null && !groupBy.equalsIgnoreCase("none")) {
+           /** Construct a Collapse Field Query */
+           queryArgs.addProperty("collapse.field", groupBy);
+           queryArgs.addProperty("collapse.threshold", "1");
+           queryArgs.addProperty("collapse.includeCollapsedDocs.fl", "handle");
+           queryArgs.addProperty("collapse.facet", "before");
+
+           //queryArgs.a  type:Article^2
+
+           // TODO: This is a hack to get Publications (Articles) to always be at the top of Groups.
+           // TODO: I think that can be more transparently done in the solr solrconfig.xml with DISMAX and boosting
+           /** sort in groups to get publications to top */
+           queryArgs.setSortField("dc.type", DiscoverQuery.SORT_ORDER.asc);
+
+       }
+
        queryArgs.setQuery("dc.relation.ispartof: \""+node.getFieldValue()+"\"");
 
        if (page > 1)
@@ -509,6 +485,15 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
        else
        {
            queryArgs.setStart(0);
+       }
+
+       if(discoveryConfiguration.getHitHighlightingConfiguration() != null)
+       {
+           java.util.List<DiscoveryHitHighlightFieldConfiguration> metadataFields = discoveryConfiguration.getHitHighlightingConfiguration().getMetadataFields();
+           for (DiscoveryHitHighlightFieldConfiguration fieldConfiguration : metadataFields)
+           {
+               queryArgs.addHitHighlightingField(new DiscoverHitHighlightingField(fieldConfiguration.getField(), fieldConfiguration.getMaxSize(), fieldConfiguration.getSnippets()));
+           }
        }
 
        queryArgs.setSpellCheck(discoveryConfiguration.isSpellCheckEnabled());
