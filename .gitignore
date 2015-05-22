@@ -6,6 +6,9 @@ target/
 .project
 .classpath
 
+## Ignore temp files created by jEdit
+*.*~
+
 ## Ignore project files created by IntelliJ IDEA
 *.iml
 *.ipr
