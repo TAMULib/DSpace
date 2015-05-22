@@ -950,8 +950,8 @@
                     <!-- Shibboleth login -->
                     <xsl:when test="contains(dri:xref/@target,'shibboleth-login')">
                         <div id="shibboleth-authentication-method" class="authentication-method">
-                            <h2>For A&amp;M Students, Faculty, and Staff:</h2>
-                            <p class="authentication-item"><a>
+                            <h3>For A&amp;M Students, Faculty, and Staff:</h2>
+                            <p class="authentication-item"><a class="btn btn-default">
                                 <xsl:attribute name="href"><xsl:value-of select="dri:xref/@target"/></xsl:attribute>
                                 Login with university NetID
                             </a></p>
@@ -961,12 +961,12 @@
                     <!-- Password login -->
                     <xsl:when test="contains(dri:xref/@target,'password-login')">
                         <div id="password-authentication-method" class="authentication-method">
-                            <h2>For those not affiliated with A&amp;M:</h2>
+                            <h3>For those not affiliated with A&amp;M:</h2>
                             <p class="authentication-item"><a>
                                 <xsl:attribute name="href"><xsl:value-of select="dri:xref/@target"/></xsl:attribute>
                                 Login with email address
                             </a></p>
-                            <p class="authentication-item"><a href="#">
+                            <p class="authentication-item"><a href="#" class="btn btn-default">
                                 <xsl:attribute name="href"><xsl:value-of select="//dri:xref/@target[contains(.,'register')]"/></xsl:attribute>
                                 Register new account
                             </a></p>

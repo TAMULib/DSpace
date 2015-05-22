@@ -65,23 +65,3 @@ div#password-authentication-method {
     clear: both;
     margin-left: 15px;
 }
-.authentication-item a {
-    padding: 5px;
-    background-color: #E2E2E2;
-    color: #333333 !important;
-    text-decoration: none !important;
-    border: 1px solid #999999;
-    width: 200px;
-    display: block;
-    text-align: center;
-    
-    /* CSS3 thingies */
-    background: -moz-linear-gradient(center top , #F9F9F9, #E2E2E2) repeat scroll 0 0 #F9F9F9;
-    background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#F9F9F9), to(#E2E2E2));
-    border-radius: 3px 3px 3px 3px;
-}
-.authentication-item a:hover {
-    text-decoration: none;
-    color: #000000 !important;
-    border: 1px solid #333333;
-}
