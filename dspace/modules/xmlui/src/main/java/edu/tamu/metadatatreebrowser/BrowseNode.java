@@ -393,6 +393,7 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
            return;
        }
        
+       String handle = null;
        try {
 	        Request request = ObjectModelHelper.getRequest(objectModel);
 		    String nodeString = getQuery();
@@ -400,6 +401,9 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 			MetadataTreeNode root = MetadataTreeNode.generateBrowseTree(context, scope);
 		
 			node = root.findById(Integer.valueOf(nodeString));
+			
+			DSpaceObject dso = HandleUtil.obtainHandle(objectModel);
+			handle = dso.getHandle();
        } catch (AuthorizeException e) {
     	   log.error(e.getMessage(), e);
        } catch (UIException e) {
@@ -442,7 +446,13 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
        sortBy = "dc.title_sort";
 
        queryArgs.setSortField(sortBy, DiscoverQuery.SORT_ORDER.asc);
-       queryArgs.setQuery("dc.relation.ispartof: \""+node.getFieldValue()+"\"");
+
+       String fieldLabel = ConfigurationManager.getProperty("xmlui.mdbrowser."+handle+".field");
+
+       if (fieldLabel == null || fieldLabel.length() == 0) {
+			fieldLabel = "dc.relation.ispartof";
+       }
+       queryArgs.setQuery(fieldLabel+": \""+node.getFieldValue()+"\"");
 
        if (page > 1)
        {
