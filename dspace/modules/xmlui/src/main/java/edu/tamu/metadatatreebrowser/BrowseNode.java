@@ -58,20 +58,8 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
     private static final Message T_head1_none =
             message("xmlui.Discovery.AbstractSearch.head1_none");
 
-	private static final Message T_title =
-            message("xmlui.ArtifactBrowser.SimpleSearch.title");
-
     private static final Message T_dspace_home =
             message("xmlui.general.dspace_home");
-
-    private static final Message T_trail =
-            message("xmlui.ArtifactBrowser.SimpleSearch.trail");
-
-    private static final Message T_search_scope =
-        message("xmlui.Discovery.SimpleSearch.search_scope");
-
-    private static final Message T_head =
-            message("xmlui.ArtifactBrowser.SimpleSearch.head");
 
     private static final Message T_no_results =
             message("xmlui.ArtifactBrowser.AbstractSearch.no_results");
@@ -79,39 +67,12 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
     private static final Message T_result_head_3 = message("xmlui.Discovery.AbstractSearch.head3");
     private static final Message T_result_head_2 = message("xmlui.Discovery.AbstractSearch.head2");
 
-//  private static final Message T_search_label =
-//	            message("xmlui.discovery.SimpleSearch.search_label");
-
-    private static final Message T_go = message("xmlui.general.go");
-    private static final Message T_filter_label = message("xmlui.Discovery.SimpleSearch.filter_head");
-    private static final Message T_filter_help = message("xmlui.Discovery.SimpleSearch.filter_help");
-    private static final Message T_filter_current_filters = message("xmlui.Discovery.AbstractSearch.filters.controls.current-filters.head");
-    private static final Message T_filter_new_filters = message("xmlui.Discovery.AbstractSearch.filters.controls.new-filters.head");
-    private static final Message T_filter_controls_apply = message("xmlui.Discovery.AbstractSearch.filters.controls.apply-filters");
-    private static final Message T_filter_controls_add = message("xmlui.Discovery.AbstractSearch.filters.controls.add-filter");
-    private static final Message T_filter_controls_remove = message("xmlui.Discovery.AbstractSearch.filters.controls.remove-filter");
-    private static final Message T_filters_show = message("xmlui.Discovery.AbstractSearch.filters.display");
-    private static final Message T_filter_contain = message("xmlui.Discovery.SimpleSearch.filter.contains");
-    private static final Message T_filter_equals = message("xmlui.Discovery.SimpleSearch.filter.equals");
-    private static final Message T_filter_notcontain = message("xmlui.Discovery.SimpleSearch.filter.notcontains");
-    private static final Message T_filter_notequals = message("xmlui.Discovery.SimpleSearch.filter.notequals");
-    private static final Message T_filter_authority = message("xmlui.Discovery.SimpleSearch.filter.authority");
-    private static final Message T_filter_notauthority = message("xmlui.Discovery.SimpleSearch.filter.notauthority");
-    private static final Message T_did_you_mean = message("xmlui.Discovery.SimpleSearch.did_you_mean");
-
     private SearchService searchService = null;
     
-    /**
-     * Cached validity object
-     */
-    private SourceValidity validity;
-
-
     public BrowseNode() throws UIException {
         DSpace dspace = new DSpace();
         searchService = dspace.getServiceManager().getServiceByName(SearchService.class.getName(),SearchService.class);
     }
-    
   
     /**
      * Add Page metadata.
@@ -138,35 +99,30 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 
         DSpaceObject currentScope = getScope();
 
-    	if (node == null)
+    	if (node == null) {
 			return;
-		
+    	}
+    	
 		String baseURL = contextPath + "/handle/" + currentScope.getHandle()+ "/mdbrowse";
 		
 		// Display the Parent bread crumb
 		Division div = body.addDivision("metadata-tree-browser-node","primary");
-		
 		
 		// Nested parent list
 		Division parentDiv = div.addDivision("parent-div");
 		org.dspace.app.xmlui.wing.element.List parentList = parentDiv.addList("parent-list");
 		parentList.addItemXref(contextPath + "/handle/" + currentScope.getHandle(), currentScope instanceof org.dspace.content.Collection ? "Collection Home" : "Community Home");
 
-		if (! (node.getParent() == null || node.getParent().isRoot())) {
+		if (!(node.getParent() == null || node.getParent().isRoot())) {
 			parentList = parentList.addList("parent-sub-list");
-
-
 			for(MetadataTreeNode parent : node.getParents()) {
-
 				if (!parent.isRoot()) {
 					String nodeURL = baseURL + "?node=" + parent.getId();
-
 					parentList.addItemXref(nodeURL, parent.getName());
 					parentList = parentList.addList("parent-sub-list");
 				}
 			}
 		}
-		
 		
 		Division contentDiv = div.addDivision("node-content-div","primary");
 		contentDiv.setHead(node.getName());
@@ -176,7 +132,6 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 			Division childDiv = contentDiv.addDivision("child-div");
 			org.dspace.app.xmlui.wing.element.List childList = childDiv.addList("child-list");
 			for(MetadataTreeNode child : node.getChildren()) {
-				
 				Bitstream thumbnail = Bitstream.find(context, child.getThumbnailId());
 				String thumbnailURL = contextPath + "/bitstream/id/"+thumbnail.getID()+"/?sequence="+thumbnail.getSequenceID();
 				String nodeURL = baseURL + "?node=" + child.getId();
@@ -196,9 +151,6 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 	            throw new UIException(e.getMessage(), e);
 	        }
 		}
-		
-		
-		
     }
 
     /**
@@ -218,12 +170,10 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
                DSpaceObject scope = getScope();
                this.performSearch(scope);
            }
-       }
-       catch (RuntimeException e) {
+       } catch (RuntimeException e) {
            log.error(e.getMessage(), e);
            queryResults = null;
-       }
-       catch (Exception e) {
+       } catch (Exception e) {
            log.error(e.getMessage(), e);
            queryResults = null;
        }	   
@@ -236,17 +186,15 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
        long totalResults;
        float searchTime;
        
-       if(queryResults != null && 0 < queryResults.getTotalSearchResults())
-       {
+       if(queryResults != null && 0 < queryResults.getTotalSearchResults()) {
            displayedResults = queryResults.getDspaceObjects().size();
            totalResults = queryResults.getTotalSearchResults();
            searchTime = ((float) queryResults.getSearchTime() / 1000) % 60;
 
-           if (searchScope instanceof org.dspace.content.Community)
-           {
+           if (searchScope instanceof org.dspace.content.Community) {
         	   org.dspace.content.Community community = (org.dspace.content.Community) searchScope;
                String communityName = community.getMetadata("name");
-           } else if (searchScope instanceof org.dspace.content.Collection){
+           } else if (searchScope instanceof org.dspace.content.Collection) {
         	   org.dspace.content.Collection collection = (org.dspace.content.Collection) searchScope;
                String collectionName = collection.getMetadata("name");
            } else {
@@ -254,18 +202,12 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
            }
        }
 
-       if (queryResults != null && 0 < queryResults.getDspaceObjects().size())
-       {
-
+       if (queryResults != null && 0 < queryResults.getDspaceObjects().size()) {
            // Pagination variables.
            int itemsTotal = (int) queryResults.getTotalSearchResults();
            int firstItemIndex = (int) this.queryResults.getStart() + 1;
            int lastItemIndex = (int) this.queryResults.getStart() + queryResults.getDspaceObjects().size();
-           
-           
 
-           //if (itemsTotal < lastItemIndex)
-           //    lastItemIndex = itemsTotal;
            int currentPage = this.queryResults.getStart() / this.queryResults.getMaxResults() + 1;
            int pagesTotal = (int) ((this.queryResults.getTotalSearchResults() - 1) / this.queryResults.getMaxResults()) + 1;
            Map<String, String> parameters = new HashMap<String, String>();
@@ -285,98 +227,78 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
 
            java.util.List<DSpaceObject> commCollList = new ArrayList<DSpaceObject>();
            java.util.List<org.dspace.content.Item> itemList = new ArrayList<org.dspace.content.Item>();
-           for (DSpaceObject resultDso : queryResults.getDspaceObjects())
-           {
-               if(resultDso.getType() == Constants.COMMUNITY || resultDso.getType() == Constants.COLLECTION)
-               {
+           for (DSpaceObject resultDso : queryResults.getDspaceObjects()) {
+               if(resultDso.getType() == Constants.COMMUNITY || resultDso.getType() == Constants.COLLECTION) {
                    commCollList.add(resultDso);
-               }else
-               if(resultDso.getType() == Constants.ITEM)
-               {
+               } else if (resultDso.getType() == Constants.ITEM) {
                    itemList.add((org.dspace.content.Item) resultDso);
                }
            }
 
-           if(CollectionUtils.isNotEmpty(commCollList))
-           {
+           if(CollectionUtils.isNotEmpty(commCollList)) {
                org.dspace.app.xmlui.wing.element.List commCollWingList = dspaceObjectsList.addList("comm-coll-result-list");
                commCollWingList.setHead(T_result_head_2);
-               for (DSpaceObject dso : commCollList)
-               {
+               for (DSpaceObject dso : commCollList) {
                    DiscoverResult.DSpaceObjectHighlightResult highlightedResults = queryResults.getHighlightedResults(dso);
-                   if(dso.getType() == Constants.COMMUNITY)
-                   {
+                   if(dso.getType() == Constants.COMMUNITY) {
                        //Render our community !
                        org.dspace.app.xmlui.wing.element.List communityMetadata = commCollWingList.addList(dso.getHandle() + ":community");
-
                        renderCommunity((Community) dso, highlightedResults, communityMetadata);
-                   }else
-                   if(dso.getType() == Constants.COLLECTION)
-                   {
+                   } else if (dso.getType() == Constants.COLLECTION) {
                        //Render our collection !
                        org.dspace.app.xmlui.wing.element.List collectionMetadata = commCollWingList.addList(dso.getHandle() + ":collection");
-
                        renderCollection((org.dspace.content.Collection) dso, highlightedResults, collectionMetadata);
                    }
                }
            }
 
-           if(CollectionUtils.isNotEmpty(itemList))
-           {
+           if(CollectionUtils.isNotEmpty(itemList)) {
                org.dspace.app.xmlui.wing.element.List itemWingList = dspaceObjectsList.addList("item-result-list");
-               if(CollectionUtils.isNotEmpty(commCollList))
-               {
+               if(CollectionUtils.isNotEmpty(commCollList)) {
                    itemWingList.setHead(T_result_head_3);
-
                }
-               for (org.dspace.content.Item resultDso : itemList)
-               {
+
+               for (org.dspace.content.Item resultDso : itemList) {
                    DiscoverResult.DSpaceObjectHighlightResult highlightedResults = queryResults.getHighlightedResults(resultDso);
                    renderItem(itemWingList, resultDso, highlightedResults);
                }
            }
-
        } else {
            results.addPara(T_no_results);
        }
    }
 
-
    @Override
    protected String getBasicUrl() throws SQLException {
        Request request = ObjectModelHelper.getRequest(objectModel);
        DSpaceObject dso = HandleUtil.obtainHandle(objectModel);
-
        return request.getContextPath() + (dso == null ? "" : "/handle/" + dso.getHandle()) + "/discover";
    }
-   
 
-    /**
-     * Get the search query from the URL parameter, if none is found the empty
-     * string is returned.
-     */
-    protected String getQuery() throws UIException {
+   /**
+    * Get the browse node from the URL parameter, if none is found the empty
+    * string is returned.
+    */
+   protected String getQuery() throws UIException {
         Request request = ObjectModelHelper.getRequest(objectModel);
         String node = decodeFromURL(request.getParameter("node"));
-        if (node == null)
-        {
+        if (node == null) {
             return "";
         }
         return node.trim();
     }
     
-    /**
+   /**
     * Generate a url to the simple search url.
     */
    protected String generateURL(Map<String, String> parameters) throws UIException {
-   	Request request = ObjectModelHelper.getRequest(objectModel);
+	   Request request = ObjectModelHelper.getRequest(objectModel);
+	   parameters.put("node",request.getParameter("node"));
 
-   	parameters.put("node",request.getParameter("node"));
-
-   	if (parameters.get("page") == null)
-   		parameters.put("page", request.getParameter("page"));
-
-   		return AbstractDSpaceTransformer.generateURL("mdbrowse", parameters);
+	   if (parameters.get("page") == null) {
+		   parameters.put("page", request.getParameter("page"));
+	   }
+	   return AbstractDSpaceTransformer.generateURL("mdbrowse", parameters);
    }
    
    /**
@@ -387,9 +309,7 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
     * @param scope the dspace object parent
     */
    public void performSearch(DSpaceObject scope) throws UIException, SearchServiceException {
-
-       if (queryResults != null)
-       {
+       if (queryResults != null) {
            return;
        }
        
@@ -412,18 +332,13 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
            log.error(e.getMessage(), e);
        }
 
-       
-
        String query = getQuery();
-
        int page = getParameterPage();
 
        java.util.List<String> filterQueries = new ArrayList<String>();
-
        String[] fqs = getFilterQueries();
 
-       if (fqs != null)
-       {
+       if (fqs != null) {
            filterQueries.addAll(Arrays.asList(fqs));
        }
 
@@ -437,7 +352,6 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
        if (filterQueries.size() > 0) {
            queryArgs.addFilterQueries(filterQueries.toArray(new String[filterQueries.size()]));
        }
-
 
        queryArgs.setMaxResults(getParameterRpp());
 
@@ -454,16 +368,11 @@ public class BrowseNode extends AbstractSearch implements CacheableProcessingCom
        }
        queryArgs.setQuery(fieldLabel+": \""+node.getFieldValue()+"\"");
 
-       if (page > 1)
-       {
+       if (page > 1) {
            queryArgs.setStart((page - 1) * queryArgs.getMaxResults());
-       }
-       else
-       {
+       } else {
            queryArgs.setStart(0);
        }
-
        this.queryResults = SearchUtils.getSearchService().search(context, scope, queryArgs);
    }
-
 }

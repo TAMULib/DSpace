@@ -168,8 +168,6 @@ public class MetadataTreeNode {
 	 * @return A root node for the browse tree, or null if not configured.
 	 */
 	public static MetadataTreeNode generateBrowseTree(Context context, DSpaceObject dso) throws SQLException, AuthorizeException {
-		//log.info("generateBrowseTree()");
-		
 		// We only apply to communities or collections. 
 		if ( !(dso instanceof Collection || dso instanceof Community))
 			return null;
@@ -180,8 +178,6 @@ public class MetadataTreeNode {
 		String separator = ConfigurationManager.getProperty("xmlui.mdbrowser."+handle+".separator");
 		boolean reverse = ConfigurationManager.getBooleanProperty("xmlui.mdbrowser."+handle+".reverse",false);
 	
-		//log.info("handle="+handle+", fieldLabel="+fieldLabel+", separator="+separator+", reverse="+reverse);
-		
 		if (fieldLabel == null || fieldLabel.length() == 0)
 			return null;
 		
@@ -199,8 +195,6 @@ public class MetadataTreeNode {
 		MetadataField field = MetadataField.findByElement(context, schema.getSchemaID(), elementPart, qualifierPart);
 		int fieldId = field.getFieldID();
 		int dsoId = dso.getID();
-		
-		//log.info("fieldId="+fieldId+", dsoId="+dsoId);
 		
 		// Step 2: Query for the complete list of metadata elements, and process each one.
 		MetadataTreeNode root = new MetadataTreeNode();
@@ -221,7 +215,6 @@ public class MetadataTreeNode {
 			+ "ORDER BY mv.text_value ";
 		
 		if (dso instanceof Community) {
-			
 			// The same query as above but searches through a community and all lower collections as well.
 			query = "SELECT mv.text_value, max(b2b.bitstream_id) AS bitstream_id"
 				+ "FROM metadatavalue mv, item i, collection2item c2i, community2collection c2c, item2bundle i2b, bundle b,metadatavalue tmv, bundle2bitstream b2b "
@@ -248,27 +241,19 @@ public class MetadataTreeNode {
 			if (reverse)
 				ArrayUtils.reverse(nameParts);
 			
-			//log.info("rowItr.hasNext(): value="+value);
-			//log.info("rowItr.hasNext(): bitstream_id="+bitstream_id);
-			
 			// Iterate over the parts to establish all the parent nodes down to this leaf node.
 			MetadataTreeNode parent = root;
 			for (String namePart : nameParts) {
 				MetadataTreeNode child = parent.getChild(namePart);
 						
 				if (child == null) {
-					//log.info("New Child node: name="+namePart+", id="+currentID);
 					child = new MetadataTreeNode(parent,namePart, bitstream_id, currentID++);
-				} else {
-					//log.info("Found Child node: name="+child.getName());
 				}
-					
 				parent = child;
 			}
 			
 			// Set the leaf node to the exact path
 			parent.setFieldValue(value);
-			//log.info("Set fieldValue="+value);
 		}
 		
 		return root;
