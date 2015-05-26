@@ -16,48 +16,36 @@
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
     
-    <!--borrowed from DIM-Handler.xsl
-        *********************************************
-        OpenURL COinS Rendering Template
-        *********************************************
-        
-        COinS Example:
-        
-        <span class="Z3988" 
-        title="ctx_ver=Z39.88-2004&amp;
-        rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;
-        rfr_id=info%3Asid%2Focoins.info%3Agenerator&amp;
-        rft.title=Making+WordPress+Content+Available+to+Zotero&amp;
-        rft.aulast=Kraus&amp;
-        rft.aufirst=Kari&amp;
-        rft.subject=News&amp;
-        rft.source=Zotero%3A+The+Next-Generation+Research+Tool&amp;
-        rft.date=2007-02-08&amp;
-        rft.type=blogPost&amp;
-        rft.format=text&amp;
-        rft.identifier=http://www.zotero.org/blog/making-wordpress-content-available-to-zotero/&amp;
-        rft.language=English"></span>
-        
-        This Code does not parse authors names, instead relying on dc.contributor to populate the
-        coins
-    -->
-    
-    <xsl:template name="renderCOinS">
-        <xsl:text>ctx_ver=Z39.88-2004&amp;rft_val_fmt=info%3Aofi%2Ffmt%3Akev%3Amtx%3Adc&amp;</xsl:text>
-        <xsl:for-each select=".//dim:field[@element = 'identifier']">
-            <xsl:text>rft_id=</xsl:text>
-            <xsl:value-of select="encoder:encode(string(.))"/>
-            <xsl:text>&amp;</xsl:text>
-        </xsl:for-each>
-        <xsl:text>rfr_id=info%3Asid%2Fdatadryad.org%3Arepo&amp;</xsl:text>
-        <xsl:for-each select=".//dim:field[@element != 'description' and @mdschema !='dc' and @qualifier != 'provenance']">
-            <xsl:value-of select="concat('rft.', @element,'=',encoder:encode(string(.))) "/>
-            <xsl:if test="position()!=last()">
-                <xsl:text>&amp;</xsl:text>
-            </xsl:if>
-        </xsl:for-each>
+  <!-- Item Detailed View: The block of templates used to render the complete DIM contents of a DRI object -->
+    <xsl:template name="itemDetailView-DIM">
+        <p id="visitEsl">
+            Visit the <a href="http://esl.tamu.edu/">Energy Systems Laboratory Homepage</a>.
+        </p>
+        <table class="ds-includeSet-table detailtable table table-striped table-hover">
+            <xsl:apply-templates mode="itemDetailView-DIM"/>
+        </table>
     </xsl:template>
     
-    
-    
+    <xsl:template name="itemSummaryView-DIM">
+        <p id="visitEsl">
+            <span class="bold">Visit the <a href="http://esl.tamu.edu/">Energy Systems Laboratory Homepage</a>.</span>
+        </p>
+        <!-- Generate the info about the item from the metadata section -->
+        <xsl:apply-templates select="./mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim"
+        mode="itemSummaryView-DIM"/>
+
+        <xsl:copy-of select="$SFXLink" />
+
+        <!-- Generate the Creative Commons license information from the file section (DSpace deposit license hidden by default)-->
+        <xsl:if test="./mets:fileSec/mets:fileGrp[@USE='CC-LICENSE' or @USE='LICENSE']">
+            <div class="license-info table">
+                <p>
+                    <i18n:text>xmlui.dri2xhtml.METS-1.0.license-text</i18n:text>
+                </p>
+                <ul class="list-unstyled">
+                    <xsl:apply-templates select="./mets:fileSec/mets:fileGrp[@USE='CC-LICENSE' or @USE='LICENSE']" mode="simple"/>
+                </ul>
+            </div>
+        </xsl:if>    
+    </xsl:template>    
 </xsl:stylesheet>
