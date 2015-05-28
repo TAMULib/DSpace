@@ -125,15 +125,15 @@
                 <div class="col-sm-8">
                     <xsl:call-template name="itemSummaryView-DIM-abstract"/>
                     <xsl:call-template name="itemSummaryView-DIM-URI"/>
-                    <!-- TAMU CUstomization -->
+                    <!-- TAMU Customization -->
                     <xsl:call-template name="itemSummaryView-DIM-description" />
-                    <!-- TAMU CUstomization -->
+                    <!-- TAMU Customization -->
                     <xsl:call-template name="itemSummaryView-DIM-subject" />
-                    <!-- TAMU CUstomization -->
+                    <!-- TAMU Customization -->
                     <xsl:call-template name="itemSummaryView-DIM-department" />
                     <xsl:call-template name="itemSummaryView-collections"/>
-                    <!-- TAMU CUstomization -->
-                    <xsl:call-template name="itemSummaryView-DWC"/>
+                    <!-- TAMU Customization -->
+                    <xsl:apply-templates select="dim:field[@mdschema='dwc']" mode="itemSummaryView-DWC"/>
                 </div>
             </div>
         </div>
@@ -785,97 +785,14 @@
         <i18n:text i18n:key="{$mimetype-key}"><xsl:value-of select="$mimetype"/></i18n:text>
     </xsl:template>
 
-    <!-- TAMU Customization - Process individual Darwin Core fields -->
-    <xsl:template name="processDWCField">
-        <xsl:param name="field" />
-        <xsl:param name="value" />
-        <div class="simple-item-view-date word-break item-page-field-wrapper table">
-            <h5><xsl:value-of select="$field" /></h5>
-            <xsl:for-each select="$value">
-                <xsl:copy-of select="node()"/>
-                <xsl:if test="position() != last()"> <br /> </xsl:if>
-            </xsl:for-each>
+    <!-- TAMU Customization - Process Darwin Core fields -->
+    <xsl:template match="dim:field[@mdschema='dwc']" mode="itemSummaryView-DWC">
+        <xsl:variable name="current"><xsl:value-of select="@element" /></xsl:variable>
+        <div class="simple-item-view-dwc word-break item-page-field-wrapper table">
+            <xsl:if test="count(preceding-sibling::dim:field[@element=$current])=0">
+                <h5><i18n:text>xmlui.dwc.<xsl:value-of select="$current" /></i18n:text></h5>
+            </xsl:if>
+            <xsl:copy-of select="node()" />
         </div>
-    </xsl:template>
-
-
-    <!-- TAMU Customization - Handle the Darwin Core metadata -->
-    <xsl:template name="itemSummaryView-DWC">
-        <xsl:if test="dim:field[@element='basisOfRecord'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Basis of Record'" />
-                <xsl:with-param name="value" select="dim:field[@element='basisOfRecord'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='catalogNumber'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Catalog Number'" />
-                <xsl:with-param name="value" select="dim:field[@element='catalogNumber'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='collectionCode'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Collection Code'" />
-                <xsl:with-param name="value" select="dim:field[@element='collectionCode'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='collectionID'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Collection ID'" />
-                <xsl:with-param name="value" select="dim:field[@element='collectionID'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='institutionCode'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Institution Code'" />
-                <xsl:with-param name="value" select="dim:field[@element='institutionCode'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='institutionID'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Institution ID'" />
-                <xsl:with-param name="value" select="dim:field[@element='institutionID'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='recordedBy'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Recorded By'" />
-                <xsl:with-param name="value" select="dim:field[@element='recordedBy'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='scientificName'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Scientific Name'" />
-                <xsl:with-param name="value" select="dim:field[@element='scientificName'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='scientificNameID'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Scientific Name ID'" />
-                <xsl:with-param name="value" select="dim:field[@element='scientificNameID'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='dataGeneralizations'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Data Generalizations'" />
-                <xsl:with-param name="value" select="dim:field[@element='dataGeneralizations'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='family'][@mdschema='dwc']">
-            <xsl:call-template name="processDWCField">
-                <xsl:with-param name="field" select="'Family'" />
-                <xsl:with-param name="value" select="dim:field[@element='family'][@mdschema='dwc']" />
-            </xsl:call-template>
-        </xsl:if>
     </xsl:template>
 </xsl:stylesheet>
