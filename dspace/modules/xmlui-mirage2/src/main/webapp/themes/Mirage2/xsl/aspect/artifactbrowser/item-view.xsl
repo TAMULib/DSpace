@@ -125,9 +125,15 @@
                 <div class="col-sm-8">
                     <xsl:call-template name="itemSummaryView-DIM-abstract"/>
                     <xsl:call-template name="itemSummaryView-DIM-URI"/>
+                    <!-- TAMU CUstomization -->
                     <xsl:call-template name="itemSummaryView-DIM-description" />
+                    <!-- TAMU CUstomization -->
                     <xsl:call-template name="itemSummaryView-DIM-subject" />
+                    <!-- TAMU CUstomization -->
+                    <xsl:call-template name="itemSummaryView-DIM-department" />
                     <xsl:call-template name="itemSummaryView-collections"/>
+                    <!-- TAMU CUstomization -->
+                    <xsl:call-template name="itemSummaryView-DWC"/>
                 </div>
             </div>
         </div>
@@ -286,23 +292,40 @@
         </xsl:if>
     </xsl:template>
 
-    <xsl:template name="itemSummaryView-DIM-description">
-        <xsl:if test="dim:field[@element='description' and not(@qualifier)]">
-            <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-description</i18n:text></h5>
-            <xsl:for-each select="dim:field[@element='description' and not(@qualifier)]">
-                <xsl:copy-of select="node()"/>
-                <xsl:if test="count(following-sibling::dim:field[@element='description']) != 0"> <br class="simpleItemViewValueBreak"/> </xsl:if>
+    <!-- TAMU CUstomization -->
+    <xsl:template name="itemSummaryView-DIM-department">
+        <xsl:if test="dim:field[@element='department']">
+            <h5>Department</h5>
+            <xsl:for-each select="dim:field[@element='department']">
+              <a href="/browse?type=department&amp;value={node()}"><xsl:value-of select="node()"/></a>
+              <xsl:if test="count(following-sibling::dim:field[@element='department']) != 0"> <br /> </xsl:if>
             </xsl:for-each>
         </xsl:if>
     </xsl:template>
 
+    <!-- TAMU Customization -->
+    <xsl:template name="itemSummaryView-DIM-description">
+        <xsl:if test="dim:field[@element='description' and not(@qualifier)]">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-description</i18n:text></h5>
+                <xsl:for-each select="dim:field[@element='description' and not(@qualifier)]">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='description']) != 0"> <br class="simpleItemViewValueBreak"/> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+    </xsl:template>
+
+    <!-- TAMU Customization -->
     <xsl:template name="itemSummaryView-DIM-subject">
         <xsl:if test="dim:field[@element='subject']">
-            <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-subject</i18n:text></h5>
-            <xsl:for-each select="dim:field[@element='subject']">
-                <a href="/browse?type=subject&amp;value={node()}"><xsl:value-of select="node()"/></a>
-                <xsl:if test="count(following-sibling::dim:field[@element='subject']) != 0"> <br /> </xsl:if>
-            </xsl:for-each>
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-subject</i18n:text></h5>
+                <xsl:for-each select="dim:field[@element='subject']">
+                    <a href="/browse?type=subject&amp;value={node()}"><xsl:value-of select="node()"/></a>
+                    <xsl:if test="count(following-sibling::dim:field[@element='subject']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
         </xsl:if>
     </xsl:template>
 
@@ -531,7 +554,7 @@
                 <!-- Otherwise, iterate over and display all of them -->
                 <xsl:otherwise>
                     <xsl:apply-templates select="mets:file">
-                     	<!--Do not sort any more bitstream order can be changed-->
+                        <!--Do not sort any more bitstream order can be changed-->
                         <xsl:with-param name="context" select="$context"/>
                     </xsl:apply-templates>
                 </xsl:otherwise>
@@ -763,4 +786,116 @@
     </xsl:template>
 
 
+    <!-- TAMU Customization - Handle the Darwin Core metadata -->
+    <xsl:template name="itemSummaryView-DWC">
+        <xsl:if test="dim:field[@element='basisOfRecord'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Basis of Record</h5>
+                <xsl:for-each select="dim:field[@element='basisOfRecord'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='basisOfRecord'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='catalogNumber'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Catalog Number</h5>
+                <xsl:for-each select="dim:field[@element='catalogNumber'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='catalogNumber'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='collectionCode'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Collection Code</h5>
+                <xsl:for-each select="dim:field[@element='collectionCode'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='collectionCode'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='collectionID'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Collection ID</h5>
+                <xsl:for-each select="dim:field[@element='collectionID'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='collectionID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='institutionCode'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Institution Code</h5>
+                <xsl:for-each select="dim:field[@element='institutionCode'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='institutionCode'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='institutionID'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Institution ID</h5>
+                <xsl:for-each select="dim:field[@element='institutionID'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='institutionID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='recordedBy'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Recorded By</h5>
+                <xsl:for-each select="dim:field[@element='recordedBy'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='recordedBy'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='scientificName'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Scientific Name</h5>
+                <xsl:for-each select="dim:field[@element='scientificName'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='scientificName'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='scientificNameID'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Scientific Name ID</h5>
+                <xsl:for-each select="dim:field[@element='scientificNameID'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='scientificNameID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='dataGeneralizations'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Data Generalizations</h5>
+                <xsl:for-each select="dim:field[@element='dataGeneralizations'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='dataGeneralizations'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+        
+        <xsl:if test="dim:field[@element='family'][@mdschema='dwc']">
+            <div class="simple-item-view-date word-break item-page-field-wrapper table">
+                <h5>Family</h5>
+                <xsl:for-each select="dim:field[@element='family'][@mdschema='dwc']">
+                    <xsl:copy-of select="node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='family'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+    </xsl:template>
 </xsl:stylesheet>
