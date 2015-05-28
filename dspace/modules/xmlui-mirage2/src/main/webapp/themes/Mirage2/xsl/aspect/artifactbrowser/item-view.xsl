@@ -785,117 +785,106 @@
         <i18n:text i18n:key="{$mimetype-key}"><xsl:value-of select="$mimetype"/></i18n:text>
     </xsl:template>
 
+    <!-- TAMU Customization - Process individual Darwin Core fields -->
+    <xsl:template name="processDWCField">
+        <xsl:param name="field" />
+        <xsl:param name="value" />
+        <div class="simple-item-view-date word-break item-page-field-wrapper table">
+            <h5><xsl:value-of select="$field" /></h5>
+            <xsl:value-of select="$value" />
+        </div>
+    </xsl:template>
+
+    <xsl:template name="processMultiDWCField">
+        <xsl:param name="field" />
+        <xsl:param name="value" />
+        <div class="simple-item-view-date word-break item-page-field-wrapper table">
+            <h5><xsl:value-of select="$field" /></h5>
+            <xsl:for-each select="$value">
+                <xsl:copy-of select="node()"/>
+                <xsl:if test="count(following-sibling::node()) != 0"> <br /> </xsl:if>
+            </xsl:for-each>
+        </div>
+    </xsl:template>
+
 
     <!-- TAMU Customization - Handle the Darwin Core metadata -->
     <xsl:template name="itemSummaryView-DWC">
         <xsl:if test="dim:field[@element='basisOfRecord'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Basis of Record</h5>
-                <xsl:for-each select="dim:field[@element='basisOfRecord'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='basisOfRecord'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Basis of Record'" />
+                <xsl:with-param name="value" select="dim:field[@element='basisOfRecord'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='catalogNumber'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Catalog Number</h5>
-                <xsl:for-each select="dim:field[@element='catalogNumber'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='catalogNumber'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processDWCField">
+                <xsl:with-param name="field" select="'Catalog Number'" />
+                <xsl:with-param name="value" select="dim:field[@element='catalogNumber'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='collectionCode'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Collection Code</h5>
-                <xsl:for-each select="dim:field[@element='collectionCode'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='collectionCode'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processDWCField">
+                <xsl:with-param name="field" select="'Collection Code'" />
+                <xsl:with-param name="value" select="dim:field[@element='collectionCode'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='collectionID'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Collection ID</h5>
-                <xsl:for-each select="dim:field[@element='collectionID'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='collectionID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Collection ID'" />
+                <xsl:with-param name="value" select="dim:field[@element='collectionID'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='institutionCode'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Institution Code</h5>
-                <xsl:for-each select="dim:field[@element='institutionCode'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='institutionCode'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Institution Code'" />
+                <xsl:with-param name="value" select="dim:field[@element='institutionCode'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='institutionID'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Institution ID</h5>
-                <xsl:for-each select="dim:field[@element='institutionID'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='institutionID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Institution ID'" />
+                <xsl:with-param name="value" select="dim:field[@element='institutionID'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='recordedBy'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Recorded By</h5>
-                <xsl:for-each select="dim:field[@element='recordedBy'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='recordedBy'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Recorded By'" />
+                <xsl:with-param name="value" select="dim:field[@element='recordedBy'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='scientificName'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Scientific Name</h5>
-                <xsl:for-each select="dim:field[@element='scientificName'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='scientificName'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Scientific Name'" />
+                <xsl:with-param name="value" select="dim:field[@element='scientificName'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='scientificNameID'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Scientific Name ID</h5>
-                <xsl:for-each select="dim:field[@element='scientificNameID'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='scientificNameID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Scientific Name ID'" />
+                <xsl:with-param name="value" select="dim:field[@element='scientificNameID'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='dataGeneralizations'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Data Generalizations</h5>
-                <xsl:for-each select="dim:field[@element='dataGeneralizations'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='dataGeneralizations'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Data Generalizations'" />
+                <xsl:with-param name="value" select="dim:field[@element='dataGeneralizations'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
         
         <xsl:if test="dim:field[@element='family'][@mdschema='dwc']">
-            <div class="simple-item-view-date word-break item-page-field-wrapper table">
-                <h5>Family</h5>
-                <xsl:for-each select="dim:field[@element='family'][@mdschema='dwc']">
-                    <xsl:copy-of select="node()"/>
-                    <xsl:if test="count(following-sibling::dim:field[@element='family'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                </xsl:for-each>
-            </div>
+            <xsl:call-template name="processMultiDWCField">
+                <xsl:with-param name="field" select="'Family'" />
+                <xsl:with-param name="value" select="dim:field[@element='family'][@mdschema='dwc']" />
+            </xsl:call-template>
         </xsl:if>
     </xsl:template>
 </xsl:stylesheet>
