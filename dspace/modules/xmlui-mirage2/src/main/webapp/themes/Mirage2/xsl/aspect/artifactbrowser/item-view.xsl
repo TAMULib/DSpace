@@ -322,7 +322,7 @@
             <div class="simple-item-view-date word-break item-page-field-wrapper table">
                 <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-subject</i18n:text></h5>
                 <xsl:for-each select="dim:field[@element='subject']">
-                    <a href="/browse?type=subject&amp;value={node()}"><xsl:value-of select="node()"/></a>
+                    <a href="{$context-path}/browse?type=subject&amp;value={node()}"><xsl:value-of select="node()"/></a>
                     <xsl:if test="count(following-sibling::dim:field[@element='subject']) != 0"> <br /> </xsl:if>
                 </xsl:for-each>
             </div>
