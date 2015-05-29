@@ -267,7 +267,8 @@
             <xsl:if test="@authority">
                 <xsl:attribute name="class"><xsl:text>ds-dc_contributor_author-authority</xsl:text></xsl:attribute>
             </xsl:if>
-            <xsl:copy-of select="node()"/>
+            <!--TAMU Customization - linkable authors -->
+            <a href="{$context-path}/browse?type=author&amp;value={node()}"><xsl:copy-of select="node()"/></a>
         </div>
     </xsl:template>
 
