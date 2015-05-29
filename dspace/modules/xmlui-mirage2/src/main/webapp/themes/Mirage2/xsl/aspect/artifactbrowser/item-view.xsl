@@ -133,7 +133,7 @@
                     <xsl:call-template name="itemSummaryView-DIM-department" />
                     <xsl:call-template name="itemSummaryView-collections"/>
                     <!-- TAMU Customization -->
-                    <xsl:apply-templates select="dim:field[@mdschema='dwc']" mode="itemSummaryView-DWC"/>
+                    <xsl:call-template name="itemSummaryView-DIM-dwc"/>
                 </div>
             </div>
         </div>
@@ -786,13 +786,19 @@
     </xsl:template>
 
     <!-- TAMU Customization - Process Darwin Core fields -->
-    <xsl:template match="dim:field[@mdschema='dwc']" mode="itemSummaryView-DWC">
-        <xsl:variable name="current"><xsl:value-of select="@element" /></xsl:variable>
+    <xsl:template name="itemSummaryView-DIM-dwc">
         <div class="simple-item-view-dwc word-break item-page-field-wrapper table">
+            <xsl:apply-templates select="dim:field[@mdschema='dwc']" mode="itemSummaryView-DIM-dwc"/>
+        </div>
+    </xsl:template>
+
+    <!-- TAMU Customization - Process Darwin Core fields -->
+    <xsl:template match="dim:field[@mdschema='dwc']" mode="itemSummaryView-DIM-dwc">
+        <xsl:variable name="current"><xsl:value-of select="@element" /></xsl:variable>
             <xsl:if test="count(preceding-sibling::dim:field[@element=$current])=0">
                 <h5><i18n:text>xmlui.dwc.<xsl:value-of select="$current" /></i18n:text></h5>
             </xsl:if>
             <xsl:copy-of select="node()" />
-        </div>
+            <xsl:if test="count(following-sibling::dim:field[@element=$current])>0">,&#160;</xsl:if>
     </xsl:template>
 </xsl:stylesheet>
