@@ -2517,4 +2517,5 @@
     <message key="xmlui.dwc.scientificNameID">Scientific Name ID</message>
     <message key="xmlui.dwc.dataGeneralizations">Data Generalizations</message>
     <message key="xmlui.dwc.family">Family</message>
+    <message key="xmlui.dwc.contributor">Contributer</message>
 </catalogue>
