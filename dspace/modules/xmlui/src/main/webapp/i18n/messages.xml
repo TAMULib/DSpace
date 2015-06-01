@@ -278,6 +278,7 @@
 	<message key="xmlui.ArtifactBrowser.Navigation.browse_author">Authors</message>
 	<message key="xmlui.ArtifactBrowser.Navigation.browse_subject">Subjects</message>
 	<message key="xmlui.ArtifactBrowser.Navigation.browse_dateissued">By Issue Date</message>
+	<message key="xmlui.ArtifactBrowser.Navigation.browse_department">Department</message>
 	<message key="xmlui.ArtifactBrowser.Navigation.browse_dateaccessioned">By Submit Date</message>
 	<message key="xmlui.ArtifactBrowser.Navigation.head_this_collection">This Collection</message>
 	<message key="xmlui.ArtifactBrowser.Navigation.head_this_community">This Community</message>
@@ -2503,4 +2504,18 @@
     <message key="xmlui.mirage2.choice-authority-control.loading">Loading...</message>
 
     <message key="xmlui.mirage2.item-list.thumbnail">Thumbnail</message>
+
+	<!-- Darwin Core Fields -->
+    <message key="xmlui.dwc.basisOfRecord">Basis Of Record</message>
+    <message key="xmlui.dwc.catalogNumber">Catalog Number</message>
+    <message key="xmlui.dwc.collectionCode">Collection Code</message>
+    <message key="xmlui.dwc.collectionID">Collection ID</message>
+    <message key="xmlui.dwc.institutionCode">Institution Code</message>
+    <message key="xmlui.dwc.institutionID">Institution ID</message>
+    <message key="xmlui.dwc.recordedBy">Recorded By</message>
+    <message key="xmlui.dwc.scientificName">Scientific Name</message>
+    <message key="xmlui.dwc.scientificNameID">Scientific Name ID</message>
+    <message key="xmlui.dwc.dataGeneralizations">Data Generalizations</message>
+    <message key="xmlui.dwc.family">Family</message>
+    <message key="xmlui.dwc.contributor">Contributer</message>
 </catalogue>

@@ -19,7 +19,7 @@
 
 @include selection {
     color: white;
-    background: hotpink;
+    background: #500000;
 }
 
 header .navbar-brand img {
@@ -43,4 +43,41 @@ header .navbar-brand img {
 #aspect_submission_StepTransformer_list_submit-review ol li.ds-form-item div.ds-form-content fieldset legend
 {
     display: none
+}
+
+
+/***************************************************************
+                Authentication Method Chooser
+***************************************************************/
+
+div#shibboleth-authentication-method,
+div#password-authentication-method {
+    float: left;
+    width: 300px;
+    padding-left: 25px;
+}
+
+div.authentication-method h3 {
+    font-size: 15px;
+}
+
+div#password-authentication-method {
+    border-left: 1px solid #CCCCCC;
+    padding-left: 25px;
+}
+
+.authentication-item {
+    clear: both;
+    margin-left: 15px;
+}
+
+#visitEsl {
+    font-weight: bold;
+    text-align: center;
+}
+
+/****** Darwin Core **********/
+
+.simple-item-view-dwc h5 {
+    margin-top:25px;
 }
