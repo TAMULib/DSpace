@@ -169,6 +169,7 @@
 
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.author.column_heading">Authors Name</message>
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.subject.column_heading">Subject</message>
+	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.department.column_heading">Department</message>
 
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.metadata.author">Browsing {0} by Author {1}</message>
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.metadata.author">Browsing {0} by Author</message>
@@ -185,6 +186,8 @@
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.item.dateaccessioned">Browsing {0} by Submit Date {1}</message>
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.item.dateaccessioned">Browsing {0} by Submit Date</message>
 
+	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.metadata.department">Browsing {0} by Department {1}</message>
+	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.metadata.department">Browsing {0} by Department</message>
 
 	<!-- org.dspace.app.xmlui.administrative.WithdrawnItems.java -->
 	<message key="xmlui.Administrative.WithdrawnItems.title.item.title">Withdrawn Items by Title</message>
