@@ -237,7 +237,16 @@
     <xsl:template name="itemSummaryView-DIM-authors">
         <xsl:if test="dim:field[@element='contributor'][@qualifier='author' and descendant::text()] or dim:field[@element='creator' and descendant::text()] or dim:field[@element='contributor' and descendant::text()]">
             <div class="simple-item-view-authors item-page-field-wrapper table">
-                <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-author</i18n:text></h5>
+                <h5>
+                    <xsl:choose>
+                        <xsl:when test="dim:field[@element='type'] = 'Image'">
+                           <i18n:text>xmlui.dri2xhtml.METS-1.0.item-photographer</i18n:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                           <i18n:text>xmlui.dri2xhtml.METS-1.0.item-author</i18n:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </h5>
                 <xsl:choose>
                     <xsl:when test="dim:field[@element='contributor'][@qualifier='author']">
                         <xsl:for-each select="dim:field[@element='contributor'][@qualifier='author']">
