@@ -139,6 +139,7 @@
                                         </div>
                                         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
                                             <xsl:apply-templates select="dri:options"/>
+                                            <!-- TAMU Customization - add link -->
                                             <div class="text-center">
                                                 <a href="http://scholarlycommunication.library.tamu.edu/repository-getting-started/help.html">Help and Documentation</a>
                                             </div>
