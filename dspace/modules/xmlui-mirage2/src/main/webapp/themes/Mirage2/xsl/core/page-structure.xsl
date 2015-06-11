@@ -139,6 +139,10 @@
                                         </div>
                                         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
                                             <xsl:apply-templates select="dri:options"/>
+                                            <!-- TAMU Customization - add link -->
+                                            <div class="text-center">
+                                                <a href="http://scholarlycommunication.library.tamu.edu/repository-getting-started/help.html">Help and Documentation</a>
+                                            </div>
                                             <!-- TAMU Customization - addthis widget -->
                                             <!-- Go to www.addthis.com/dashboard to customize your tools -->
                                             <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5579a30821f710b2" async="async"></script>
