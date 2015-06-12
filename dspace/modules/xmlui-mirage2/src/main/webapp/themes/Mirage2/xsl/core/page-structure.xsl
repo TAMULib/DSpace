@@ -157,6 +157,8 @@
                     </xsl:choose>
                     <!-- Javascript at the bottom for fast page loading -->
                     <xsl:call-template name="addJavascript"/>
+                    <!--TAMU Customization - plum analytics-->
+                    <script type="text/javascript" src="//d39af2mgp1pqhg.cloudfront.net/widget-details.js"></script>
                 </body>
                 <xsl:text disable-output-escaping="yes">&lt;/html&gt;</xsl:text>
 

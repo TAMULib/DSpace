@@ -57,7 +57,11 @@
                 </ul>
             </div>
         </xsl:if>
-
+        <!--TAMU Customization - plum analytics widget -->
+        <xsl:variable name="identifier">
+            <xsl:value-of select="./mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim/dim:field[@element='identifier' and @qualifier='uri']"/>
+        </xsl:variable>
+        <a href="https://plu.mx/a/?repo_url={$identifier}" class="plumx-details" data-hide-when-empty="true" data-border="true" data-site="tamu"></a>
 
     </xsl:template>
 
