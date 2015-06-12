@@ -52,6 +52,7 @@
             <map:reader name="ConcatenationReader" src="org.dspace.app.xmlui.cocoon.ConcatenationReader"/>
         </map:readers>
 
+        <!-- TAMU Customization - generate interrupt request to preserve context when users navigate to login page -->
         <map:actions>
             <map:action name="recordContext" src="org.tamu.dspace.extensions.RecordContextAction"/>
         </map:actions>
