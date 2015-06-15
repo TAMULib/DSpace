@@ -15,6 +15,8 @@
 
  <form-map>
    <name-map collection-handle="default" form-name="traditional" />
+   <name-map collection-handle="1969.1/93296" form-name="facultyPub"/>
+   <name-map collection-handle="1969.1/152358" form-name="BRTC"/>
  </form-map>
 
 
@@ -35,6 +37,376 @@
  <!-- serves as a 'this field is required' flag.                           -->
 
  <form-definitions>
+   <form name="facultyPub">
+        <page number="1">
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>creator</dc-element>
+                <dc-qualifier/>
+                <repeatable>true</repeatable>
+                <label>Authors</label>
+                <input-type>name</input-type>
+                <hint>Enter the names of the authors of this item.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>title</dc-element>
+                <dc-qualifier/>
+                <repeatable>false</repeatable>
+                <label>Title</label>
+                <input-type>onebox</input-type>
+                <hint>Enter the title of the item.</hint>
+                <required>You must enter a main title for this item.</required>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>title</dc-element>
+                <dc-qualifier>alternative</dc-qualifier>
+                <repeatable>true</repeatable>
+                <label>Other Titles</label>
+                <input-type>onebox</input-type>
+                <hint>If the item has any alternative titles, please enter them.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>date</dc-element>
+                <dc-qualifier>issued</dc-qualifier>
+                <repeatable>false</repeatable>
+                <label>Date of Issue</label>
+                <input-type>date</input-type>
+                <hint>Please give the date of previous publication or public distribution.
+                    You can leave out the day and/or month if they aren't applicable.</hint>
+                <required>You must enter at least the year.</required>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>publisher</dc-element>
+                <dc-qualifier/>
+                <repeatable>false</repeatable>
+                <label>Publisher</label>
+                <input-type>onebox</input-type>
+                <hint>Enter the name of the publisher of the previously issued instance of this
+                    item.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>identifier</dc-element>
+                <dc-qualifier>citation</dc-qualifier>
+                <repeatable>false</repeatable>
+                <label>Citation</label>
+                <input-type>onebox</input-type>
+                <hint>Enter the standard citation for the previously issued instance of this
+                    item.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>relation</dc-element>
+                <dc-qualifier>ispartofseries</dc-qualifier>
+                <repeatable>true</repeatable>
+                <label>Series/Report No.</label>
+                <input-type>series</input-type>
+                <hint>Enter the series and number assigned to this item by your community.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>identifier</dc-element>
+                <dc-qualifier/>
+                <!-- An input-type of qualdrop_value MUST be marked as repeatable -->
+                <repeatable>true</repeatable>
+                <label>Identifiers</label>
+                <input-type value-pairs-name="common_identifiers">qualdrop_value</input-type>
+                <hint>If the item has any identification numbers or codes associated with it,
+                    please enter the types and the actual numbers or codes.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>type</dc-element>
+                <dc-qualifier/>
+                <repeatable>true</repeatable>
+                <label>Type</label>
+                <input-type value-pairs-name="common_types">dropdown</input-type>
+                <hint> Select the type(s) of content of the item. To select more than one value
+                    in the list, you may have to hold down the "CTRL" or "Shift" key.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>language</dc-element>
+                <dc-qualifier>iso</dc-qualifier>
+                <repeatable>false</repeatable>
+                <label>Language</label>
+                <input-type value-pairs-name="common_iso_languages">dropdown</input-type>
+                <hint>Select the language of the main content of the item. If the language does
+                    not appear in the list, please select 'Other'. If the content does not
+                    really have a language (for example, if it is a dataset or an image) please
+                    select 'N/A'.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>local</dc-schema>
+                <dc-element>department</dc-element>
+                <dc-qualifier/>
+                <repeatable>true</repeatable>
+                <label>Department</label>
+                <input-type value-pairs-name="departments">dropdown</input-type>
+                <hint>Select your academic department. If your department does not appear in the
+                    list, please select 'Other'. To select more than one value in the
+                    list, you may have to hold down the "CTRL" or "Shift" key.</hint>
+                <required/>
+            </field>
+            <!--
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>embargo</dc-element>
+                <dc-qualifier>terms</dc-qualifier>
+                <repeatable>false</repeatable>
+                <label>Embargo Date</label>
+                <input-type>onebox</input-type>
+                <hint>If required, enter date 'yyyy-mm-dd' when embargo expires or 'forever'.</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>rights</dc-element>
+                <dc-qualifier>requestable</dc-qualifier>
+                <repeatable>false</repeatable>
+                <label>Request Access</label>
+                <input-type value-pairs-name="requestable">dropdown</input-type>
+                <hint>If you intend to embargo the item or otherwise restrict access to some or
+                    all of its contents, do you want to allow people to request access to it?</hint>
+                <required/>
+            </field>
+            -->
+        </page>
+
+        <page number="2">
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>subject</dc-element>
+                <dc-qualifier/>
+                <!-- An input-type of twobox MUST be marked as repeatable -->
+                <repeatable>true</repeatable>
+                <label>Subject Keywords</label>
+                <input-type>twobox</input-type>
+                <hint> Enter appropriate subject keywords or phrases. </hint>
+                <required/>
+                <vocabulary>srsc</vocabulary>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>description</dc-element>
+                <dc-qualifier>abstract</dc-qualifier>
+                <repeatable>false</repeatable>
+                <label>Abstract</label>
+                <input-type>textarea</input-type>
+                <hint> Enter the abstract of the item. </hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>description</dc-element>
+                <dc-qualifier>sponsorship</dc-qualifier>
+                <repeatable>false</repeatable>
+                <label>Sponsors</label>
+                <input-type>textarea</input-type>
+                <hint> Enter the names of any sponsors and/or funding codes in the box. </hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>description</dc-element>
+                <dc-qualifier/>
+                <repeatable>false</repeatable>
+                <label>Description</label>
+                <input-type>textarea</input-type>
+                <hint> Enter any other description or comments in this box. </hint>
+                <required/>
+            </field>
+        </page>
+    </form>
+    
+    <form name="BRTC">
+      <page number="1">
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>title</dc-element>
+                <dc-qualifier/>
+                <repeatable>false</repeatable>
+                <label>Title</label>
+                <input-type>onebox</input-type>
+                <hint>Fill with scientific name and label number</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dwc</dc-schema>
+                <dc-element>scientificName</dc-element>
+                <dc-qualifier/>
+                <repeatable>false</repeatable>
+                <label>Scientific Name</label>
+                <input-type>onebox</input-type>
+                <hint>Fill with scientific name and rank</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>title</dc-element>
+                <dc-qualifier>alternative</dc-qualifier>
+                <repeatable>true</repeatable>
+                <label>Common Name</label>
+                <input-type>onebox</input-type>
+                <hint>Fill with common name</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dwc</dc-schema>
+                <dc-element>family</dc-element>
+                <dc-qualifier/>
+                <repeatable>false</repeatable>
+                <label>Family</label>
+                <input-type>onebox</input-type>
+                <hint>Fill with family name</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>coverage</dc-element>
+                <dc-qualifier>point</dc-qualifier>
+                <repeatable>true</repeatable>
+                <label>Geographic Point of Discovery</label>
+                <input-type>onebox</input-type>
+                <hint>latitude, longitude</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>description</dc-element>
+                <dc-qualifier/>
+                <repeatable>true</repeatable>
+                <label>Location (transcribed)</label>
+                <input-type>onebox</input-type>
+                <hint>Transcription of location of discovery recorded by collector</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>coverage</dc-element>
+                <dc-qualifier>spatial</dc-qualifier>
+                <repeatable>true</repeatable>
+                <label>Location (authority form)</label>
+                <input-type>onebox</input-type>
+                <hint>Locality with authority control applied. Use preferred term in GTGN</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>date</dc-element>
+                <dc-qualifier>created</dc-qualifier>
+                <repeatable>false</repeatable>
+                <label>Date Discovered</label>
+                <input-type>date</input-type>
+                <hint>Fill with YYYY-MM-DD format. If unknown, leave blank</hint>
+                <required/>
+            </field>
+
+      </page>
+        <page number="2">
+            
+            <field>
+                <dc-schema>dwc</dc-schema>
+                <dc-element>collectionCode</dc-element>
+                <dc-qualifier/>
+                <repeatable>false</repeatable>
+                <label>Collection Code</label>
+                <input-type>onebox</input-type>
+                <hint>Fill with official collection code</hint>
+                <required>This field is required</required>
+            </field>
+            
+            <field>
+                <dc-schema>dwc</dc-schema>
+                <dc-element>catalogNumber</dc-element>
+               <dc-qualifier/>
+                <repeatable>false</repeatable>
+                <label>Catalog Number</label>
+                <input-type>onebox</input-type>
+                <hint>Fill with official catalog number</hint>
+                <required>This field is required</required>
+            </field>
+
+            <field>
+                <dc-schema>dwc</dc-schema>
+                <dc-element>recordedBy</dc-element>
+                <dc-qualifier/>
+                <repeatable>true</repeatable>
+                <label>Name of Collector</label>
+                <input-type>name</input-type>
+                <hint>Fill with collector name</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dwc</dc-schema>
+                <dc-element>samplingProtocol</dc-element>
+                <dc-qualifier/>
+                <repeatable>true</repeatable>
+                <label>Collection Method</label>
+                <input-type>onebox</input-type>
+                <hint>The name of, reference to, or description of the method or protocol used during an Event</hint>
+                <required/>
+            </field>
+
+            <field>
+                <dc-schema>dwc</dc-schema>
+                <dc-element>basisOfRecord</dc-element>
+                <repeatable>true</repeatable>
+                <label>Record Type</label>
+                <input-type value-pairs-name="dwc_basisOfRecord">dropdown</input-type>
+                <hint>A descriptive term indicating whether the record represents an object or observation. To select more than one value in the
+                    list, you may have to hold down the "CTRL" or "Shift" key.</hint>
+                <required/>
+            </field>
+      
+            <field>
+                <dc-schema>dc</dc-schema>
+                <dc-element>subject</dc-element>
+                <dc-qualifier/>
+                <!-- An input-type of twobox MUST be marked as repeatable -->
+                <repeatable>true</repeatable>
+                <label>Subject Keywords</label>
+                <input-type>twobox</input-type>
+                <hint> Enter appropriate subject keywords or phrases </hint>
+                <required/>
+            </field> 
+        </page>
+
+    </form>
 
    <form name="traditional">
      <page number="1">
@@ -846,6 +1218,44 @@ it, please enter the types and the actual numbers or codes.</hint>
      </pair>
    </value-pairs>
 
+    <value-pairs value-pairs-name="dwc_basisOfRecord" dc-term="basisOfRecord">
+        <pair>
+            <displayed-value>PreservedSpecimen</displayed-value>
+            <stored-value>PreservedSpecimen</stored-value>
+        </pair>
+        <pair>
+            <displayed-value>FossilSpecimen</displayed-value>
+            <stored-value>FossilSpecimen</stored-value>
+        </pair>
+        <pair>
+            <displayed-value>LivingSpecimen</displayed-value>
+            <stored-value>LivingSpecimen</stored-value>
+        </pair>
+        <pair>
+            <displayed-value>HumanObservation</displayed-value>
+            <stored-value>HumanObservation</stored-value>
+        </pair>
+        <pair>
+            <displayed-value>MachineObservation</displayed-value>
+            <stored-value>MachineObservation</stored-value>
+        </pair>
+        <pair>
+            <displayed-value>StillImage</displayed-value>
+            <stored-value>StillImage</stored-value>
+        </pair>
+        <pair>
+            <displayed-value>MovingImage</displayed-value>
+            <stored-value>MovingImage</stored-value>
+        </pair>
+        <pair>
+            <displayed-value>SoundRecording</displayed-value>
+            <stored-value>SoundRecording</stored-value>
+        </pair>
+        <pair>
+            <displayed-value>OtherSpecimen</displayed-value>
+            <stored-value>OtherSpecimen</stored-value>
+        </pair>
+    </value-pairs>
  </form-value-pairs>
 
 </input-forms>
