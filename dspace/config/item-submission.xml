@@ -248,9 +248,9 @@
 		<workflow-editable>true</workflow-editable>
       </step>
 
+      <!-- TAMU Customization - enable CCL step -->
       <!--Step 6 will be to select a Creative Commons License-->
       <!-- Uncomment this step to allow the user to select a Creative Commons license -->
-       <!--
       <step>
         <heading>submit.progressbar.CClicense</heading>
         <processing-class>org.dspace.submit.step.CCLicenseStep</processing-class>
@@ -258,7 +258,6 @@
 		<xmlui-binding>org.dspace.app.xmlui.aspect.submission.submit.CCLicenseStep</xmlui-binding>
 		<workflow-editable>false</workflow-editable>
       </step>
-      -->
 
      <!--Step 6.5 will be to possibly add a Creative Commons License and/or a proxy license, and sign off on the License-->
      <step>
