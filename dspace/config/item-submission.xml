@@ -217,7 +217,7 @@
        </step>
        -->
       
-      <!-- TAMU Customization - use Upload Item with Embargo instead of simple Uploader ->
+      <!-- TAMU Customization - use Upload Item with Embargo instead of simple Uploader -->
       <!--Step 4 will be to Upload the item
       <step>
         <heading>submit.progressbar.upload</heading>
@@ -228,7 +228,7 @@
       </step>
       -->
 
-      <!-- TAMU Customization - use Upload Item with Embargo instead of simple Uploader ->
+      <!-- TAMU Customization - use Upload Item with Embargo instead of simple Uploader -->
        <!-- Step 4 Upload Item with Embargo Features
             to enable this step, please make sure to comment-out the previous step "UploadStep"  -->
        <step>
