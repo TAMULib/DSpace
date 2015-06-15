@@ -164,7 +164,8 @@ it, please enter the types and the actual numbers or codes.</hint>
          <input-type>twobox</input-type>
          <hint>Enter appropriate subject keywords or phrases. </hint>
          <required></required>
-         <vocabulary>srsc</vocabulary>
+<!-- TAMU Customization - hide controlled vocabulary link -->
+<!--         <vocabulary>srsc</vocabulary>-->
        </field>
 
        <field>
@@ -234,6 +235,7 @@ it, please enter the types and the actual numbers or codes.</hint>
 
  <form-value-pairs>
    <value-pairs value-pairs-name="common_identifiers" dc-term="identifier">
+      <!-- TAMU Customization - add DOI option -->
      <pair>
          <displayed-value>DOI</displayed-value>
          <stored-value>doi</stored-value>
