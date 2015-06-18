@@ -1,8 +1,0 @@
-<div id="header">		
-			<div id="site_logo">
-			    <img src="%contextPath%/themes/TAMU/images/tamudl_logo.jpg" alt="Library Logo" usemap="#logomap"/>
-			</div>
-			<div id="page_header">
-			    <img src="%contextPath%/themes/TAMU/images/wheelan_banner.jpg" alt="Header Image" />
-		    </div>
-</div><!--end of <div id="header">-->
