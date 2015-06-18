@@ -168,3 +168,13 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
 .addthis_sharing_toolbox {
     text-align: center;
 }
+
+/*********** Item Submission ************/
+
+#aspect_submission_StepTransformer_list_submit-initial-questions label, #aspect_submission_StepTransformer_list_submit-initial-questions p.help-block,#aspect_submission_StepTransformer_list_submit-initial-questions fieldset {
+    display: inline;
+}
+
+#aspect_submission_StepTransformer_list_submit-initial-questions label.control-label {
+    display: block;
+}
