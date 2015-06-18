@@ -177,7 +177,6 @@ public class EmbargoManager
 
         // new version of Embargo policies remain in place.
         // TAMU Customization: actually, maybe they won't because we need this line to be run (it was commented out)
-        System.err.println("Got Here!!!");	
 	lifter.liftEmbargo(context, item);
         item.clearMetadata(lift_schema, lift_element, lift_qualifier, Item.ANY);
 
@@ -397,7 +396,6 @@ public class EmbargoManager
     // initialize - get plugins and MD field settings from config
     private static void init()
     {
-        System.err.println("Got init!");
 	if (terms_schema == null)
         {
             String terms = ConfigurationManager.getProperty("embargo.field.terms");
