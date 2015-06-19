@@ -808,7 +808,7 @@
     <!-- TAMU Customization - Generate citation -->
     <xsl:template name="itemSummaryView-DIM-citation">
        <h5>Citation</h5>
-       <div class="citation">
+       <div class="simple-item-view-citation word-break item-page-field-wrapper table">
          <xsl:choose>
            <xsl:when test="dim:field[@element='identifier'][@qualifier='citation']">
              <xsl:copy-of select="dim:field[@element='identifier'][@qualifier='citation']"/>
