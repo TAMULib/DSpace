@@ -1,3 +1,5 @@
+<!-- todo: update template to use Mirage 2 -->
+
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:i18n="http://apache.org/cocoon/i18n/2.1"
     xmlns:dri="http://di.tamu.edu/DRI/1.0/"
@@ -16,11 +18,6 @@
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
     
-    <!-- inject child theme content into Mirage2 generated document head -->
-    <xsl:template name="appendHead">
-        <link rel="stylesheet" href="{concat($child-theme-path, 'Capstones/lib/css/style.css')}"/>
-    </xsl:template>
-
     <!-- Generate the info about the item from the metadata section
         Used to display item information on the simple item record -->
     <xsl:template match="dim:dim" mode="itemSummaryView-DIM">

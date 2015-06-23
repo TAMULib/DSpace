@@ -28,11 +28,6 @@
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
 
-    <!-- inject child theme content into Mirage2 generated document head -->
-    <xsl:template name="appendHead">
-        <link rel="stylesheet" href="{concat($child-theme-path, 'ImageGallery/ImageGallery.css')}"/>
-    </xsl:template>
-
     <!-- inject child theme content into Mirage2 addJavascript template (after jquery is loaded) -->
    <xsl:template name="appendJavaScript">
         <script src="{concat($child-theme-path,'lib/jquery-ui.1.8.6.min.js')}"></script>
