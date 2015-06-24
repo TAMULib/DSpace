@@ -45,8 +45,8 @@
             <!-- Add page metadata to DRI -->
             <map:transform type="IncludePageMeta">
                 <map:parameter name="theme.path" value="{global:theme-path}/"/>
-                <map:parameter name="childtheme.path" value="{global:childtheme-path}"/>
                 <map:parameter name="theme.name" value="{global:theme-name}/"/>
+                <map:parameter name="childtheme.path" value="{global:childtheme-path}/"/>
             </map:transform>
 
             <!-- Debugging output (this is only called when ?XML is passed on querystring) -->
@@ -72,9 +72,9 @@
     <map:pipelines>
         <map:component-configurations>
             <global-variables>
-                <theme-path>Mirage2/</theme-path>
+                <theme-path>Mirage2</theme-path>
+                <childtheme-path>Mirage2Ext</childtheme-path>
                 <theme-name>The official TAMU theme Image Gallery</theme-name>
-                <childtheme-path>Mirage2Ext/</childtheme-path>
             </global-variables>
         </map:component-configurations>
 
@@ -132,11 +132,6 @@
                 <map:match pattern="handle/*/*">
                     <map:transform type="restrictedItemsInfo"/>
                 </map:match>          
-                <map:transform type="IncludePageMeta">
-                    <map:parameter name="theme.path" value="{global:theme-path}"/>
-                    <map:parameter name="child.theme.path" value="{global:child-theme-path}"/>
-                    <map:parameter name="theme.name" value="{global:theme-name}"/>
-                </map:transform>
 
                 <!-- Step 2: Transform the DRI page into XHTML -->
                 <!-- This line calls the resource named 'transform-to-xhtml' (included above).

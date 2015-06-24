@@ -45,7 +45,7 @@
             <!-- Add page metadata to DRI -->
             <map:transform type="IncludePageMeta">
                 <map:parameter name="theme.path" value="{global:theme-path}/"/>
-                <map:parameter name="childtheme.path" value="{global:childtheme-path}"/>
+                <map:parameter name="childtheme.path" value="{global:childtheme-path}/"/>
                 <map:parameter name="theme.name" value="{global:theme-name}/"/>
                 <map:parameter name="theme.image-server" value="https://djatoka.library.tamu.edu/"/>
                 <map:parameter name="childstylesheet.screen#1" value="ImageGallery/ImageGallery.css"/>
@@ -74,8 +74,8 @@
     <map:pipelines>
         <map:component-configurations>
             <global-variables>
-                <theme-path>Mirage2/</theme-path>
-                <childtheme-path>Mirage2Ext/</childtheme-path>
+                <theme-path>Mirage2</theme-path>
+                <childtheme-path>Mirage2Ext</childtheme-path>
                 <theme-name>The official TAMU theme Image Gallery</theme-name>
             </global-variables>
         </map:component-configurations>
