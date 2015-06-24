@@ -1,5 +1,3 @@
-<!-- todo: update template to use Mirage 2 -->
-
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet xmlns:i18n="http://apache.org/cocoon/i18n/2.1"
     xmlns:dri="http://di.tamu.edu/DRI/1.0/"
@@ -17,6 +15,8 @@
     exclude-result-prefixes="i18n dri mets xlink xsl dim xhtml mods dc">
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
+
+<!-- todo: update template to use Mirage 2 -->
     
     <!-- Generate the info about the item from the metadata section
         Used to display item information on the simple item record -->
@@ -43,7 +43,7 @@
                         <xsl:for-each select="dim:field[@element='contributor' and @qualifier='advisor']">
                             <xsl:copy-of select="node()"/>
                             <xsl:if test="count(following-sibling::dim:field[@element='contributor' and @qualifier='advisor']) != 0"> <br class="simpleItemViewValueBreak"/> </xsl:if>
-                        </xsl:for-each>	                  
+                        </xsl:for-each>                   
                     </td>
                 </tr>
             </xsl:if>
@@ -54,7 +54,7 @@
                         <xsl:for-each select="dim:field[@element='contributor' and @qualifier='sponsor']">
                             <xsl:copy-of select="node()"/>
                             <xsl:if test="count(following-sibling::dim:field[@element='contributor' and @qualifier='sponsor']) != 0"> <br class="simpleItemViewValueBreak"/> </xsl:if>
-                        </xsl:for-each>	                  
+                        </xsl:for-each>                   
                     </td>
                 </tr>
             </xsl:if>
@@ -101,7 +101,7 @@
                         <xsl:for-each select="dim:field[@element='description' and @qualifier='abstract']">
                             <xsl:copy-of select="node()"/>
                             <xsl:if test="count(following-sibling::dim:field[@element='description' and @qualifier='abstract']) != 0"> <br class="simpleItemViewValueBreak"/> </xsl:if>
-                        </xsl:for-each>	                  
+                        </xsl:for-each>                   
                     </td>
                 </tr>
             </xsl:if>
@@ -132,17 +132,7 @@
                     </xsl:choose>
                 </td>
             </tr>
-            
-            <xsl:call-template name="handleDWC"/>
-            
         </table>
         
     </xsl:template>
-        
-    
-    
-    
-    
-    
-    
 </xsl:stylesheet>
