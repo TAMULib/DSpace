@@ -45,10 +45,11 @@
             <!-- Add page metadata to DRI -->
             <map:transform type="IncludePageMeta">
                 <map:parameter name="theme.path" value="{global:theme-path}/"/>
-                <map:parameter name="child.theme.path" value="Mirage2Ext/"/>
+                <map:parameter name="childtheme.path" value="{global:childtheme-path}/"/>
                 <map:parameter name="theme.name" value="{global:theme-name}/"/>
                 <map:parameter name="childstylesheet.screen#1" value="PrimerosLibros/lib/css/lightbox.css"/>
                 <map:parameter name="childstylesheet.screen#2" value="PrimerosLibros/lib/css/PrimerosLibros.css"/>
+                <map:parameter name="childstylesheet.screen#3" value="PrimerosLibros/PrimerosLibros.css"/>
                 <map:parameter name="theme.image-server" value="https://djatoka.library.tamu.edu/"/>
                 <map:parameter name="theme.django-app" value="http://libros.library.tamu.edu/book/oai:repository.tamu.edu:"/>
             </map:transform>
@@ -77,8 +78,8 @@
         <map:component-configurations>
             <global-variables>
                 <theme-path>Mirage2</theme-path>
-                <childtheme-path>Mirage2/</childtheme-path>
-                <theme-name>The official TAMU theme Image Gallery</theme-name>
+                <childtheme-path>Mirage2Ext</childtheme-path>
+                <theme-name>The official TAMU Primeros Libro theme</theme-name>
             </global-variables>
         </map:component-configurations>
 
