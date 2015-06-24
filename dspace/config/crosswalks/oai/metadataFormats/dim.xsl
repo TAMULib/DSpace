@@ -54,6 +54,8 @@
         <xsl:param name="confidence"/>
         <xsl:param name="value"/>
 
+
+        <xsl:if test="not($mdschema='dc' and $element='description' and $qualifier='provenance')">
         <dim:field>
             <xsl:attribute name="mdschema">
                 <xsl:value-of select="$mdschema"/>
@@ -92,6 +94,7 @@
 
             <xsl:value-of select="$value"/>
         </dim:field>
+        </xsl:if>
     </xsl:template>
 
 </xsl:stylesheet>
