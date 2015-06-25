@@ -1,0 +1,21 @@
+# E-mail sent to an item's submitter, requesting temporary access.
+#
+# Parameters: {0} requestor's name
+#             {1} submitter'sname
+#             {2} item title
+#             {3} item handle
+#             {4} item link
+# See org.dspace.core.Email for information on the format of this file.
+#
+Subject: OAKTrust: You temporary access request was granted
+
+Hello {0},
+
+{1} has granted your request to the following restricted item:
+
+{2}
+{3}
+{4}
+
+This is a permanent authorization. It will not expire and will remain accessible unless the original author chooses to withdraw the item.
+

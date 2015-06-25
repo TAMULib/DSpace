@@ -37,6 +37,16 @@
 
     <xsl:output method="xml" encoding="UTF-8" indent="yes"/>
 
+    <!-- TAMU Customization for Metadata Tree Browser  -->
+    <xsl:template match="dri:div[@id='aspect.discovery.CollectionRecentSubmissions.div.collection-recent-submission' and //dri:div[@id='edu.tamu.metadatatreebrowser.BrowseOverview.div.metadata-tree-browser-overview']]" priority="100">
+        <!-- don't display the recent submission when the metadata tree browser is being used for collections. -->
+    </xsl:template>
+     
+    <!-- TAMU Customization for Metadata Tree Browser  -->
+    <xsl:template match="dri:div[@id='aspect.discovery.CommunityRecentSubmissions.div.collection-recent-submission' and //dri:div[@id='edu.tamu.metadatatreebrowser.BrowseOverview.div.metadata-tree-browser-overview']]" priority="100">
+        <!-- don't display the recent submission when the metadata tree browser is being used for communities. -->
+    </xsl:template>
+
     <!--
         Requested Page URI. Some functions may alter behavior of processing depending if URI matches a pattern.
         Specifically, adding a static page will need to override the DRI, to directly add content.
@@ -129,6 +139,15 @@
                                         </div>
                                         <div class="col-xs-6 col-sm-3 sidebar-offcanvas" id="sidebar" role="navigation">
                                             <xsl:apply-templates select="dri:options"/>
+                                            <!-- TAMU Customization - add link -->
+                                            <div class="text-center">
+                                                <a href="http://scholarlycommunication.library.tamu.edu/repository-getting-started/help.html">Help and Documentation</a>
+                                            </div>
+                                            <!-- TAMU Customization - addthis widget -->
+                                            <!-- Go to www.addthis.com/dashboard to customize your tools -->
+                                            <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-5579a30821f710b2" async="async"></script>
+                                            <!-- Go to www.addthis.com/dashboard to customize your tools -->
+                                            <div class="addthis_sharing_toolbox"></div>
                                         </div>
 
                                     </div>
@@ -147,6 +166,8 @@
                     </xsl:choose>
                     <!-- Javascript at the bottom for fast page loading -->
                     <xsl:call-template name="addJavascript"/>
+                    <!--TAMU Customization - plum analytics-->
+                    <script type="text/javascript" src="//d39af2mgp1pqhg.cloudfront.net/widget-details.js"></script>
                 </body>
                 <xsl:text disable-output-escaping="yes">&lt;/html&gt;</xsl:text>
 

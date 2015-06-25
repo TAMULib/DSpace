@@ -169,6 +169,7 @@
 
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.author.column_heading">Authors Name</message>
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.subject.column_heading">Subject</message>
+	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.department.column_heading">Department</message>
 
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.metadata.author">Browsing {0} by Author {1}</message>
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.metadata.author">Browsing {0} by Author</message>
@@ -185,6 +186,8 @@
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.item.dateaccessioned">Browsing {0} by Submit Date {1}</message>
 	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.item.dateaccessioned">Browsing {0} by Submit Date</message>
 
+	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.metadata.department">Browsing {0} by Department {1}</message>
+	<message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.metadata.department">Browsing {0} by Department</message>
 
 	<!-- org.dspace.app.xmlui.administrative.WithdrawnItems.java -->
 	<message key="xmlui.Administrative.WithdrawnItems.title.item.title">Withdrawn Items by Title</message>
@@ -289,8 +292,27 @@
 	<message key="xmlui.ArtifactBrowser.SimpleSearch.head">Search</message>
 	<message key="xmlui.ArtifactBrowser.SimpleSearch.search_scope">Search Scope</message>
 	<message key="xmlui.ArtifactBrowser.SimpleSearch.full_text_search">Full Text Search</message>
-	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Series">Series</message>
 
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.department">Department</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Keyword">Keyword</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Abstract">Abstract</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Series">Series</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Sponsor">Sponsor</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Identifier">Identifier</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.LanguageISO">LanguageISO</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.ETDLevel">ETDLevel</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.ETDDiscipline">ETDdiscipline</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.ETDGrantor">ETDGrantor</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.ETDAuthors">ETDAuthors</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.ETDSubmissionDate">ETDSubmissionDate</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.ETDChair">ETDChair</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.ETDCommitteeMember">ETDCommitteeMember</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Description">Description</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Coverage">Coverage</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Rights">Rights</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.IsPartOf">IsPartOf</message>
+	<message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Type">Type</message>
+  	
 	<!-- org.dspace.app.xmlui.artifactbrowser.RestrictedItem.java -->
 	<message key="xmlui.ArtifactBrowser.RestrictedItem.title">This resource is restricted</message>
 	<message key="xmlui.ArtifactBrowser.RestrictedItem.trail">Restricted</message>
@@ -2212,6 +2234,8 @@
 	<message key="xmlui.dri2xhtml.METS-1.0.item-preview">Preview</message>
 	<message key="xmlui.dri2xhtml.METS-1.0.item-title">Title</message>
 	<message key="xmlui.dri2xhtml.METS-1.0.item-author">Author</message>
+	<!-- TAMU Customization -->
+	<message key="xmlui.dri2xhtml.METS-1.0.item-photographer">Photographer</message>
 	<message key="xmlui.dri2xhtml.METS-1.0.item-abstract">Abstract</message>
 	<message key="xmlui.dri2xhtml.METS-1.0.item-description">Description</message>
 	<message key="xmlui.dri2xhtml.METS-1.0.item-uri">URI</message>

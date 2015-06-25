@@ -33,141 +33,6 @@
         <link rel="stylesheet" href="{concat($child-theme-path, 'Periodicals/lib/css/style.css')}"/>
     </xsl:template>
 
-    <!-- Handle the Darwin Core metadata -->
-    <xsl:template name="handleDWC">
-        <xsl:if test="dim:field[@element='basisOfRecord'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Basis of Record:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='basisOfRecord'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='basisOfRecord'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='catalogNumber'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Catalog Number:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='catalogNumber'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='catalogNumber'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='collectionCode'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Collection Code:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='collectionCode'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='collectionCode'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='collectionID'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Collection ID:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='collectionID'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='collectionID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='institutionCode'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Institution Code:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='institutionCode'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='institutionCode'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='institutionID'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Institution ID:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='institutionID'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='institutionID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='recordedBy'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Recorded By:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='recordedBy'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='recordedBy'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='scientificName'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Scientific Name:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='scientificName'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='scientificName'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='scientificNameID'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Scientific Name ID:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='scientificNameID'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='scientificNameID'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='dataGeneralizations'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Data Generalizations:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='dataGeneralizations'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='dataGeneralizations'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-        
-        <xsl:if test="dim:field[@element='family'][@mdschema='dwc']">
-            <tr class="ds-table-row odd">
-                <td><span class="bold">Family:</span></td>
-                <td>
-                    <xsl:for-each select="dim:field[@element='family'][@mdschema='dwc']">
-                        <xsl:copy-of select="node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='family'][@mdschema='dwc']) != 0"> <br /> </xsl:if>
-                    </xsl:for-each>
-                </td>
-            </tr>
-        </xsl:if>
-    </xsl:template> 
-
     <!-- A collection rendered in the detailView pattern; default way of viewing a collection. -->
     <xsl:template name="collectionDetailView-DIM">
         <div class="detail-view">&#160;
@@ -188,217 +53,118 @@
     </xsl:template>
 
 
-<!-- Iterate over the <tdl:issue> tags and group using the Muenchian method -->
-<xsl:template match="tdl:issue">
-    <xsl:variable name="search_path" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='search' and @qualifier='simpleURL']" />
-    <xsl:variable name="query_string" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='search' and @qualifier='queryField']" />
-    <xsl:variable name="context_path" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath']" />
-    <xsl:variable name="collection_handle" select="substring-after($document/dri:meta/dri:pageMeta/dri:metadata[@element='focus' and @qualifier='container'], ':')" />
-    
-    <div class="journal-volume-group">
-    
-        <h2>
-            <xsl:text>Volume </xsl:text>
-            <xsl:value-of select="@vol" />
-        </h2>
-        <xsl:for-each select="key('issues-by-vol', @vol)">
-        <p>
-            <strong>
-                <xsl:text>Issues </xsl:text>
-                <xsl:value-of select="@num" />
-                <xsl:text> (</xsl:text>
-                <xsl:value-of select="@year" />
-                <xsl:text>)</xsl:text>
-                <xsl:if test="@name != ''">
-                    <xsl:text> :: </xsl:text>
-                    <xsl:value-of select="@name" />
-                </xsl:if>
-            </strong> <br />
-            <xsl:variable name="index"><xsl:if test="@index"><xsl:value-of select="@index"/></xsl:if>
-            <xsl:if test="not(@index)"><xsl:text>series</xsl:text></xsl:if></xsl:variable>
-            <a href="{$context_path}/handle/{$collection_handle}{$discoveryUrl}?{$query_string}={$index}:vol. {@vol} no. {@num}">Browse Issue</a> |
-            <a href="{$context_path}/handle/{@handle}">Download Complete Issue</a>
-        </p>
-        </xsl:for-each>
-    
-    </div>
+    <!-- Iterate over the <tdl:issue> tags and group using the Muenchian method -->
+    <xsl:template match="tdl:issue">
+        <xsl:variable name="search_path" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='search' and @qualifier='simpleURL']" />
+        <xsl:variable name="query_string" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='search' and @qualifier='queryField']" />
+        <xsl:variable name="context_path" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath']" />
+        <xsl:variable name="collection_handle" select="substring-after($document/dri:meta/dri:pageMeta/dri:metadata[@element='focus' and @qualifier='container'], ':')" />
         
-</xsl:template>
-
-<!-- Hide the search box -->
-<xsl:template match="dri:div[@id='aspect.artifactbrowser.CollectionViewer.div.collection-search-browse']" >
-</xsl:template>
-
-<!-- Hide the recent submissions list -->
-                                 
-<xsl:template match="dri:div[@id='aspect.discovery.CollectionRecentSubmissions.div.collection-recent-submission']" >
-</xsl:template>
-
-<!-- Group of templates to hide the search forms when appropriate (if the "hidesearch" parameter is in the contextualized-search URL) -->
-<xsl:template match="dri:div[@n='general-query'][$hidesearch]" >
-</xsl:template>
-<xsl:template match="dri:p[@n='result-query'][$hidesearch]" >
-</xsl:template>
-<xsl:template match="dri:div[@id='aspect.artifactbrowser.SimpleSearch.div.search'][$hidesearch]/dri:head" >
-    <h1>
-        <span class="header-insert">Browse Issue</span>
-    </h1>
-</xsl:template>
-<xsl:template match="dri:div[@id='aspect.artifactbrowser.SimpleSearch.div.search-results'][$hidesearch]/dri:head">
-</xsl:template>
-
-
-
-<!-- Generate the info about the item from the metadata section -->
-    <xsl:template match="dim:dim" mode="itemSummaryView-DIM">
-        <table class="ds-includeSet-table">
-            <tr class="ds-table-row even">
-                <td><span class="bold"><i18n:text>xmlui.dri2xhtml.METS-1.0.item-title</i18n:text>: </span></td>
-                <td>
-                    <xsl:choose>
-                        <xsl:when test="count(dim:field[@element='title'][not(@qualifier)]) &gt; 1">
-                            <xsl:for-each select="dim:field[@element='title'][not(@qualifier)]">
-                                <xsl:value-of select="./node()"/>
-                                <xsl:if test="count(following-sibling::dim:field[@element='title'][not(@qualifier)]) != 0">
-                                        <xsl:text>; </xsl:text><br/>
-                                    </xsl:if>
-                            </xsl:for-each>
-                        </xsl:when>
-                         <xsl:when test="count(dim:field[@element='title'][not(@qualifier)]) = 1">
-                            <xsl:value-of select="dim:field[@element='title'][not(@qualifier)][1]/node()"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <i18n:text>xmlui.dri2xhtml.METS-1.0.no-title</i18n:text>
-                        </xsl:otherwise>
-                    </xsl:choose>
-                </td>
-            </tr>
-            <xsl:if test="dim:field[@element='contributor'][@qualifier='author'] or dim:field[@element='creator'] or dim:field[@element='contributor']">
-                <tr class="ds-table-row odd">
-                    <td><span class="bold"><i18n:text>xmlui.dri2xhtml.METS-1.0.item-author</i18n:text>:</span></td>
-                    <td>
-                        <xsl:choose>
-                            <xsl:when test="dim:field[@element='contributor'][@qualifier='author']">
-                                <xsl:for-each select="dim:field[@element='contributor'][@qualifier='author']">
-                                    <xsl:copy-of select="node()"/>
-                                    <xsl:if test="count(following-sibling::dim:field[@element='contributor'][@qualifier='author']) != 0">
-                                        <xsl:text>; </xsl:text>
-                                    </xsl:if>
-                                </xsl:for-each>
-                            </xsl:when>
-                            <xsl:when test="dim:field[@element='creator']">
-                                <xsl:for-each select="dim:field[@element='creator']">
-                                    <xsl:copy-of select="node()"/>
-                                    <xsl:if test="count(following-sibling::dim:field[@element='creator']) != 0">
-                                        <xsl:text>; </xsl:text>
-                                    </xsl:if>
-                                </xsl:for-each>
-                            </xsl:when>
-                            <xsl:when test="dim:field[@element='contributor']">
-                                <xsl:for-each select="dim:field[@element='contributor']">
-                                    <xsl:copy-of select="node()"/>
-                                    <xsl:if test="count(following-sibling::dim:field[@element='contributor']) != 0">
-                                        <xsl:text>; </xsl:text>
-                                    </xsl:if>
-                                </xsl:for-each>
-                            </xsl:when>
-                            <xsl:otherwise>
-                                <i18n:text>xmlui.dri2xhtml.METS-1.0.no-author</i18n:text>
-                            </xsl:otherwise>
-                        </xsl:choose>
-                    </td>
-                </tr>
-            </xsl:if>
-            
-            <xsl:if test="dim:field[@element='relation' and @qualifier='ispartofseries']">
-                <tr class="ds-table-row odd">
-                    <td><span class="bold"><i18n:text>Issue</i18n:text>:</span></td>
-                    <td>
-                        <xsl:for-each select="dim:field[@element='relation' and @qualifier='ispartofseries']">
-                             <xsl:copy-of select="./node()"/>
-                             <xsl:if test="count(following-sibling::dim:field[@element='date' and @qualifier='issued']) != 0">
-                            <br/>
-                        </xsl:if>
-                        </xsl:for-each>
-                    </td>
-                </tr>
-            </xsl:if>
-            
-            
-            <xsl:if test="dim:field[@element='date' and @qualifier='issued']">
-                <tr class="ds-table-row odd">
-                    <td><span class="bold"><i18n:text>xmlui.dri2xhtml.METS-1.0.item-date</i18n:text>:</span></td>
-                    <td>
-                        <xsl:for-each select="dim:field[@element='date' and @qualifier='issued']">
-                             <xsl:copy-of select="./node()"/>
-                             <xsl:if test="count(following-sibling::dim:field[@element='date' and @qualifier='issued']) != 0">
-                            <br/>
-                        </xsl:if>
-                        </xsl:for-each>
-                    </td>
-                </tr>
-            </xsl:if>
-            
-            <xsl:if test="dim:field[@element='description' and @qualifier='abstract']">
-                <tr class="ds-table-row even">
-                    <td><span class="bold"><i18n:text>xmlui.dri2xhtml.METS-1.0.item-abstract</i18n:text>:</span></td>
-                    <td>
-                    <xsl:if test="count(dim:field[@element='description' and @qualifier='abstract']) &gt; 1">
-                        <hr class="metadata-seperator"/>
+        <div class="journal-volume-group">
+        
+            <h2>
+                <xsl:text>Volume </xsl:text>
+                <xsl:value-of select="@vol" />
+            </h2>
+            <xsl:for-each select="key('issues-by-vol', @vol)">
+            <p>
+                <strong>
+                    <xsl:text>Issues </xsl:text>
+                    <xsl:value-of select="@num" />
+                    <xsl:text> (</xsl:text>
+                    <xsl:value-of select="@year" />
+                    <xsl:text>)</xsl:text>
+                    <xsl:if test="@name != ''">
+                        <xsl:text> :: </xsl:text>
+                        <xsl:value-of select="@name" />
                     </xsl:if>
-                    <xsl:for-each select="dim:field[@element='description' and @qualifier='abstract']">
-                        <xsl:copy-of select="./node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='description' and @qualifier='abstract']) != 0">
-                            <hr class="metadata-seperator"/>
-                        </xsl:if>
-                    </xsl:for-each>
-                    <xsl:if test="count(dim:field[@element='description' and @qualifier='abstract']) &gt; 1">
-                        <hr class="metadata-seperator"/>
-                    </xsl:if>
-                    </td>
-                </tr>
-            </xsl:if>
-            <xsl:if test="dim:field[@element='description' and not(@qualifier)]">
-                <tr class="ds-table-row odd">
-                    <td><span class="bold"><i18n:text>xmlui.dri2xhtml.METS-1.0.item-description</i18n:text>:</span></td>
-                    <td>
-                    <xsl:if test="count(dim:field[@element='description' and not(@qualifier)]) &gt; 1 and not(count(dim:field[@element='description' and @qualifier='abstract']) &gt; 1)">
-                        <hr class="metadata-seperator"/>
-                    </xsl:if>
-                    <xsl:for-each select="dim:field[@element='description' and not(@qualifier)]">
-                        <xsl:copy-of select="./node()"/>
-                        <xsl:if test="count(following-sibling::dim:field[@element='description' and not(@qualifier)]) != 0">
-                            <hr class="metadata-seperator"/>
-                        </xsl:if>
-                    </xsl:for-each>
-                    <xsl:if test="count(dim:field[@element='description' and not(@qualifier)]) &gt; 1">
-                        <hr class="metadata-seperator"/>
-                    </xsl:if>
-                    </td>
-                </tr>
-            </xsl:if>
-            <xsl:if test="dim:field[@element='identifier' and @qualifier='uri']">
-                <tr class="ds-table-row even">
-                    <td><span class="bold"><i18n:text>xmlui.dri2xhtml.METS-1.0.item-uri</i18n:text>:</span></td>
-                    <td>
-                        <xsl:for-each select="dim:field[@element='identifier' and @qualifier='uri']">
-                            <a>
-                                <xsl:attribute name="href">
-                                    <xsl:copy-of select="./node()"/>
-                                </xsl:attribute>
-                                <xsl:copy-of select="./node()"/>
-                            </a>
-                            <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='uri']) != 0">
-                                <br/>
-                            </xsl:if>
-                        </xsl:for-each>
-                    </td>
-                </tr>
-            </xsl:if>
+                </strong> <br />
+                <xsl:variable name="index"><xsl:if test="@index"><xsl:value-of select="@index"/></xsl:if>
+                <xsl:if test="not(@index)"><xsl:text>series</xsl:text></xsl:if></xsl:variable>
+                <a href="{$context_path}/handle/{$collection_handle}{$discoveryUrl}?{$query_string}={$index}:vol. {@vol} no. {@num}">Browse Issue</a> |
+                <a href="{$context_path}/handle/{@handle}">Download Complete Issue</a>
+            </p>
+            </xsl:for-each>
+        
+        </div>
             
-            <xsl:call-template name="handleDWC"/>
-            
-        </table>
     </xsl:template>
 
+    <!-- Hide the search box -->
+    <xsl:template match="dri:div[@id='aspect.artifactbrowser.CollectionViewer.div.collection-search-browse']" >
+    </xsl:template>
+
+    <!-- Hide the recent submissions list -->
+                                     
+    <xsl:template match="dri:div[@id='aspect.discovery.CollectionRecentSubmissions.div.collection-recent-submission']" >
+    </xsl:template>
+
+    <!-- Group of templates to hide the search forms when appropriate (if the "hidesearch" parameter is in the contextualized-search URL) -->
+    <xsl:template match="dri:div[@n='general-query'][$hidesearch]" >
+    </xsl:template>
+    <xsl:template match="dri:p[@n='result-query'][$hidesearch]" >
+    </xsl:template>
+    <xsl:template match="dri:div[@id='aspect.artifactbrowser.SimpleSearch.div.search'][$hidesearch]/dri:head" >
+        <h1>
+            <span class="header-insert">Browse Issue</span>
+        </h1>
+    </xsl:template>
+    <xsl:template match="dri:div[@id='aspect.artifactbrowser.SimpleSearch.div.search-results'][$hidesearch]/dri:head">
+    </xsl:template>
+
+    <!-- We are overriding Mirage2/xsl/aspect/artifactbrowser/item-view.xsl to add the ispartofseries transform -->
+    <xsl:template match="dim:dim" mode="itemSummaryView-DIM">
+        <div class="item-summary-view-metadata">
+            <xsl:call-template name="itemSummaryView-DIM-title"/>
+            <div class="row">
+                <div class="col-sm-4">
+                    <div class="row">
+                        <div class="col-xs-6 col-sm-12">
+                            <xsl:call-template name="itemSummaryView-DIM-thumbnail"/>
+                        </div>
+                        <div class="col-xs-6 col-sm-12">
+                            <xsl:call-template name="itemSummaryView-DIM-file-section"/>
+                        </div>
+                    </div>
+                    <xsl:call-template name="itemSummaryView-DIM-date"/>
+                    <xsl:call-template name="itemSummaryView-DIM-authors"/>
+                    <xsl:if test="$ds_item_view_toggle_url != ''">
+                        <xsl:call-template name="itemSummaryView-show-full"/>
+                    </xsl:if>
+                </div>
+                <div class="col-sm-8">
+                    <xsl:call-template name="itemSummaryView-DIM-abstract"/>
+                    <xsl:call-template name="itemSummaryView-DIM-URI"/>
+                    <!-- TAMU Customization -->
+                    <xsl:call-template name="itemSummaryView-DIM-ispartofseries" />
+                    <!-- TAMU Customization -->
+                    <xsl:call-template name="itemSummaryView-DIM-description" />
+                    <!-- TAMU Customization -->
+                    <xsl:call-template name="itemSummaryView-DIM-subject" />
+                    <!-- TAMU Customization -->
+                    <xsl:call-template name="itemSummaryView-DIM-department" />
+                    <xsl:call-template name="itemSummaryView-collections"/>
+                    <!-- TAMU Customization -->
+                    <xsl:call-template name="itemSummaryView-DIM-dwc"/>
+                    <!-- TAMU Customization -->
+                    <xsl:call-template name="itemSummaryView-DIM-citation"/>
+                </div>
+            </div>
+        </div>
+    </xsl:template>
+
+    <!-- TAMU Customization -->
+    <xsl:template name="itemSummaryView-DIM-ispartofseries">
+        <xsl:if test="dim:field[@element='relation' and @qualifier='ispartofseries']">
+            <h5><i18n:text>Issue</i18n:text></h5>
+            <div class="simple-item-view-ispartofseries word-break item-page-field-wrapper table">
+                <xsl:for-each select="dim:field[@element='relation' and @qualifier='ispartofseries']">
+                    <xsl:copy-of select="./node()"/>
+                    <xsl:if test="count(following-sibling::dim:field[@element='date' and @qualifier='issued']) != 0">
+                    <br/>
+                    </xsl:if>
+                </xsl:for-each>
+            </div>
+        </xsl:if>
+    </xsl:template>
 </xsl:stylesheet>

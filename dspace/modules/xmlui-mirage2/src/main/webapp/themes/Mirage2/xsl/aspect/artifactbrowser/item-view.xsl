@@ -57,7 +57,11 @@
                 </ul>
             </div>
         </xsl:if>
-
+        <!--TAMU Customization - plum analytics widget -->
+        <xsl:variable name="identifier">
+            <xsl:value-of select="./mets:dmdSec/mets:mdWrap[@OTHERMDTYPE='DIM']/mets:xmlData/dim:dim/dim:field[@element='identifier' and @qualifier='uri']"/>
+        </xsl:variable>
+        <a href="https://plu.mx/a/?repo_url={$identifier}" class="plumx-details" data-hide-when-empty="true" data-border="true" data-site="tamu"></a>
 
     </xsl:template>
 
@@ -134,6 +138,8 @@
                     <xsl:call-template name="itemSummaryView-collections"/>
                     <!-- TAMU Customization -->
                     <xsl:call-template name="itemSummaryView-DIM-dwc"/>
+                    <!-- TAMU Customization -->
+                    <xsl:call-template name="itemSummaryView-DIM-citation"/>
                 </div>
             </div>
         </div>
@@ -237,7 +243,16 @@
     <xsl:template name="itemSummaryView-DIM-authors">
         <xsl:if test="dim:field[@element='contributor'][@qualifier='author' and descendant::text()] or dim:field[@element='creator' and descendant::text()] or dim:field[@element='contributor' and descendant::text()]">
             <div class="simple-item-view-authors item-page-field-wrapper table">
-                <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-author</i18n:text></h5>
+                <h5>
+                    <xsl:choose>
+                        <xsl:when test="dim:field[@element='type'] = 'Image'">
+                           <i18n:text>xmlui.dri2xhtml.METS-1.0.item-photographer</i18n:text>
+                        </xsl:when>
+                        <xsl:otherwise>
+                           <i18n:text>xmlui.dri2xhtml.METS-1.0.item-author</i18n:text>
+                        </xsl:otherwise>
+                    </xsl:choose>
+                </h5>
                 <xsl:choose>
                     <xsl:when test="dim:field[@element='contributor'][@qualifier='author']">
                         <xsl:for-each select="dim:field[@element='contributor'][@qualifier='author']">
@@ -801,5 +816,158 @@
             </xsl:if>
             <xsl:copy-of select="node()" />
             <xsl:if test="count(following-sibling::dim:field[@element=$current])>0">,&#160;</xsl:if>
+    </xsl:template>
+
+    <!-- TAMU Customization - Generate citation -->
+    <xsl:template name="itemSummaryView-DIM-citation">
+       <h5>Citation</h5>
+       <div class="simple-item-view-citation word-break item-page-field-wrapper table">
+         <xsl:choose>
+           <xsl:when test="dim:field[@element='identifier'][@qualifier='citation']">
+             <xsl:copy-of select="dim:field[@element='identifier'][@qualifier='citation']"/>
+           </xsl:when>
+           <xsl:otherwise>
+               <xsl:call-template name="makeCitation"/>
+           </xsl:otherwise>
+          </xsl:choose>
+        </div>
+    </xsl:template>
+
+    <!-- TAMU Customization -  Create a citation block by cobbling together pieces of metadata into an APA style reference -->
+    <xsl:template name="makeCitation">
+            <span class="author">
+                <xsl:choose>
+                        <xsl:when test="dim:field[@element='contributor'][@qualifier='author']">
+                            <xsl:for-each select="dim:field[@element='contributor'][@qualifier='author']">
+                                <xsl:value-of select="node()"/>
+                                <xsl:if test="count(following-sibling::dim:field[@element='contributor'][@qualifier='author']) != 0">
+                                    <xsl:text>; </xsl:text>
+                                </xsl:if>
+                            </xsl:for-each>
+                        </xsl:when>
+                        <xsl:when test="dim:field[@element='creator']">
+                            <xsl:for-each select="dim:field[@element='creator']">
+                                <xsl:value-of select="node()"/>
+                                <xsl:if test="count(following-sibling::dim:field[@element='creator']) != 0">
+                                    <xsl:text>; </xsl:text>
+                                </xsl:if>
+                            </xsl:for-each>
+                        </xsl:when>
+                        <xsl:when test="dim:field[@element='contributor']">
+                            <xsl:for-each select="dim:field[@element='contributor']">
+                                <xsl:value-of select="node()"/>
+                                <xsl:if test="count(following-sibling::dim:field[@element='contributor']) != 0">
+                                    <xsl:text>; </xsl:text>
+                                </xsl:if>
+                            </xsl:for-each>
+                        </xsl:when>
+                  </xsl:choose>
+            </span>
+            <xsl:choose>
+                <xsl:when test="dim:field[@element='date'][@qualifier='created']">
+                    <span class="date"> (<xsl:value-of select="substring(dim:field[@element='date'][@qualifier='created'][1]/child::node(),1,4)"/>). </span>
+                </xsl:when>
+                <xsl:when test="dim:field[@element='date'][@qualifier='issued']">
+                    <span class="date"> (<xsl:value-of select="substring(dim:field[@element='date'][@qualifier='issued'][1]/child::node(),1,4)"/>). </span>
+                </xsl:when>
+            </xsl:choose>
+            <span class="title">
+                <xsl:choose>
+                    <xsl:when test="dim:field[@element='title']">
+                        <xsl:copy-of select="dim:field[@element='title'][1]/child::node()"/>
+                        <xsl:text>. </xsl:text>
+                    </xsl:when>
+                    <xsl:otherwise>
+                        <i18n:text>xmlui.dri2xhtml.METS-1.0.no-title</i18n:text>
+                        <xsl:text>. </xsl:text>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </span>
+            <span class="degree">
+                <xsl:choose>
+                    <xsl:when test="dim:field[@element = 'degree'][@qualifier = 'level']='Doctoral'">
+                        <xsl:text>Doctoral dissertation, </xsl:text>  
+                    </xsl:when>
+                    <xsl:when test="dim:field[@element = 'degree'][@qualifier = 'level']='Masters'">
+                        <xsl:text>Master's thesis, </xsl:text>  
+                    </xsl:when>
+                    <xsl:otherwise></xsl:otherwise>
+                </xsl:choose>
+            </span>
+            <xsl:if test="dim:field[@element = 'degree'][@qualifier = 'grantor']">
+              <span class="grantor">
+                <xsl:copy-of select="dim:field[@element = 'degree'][@qualifier = 'grantor']/child::node()"/>
+                <xsl:text>. </xsl:text>
+              </span>
+            </xsl:if>
+            <xsl:if test="dim:field[@element = 'publisher']">
+                <span class="publisher">
+                    <xsl:for-each select="dim:field[@element = 'publisher']">
+                        <xsl:value-of select="node()"/>
+                        <xsl:choose>
+                            <xsl:when test="count(following-sibling::dim:field[@element='publisher']) != 0">
+                                <xsl:text>; </xsl:text>
+                            </xsl:when>
+                            <xsl:otherwise>
+                                <xsl:text>.  </xsl:text>
+                            </xsl:otherwise>
+                        </xsl:choose>
+                    </xsl:for-each>
+                </span>
+            </xsl:if>
+
+            <xsl:if test="dim:field[@element='identifier'][@qualifier='uri'][1]/child::node()">
+                <xsl:text>Available electronically from </xsl:text>
+                <span class="citation-link">
+                    <xsl:element name="a">
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="dim:field[@element='identifier'][@qualifier='uri'][1]/child::node()"/>
+                        </xsl:attribute>
+                        <!--<xsl:copy-of select="dim:field[@element='identifier'][@qualifier='uri'][1]/child::node()"/>-->
+                        <xsl:call-template name="wrapHack">
+                            <xsl:with-param name="string"><xsl:value-of select="dim:field[@element='identifier'][@qualifier='uri'][1]/child::node()"/></xsl:with-param>
+                        </xsl:call-template>
+                    </xsl:element>.
+                </span>
+            </xsl:if>
+    </xsl:template> 
+
+    <!-- TAMU Customization - wrapHack 2.0: harder, better, faster(slower) -->
+    <xsl:template name="wrapHack">
+        <xsl:param name="string"/>
+        <xsl:param name="delims" select="'@#$%&amp;:;()-_.,/\~&gt;&lt;?'"/>
+        
+        <!-- Does our string contain any of the target delimiters? -->
+        <xsl:choose>
+            <!-- No, so no point in splitting it further -->
+            <xsl:when test="translate($string,$delims,'')=$string">
+                <xsl:value-of select="$string"/>
+            </xsl:when>
+            <!-- Yes, check the length -->
+            <xsl:otherwise>
+                <xsl:variable name="length" select="string-length($string)"/>
+                <!-- Is it of length 1? -->
+                <xsl:choose>
+                    <!-- Yes, we're down to the last character and it's one of the targets: prepend the breaker -->
+                    <xsl:when test="$length=1">
+                        <span style="font-size: 0em;"><xsl:text> </xsl:text></span>
+                        <xsl:value-of select="$string"/>
+                    </xsl:when>
+                    <!-- No, divide and conquer -->
+                    <xsl:otherwise>
+                        <!-- First half -->
+                        <xsl:call-template name="wrapHack">
+                            <xsl:with-param name="string" select="substring($string,1,floor($length div 2))"/>
+                            <xsl:with-param name="delims" select="$delims"/>
+                        </xsl:call-template>
+                        <!-- Second half -->
+                        <xsl:call-template name="wrapHack">
+                            <xsl:with-param name="string" select="substring($string,1+floor($length div 2))"/>
+                            <xsl:with-param name="delims" select="$delims"/>
+                        </xsl:call-template>
+                    </xsl:otherwise>
+                </xsl:choose>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 </xsl:stylesheet>
