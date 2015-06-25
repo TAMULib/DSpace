@@ -1,0 +1,44 @@
+# E-mail sent to an item's submitter, requesting temporary access.
+#
+# Parameters: {0} submitter'sname
+#             {1} requestor's name
+#             {2} item title
+#             {3} item handle
+#             {4} item link
+#             {5} request message
+#             {6} deny access link
+#             {7} grant temporary access link
+#             {8} grant permanent access link
+#             {9} switch to open-access link
+#             {10} requestor's email
+# See org.dspace.core.Email for information on the format of this file.
+#
+Subject: OAKTrust: Temporary access request
+
+Hello {0},
+
+{1} has requested access to the following restricted item:
+
+{2}
+{3}
+{4}
+
+-----------------------------------------------------------------------
+
+"{5}"
+
+-----------------------------------------------------------------------
+
+If you would like to acknowledge this request, please choose one of the following options:
+
+1) DENY REQUEST: {6}
+2) GRANT THE USER TEMPORARY ACCESS (3 DAYS): {7}
+3) GRANT THE USER PERMANENT ACCESS: {8}
+4) MAKE THE ITEM OPEN-ACCESS: {9}
+ 
+You can also contact the requestor at:
+{10}
+
+If you do not pick one of the above options, the request will be automatically denied in 7 days. 
+
+
