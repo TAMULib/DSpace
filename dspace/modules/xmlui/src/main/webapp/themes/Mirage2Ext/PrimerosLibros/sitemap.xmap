@@ -137,7 +137,7 @@
                     <map:parameter name="child.theme.path" value="{global:child-theme-path}"/>
                     <map:parameter name="theme.name" value="{global:theme-name}"/>
 					<map:parameter name="theme.image-server" value="https://djatoka.library.tamu.edu/"/>
-					<map:parameter name="theme.django-app" value="http://libros.library.tamu.edu/book/oai:repository.tamu.edu:"/>
+					<map:parameter name="theme.django-app" value="http://libros.library.tamu.edu/book/oai:oaktrust.library.tamu.edu:"/>
 				</map:transform>
 
 
