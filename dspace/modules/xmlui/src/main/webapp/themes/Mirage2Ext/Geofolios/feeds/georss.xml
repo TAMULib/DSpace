@@ -2,7 +2,7 @@
 <feed xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss"
     xmlns:gml="http://www.opengis.net/gml">
     <title>Geologic Atlas of the United States</title>
-    <link href="http://repository.tamu.edu/handle/1969.1/2490"/>
+    <link href="http://oaktrust.library.tamu.edu/handle/1969.1/2490"/>
     <subtitle>A GeoRSS encoded mapping file for the Geologic Folios collection at Texas A&amp;M
         University</subtitle>
     <entry>
