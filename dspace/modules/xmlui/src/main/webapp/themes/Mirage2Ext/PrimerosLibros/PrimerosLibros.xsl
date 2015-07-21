@@ -28,12 +28,7 @@
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
 
-    <xsl:template name="appendHead">
-        <link rel="stylesheet" href="{concat($child-theme-path, 'PrimerosLibros/lib/css/lightbox.css')}"/>
-        <link rel="stylesheet" href="{concat($child-theme-path, 'PrimerosLibros/PrimerosLibros.css')}"/>
-    </xsl:template>
-
-    <!-- inject child theme content into Mirage2 generated document head -->
+    <!-- inject child theme content into Mirage2 addJavascript template -->
    <xsl:template name="appendJavaScript">
         <script src="{concat($child-theme-path,'PrimerosLibros/lib/js/lightbox.js')}"></script>
         <script src="{concat($child-theme-path,'PrimerosLibros/PrimerosLibros.js')}"></script>

@@ -21,10 +21,6 @@
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
 
-    <xsl:template name="appendHead">
-        <link rel="stylesheet" href="{concat($child-theme-path, 'Geofolios/lib/style.css')}"/>
-    </xsl:template>
-    
     <xsl:template name="appendJavaScript">
             <!-- Add javascipt  -->            
             <xsl:variable name="jqueryUIVersion"><xsl:text>1.10.4</xsl:text></xsl:variable>

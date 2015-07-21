@@ -27,17 +27,8 @@
 				<map:read src="{2}"/>
 			</map:match>
 			
-			<!-- Deliver common static theme content for all TAMU themes -->
-			<map:match pattern="themes/*/images/**">
-				<map:read src="images/{2}"/>
-			</map:match>
-
 			<map:match pattern="themes/*/lib/**">
 				<map:read src="lib/{2}"/>
-			</map:match>
-			
-			<map:match pattern="themes/*/static/**">
-				<map:read src="static/{2}"/>
 			</map:match>
 			
 			<!-- Deliver static theme content for the Geofolios sub-theme -->
@@ -69,10 +60,6 @@
 			<map:match pattern="themes/*/Fanzine/**">
 				<map:mount uri-prefix="" src="Fanzine/"/>
 			</map:match>
-									
-			<!-- Deliver static theme content for the rest of the TAMU theme -->
-			<map:mount uri-prefix="" src="Main/"/>
-						
 	
 		</map:pipeline>
 	</map:pipelines>
