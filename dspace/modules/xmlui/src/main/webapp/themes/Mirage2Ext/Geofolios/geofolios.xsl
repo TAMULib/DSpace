@@ -21,10 +21,6 @@
     <xsl:import href="../shared.xsl"/>
     <xsl:output indent="yes"/>
 
-    <xsl:template name="appendHead">
-        <link rel="stylesheet" href="{concat($child-theme-path, 'Geofolios/lib/style.css')}"/>
-    </xsl:template>
-    
     <xsl:template name="appendJavaScript">
             <!-- Add javascipt  -->            
             <xsl:variable name="jqueryUIVersion"><xsl:text>1.10.4</xsl:text></xsl:variable>
@@ -114,7 +110,7 @@
                                                 anchorXUnits: 'fraction',
                                                 anchorYUnits: 'fraction',
                                                 opacity: 1.0,
-                                                src: ']]><xsl:value-of select="concat($context-path,'/themes/TAMU/Geofolios/images/icon_lg.png')"/><![CDATA['                                                                                               
+                                                src: ']]><xsl:value-of select="concat($child-theme-path, 'Geofolios/images/icon_lg.png')"/><![CDATA['                                                                                               
                                             })),
                                             text: new ol.style.Text({
                                                 font: '12px Calibri,sans-serif',
@@ -363,13 +359,13 @@
 
         <p class="linkbox">        
             <span>View all folios as:</span>
-            <a href="{$context-path}/themes/TAMU/Geofolios/feeds/Geologic_Atlas_of_the_United_States.kmz">
+            <a href="{$child-theme-path}Geofolios/feeds/Geologic_Atlas_of_the_United_States.kmz">
                 <span class="linkboxlink" id="kmllink">
                     <xsl:text>Google Earth overlays</xsl:text>
                 </span>
             </a>
             
-            <a href="{$context-path}/themes/TAMU/Geofolios/feeds/georss.xml">
+            <a href="{$child-theme-path}Geofolios/feeds/georss.xml">
                 <span class="linkboxlink" id="georsslink">
                     <xsl:text>GeoRSS feed</xsl:text>
                 </span>
@@ -532,12 +528,12 @@
         
         <p class="linkbox">
             <span>View all folios as:</span>
-            <a href="{$context-path}/themes/TAMU/Geofolios/feeds/Geologic_Atlas_of_the_United_States.kmz">
+            <a href="{$child-theme-path}Geofolios/feeds/Geologic_Atlas_of_the_United_States.kmz">
                 <span class="linkboxlink" id="kmllink">
                     <xsl:text>Google Earth overlays</xsl:text>
                 </span>
             </a>
-            <a href="{$context-path}/themes/TAMU/Geofolios/feeds/georss.xml">
+            <a href="{$child-theme-path}Geofolios/feeds/georss.xml">
                 <span class="linkboxlink" id="georsslink">
                     <xsl:text>GeoRSS feed</xsl:text>
                 </span>
@@ -731,17 +727,17 @@
         
         <!-- The links to all the top-level stuff -->
         <p class="linkbox front">         
-            <a href="{$context-path}/themes/TAMU/Geofolios/feeds/Geologic_Atlas_of_the_United_States.kmz">
+            <a href="{$child-theme-path}Geofolios/feeds/Geologic_Atlas_of_the_United_States.kmz">
                 <span class="linkboxlink" id="kmllink">
                     <xsl:text>Google Earth overlays</xsl:text>
                 </span>
             </a>
-            <a href="{$context-path}/themes/TAMU/Geofolios/feeds/georss.xml">
+            <a href="{$child-theme-path}Geofolios/feeds/georss.xml">
                 <span class="linkboxlink" id="georsslink">
                     <xsl:text>GeoRSS feed</xsl:text>
                 </span>
             </a>
-            <a href="{$context-path}/themes/TAMU/Geofolios/feeds/GIS-data.zip">
+            <a href="{$child-theme-path}Geofolios/feeds/GIS-data.zip">
                 <span class="linkboxlink" id="gislink">
                     <xsl:text>GIS map data</xsl:text>
                 </span>

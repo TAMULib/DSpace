@@ -15,9 +15,8 @@
 }
 
 .image-gallery-tile img.image-gallery-thumbnail {
-    border: 1px solid #D1D1D1;
-    max-width: 200px;
-    max-height: 200px;
+    width: 100%;
+    height: auto;
 }
 
 .image-gallery-tile .image-gallery-title {   

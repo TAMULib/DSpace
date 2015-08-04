@@ -28,12 +28,7 @@
     <xsl:variable name="hidesearch" select="contains(/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='request' and @qualifier='queryString']/text(),'hidesearch')"/>
     <xsl:variable name="discoveryUrl" select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='search' and @qualifier='simpleURL']"/>
 
-    <!-- inject child theme content into Mirage2 generated document head -->
-    <xsl:template name="appendHead">
-        <link rel="stylesheet" href="{concat($child-theme-path, 'Periodicals/lib/css/style.css')}"/>
-    </xsl:template>
-
-    <!-- A collection rendered in the detailView pattern; default way of viewing a collection. -->
+     <!-- A collection rendered in the detailView pattern; default way of viewing a collection. -->
     <xsl:template name="collectionDetailView-DIM">
         <div class="detail-view">&#160;
             <!-- Generate the logo, if present, from the file section -->
