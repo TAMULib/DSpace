@@ -1,28 +1,19 @@
 package org.tdl.dspace.communityview;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
 
-import org.apache.avalon.framework.configuration.Configurable;
-import org.apache.avalon.framework.configuration.Configuration;
-import org.apache.avalon.framework.configuration.ConfigurationException;
 import org.apache.avalon.framework.parameters.Parameters;
 import org.apache.cocoon.ProcessingException;
 import org.apache.cocoon.caching.CacheableProcessingComponent;
-import org.apache.cocoon.environment.ObjectModelHelper;
-import org.apache.cocoon.environment.Request;
 import org.apache.cocoon.environment.SourceResolver;
 import org.apache.cocoon.util.HashUtil;
 import org.apache.excalibur.source.SourceValidity;
 import org.apache.log4j.Logger;
-import org.dspace.app.xmlui.aspect.artifactbrowser.AbstractSearch;
 import org.dspace.app.xmlui.aspect.artifactbrowser.CommunityBrowser;
 //TreeNode is not visible! :
 //import org.dspace.app.xmlui.aspect.artifactbrowser.CommunityBrowser.TreeNode;
@@ -34,12 +25,8 @@ import org.dspace.app.xmlui.wing.Message;
 import org.dspace.app.xmlui.wing.WingException;
 import org.dspace.app.xmlui.wing.element.Body;
 import org.dspace.app.xmlui.wing.element.Division;
-import org.dspace.app.xmlui.wing.element.List;
-import org.dspace.app.xmlui.wing.element.PageMeta;
 import org.dspace.app.xmlui.wing.element.Reference;
 import org.dspace.app.xmlui.wing.element.ReferenceSet;
-import org.dspace.app.xmlui.wing.element.Select;
-import org.dspace.app.xmlui.wing.element.Text;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
@@ -47,13 +34,9 @@ import org.dspace.content.DSpaceObject;
 import org.dspace.core.ConfigurationManager;
 import org.dspace.core.Constants;
 import org.dspace.core.LogManager;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.JDOMException;
-import org.jdom.input.SAXBuilder;
 import org.xml.sax.SAXException;
 
-public class ExpandingCollapsingBrowser extends AbstractDSpaceTransformer implements CacheableProcessingComponent
+public class CommunityTreeBrowser extends AbstractDSpaceTransformer implements CacheableProcessingComponent
 {
 
 	private static Logger log = Logger.getLogger(CommunityBrowser.class);
@@ -86,7 +69,7 @@ public class ExpandingCollapsingBrowser extends AbstractDSpaceTransformer implem
     /** What depth is the maximum depth of the tree */
     protected int depth = DEFAULT_DEPTH;
 
-    /** Cached version the community / collection hierarch */
+    /** Cached version the community / collection hierarchy */
     protected TreeNode root;
     
     /** cached validity object */
@@ -171,7 +154,7 @@ public class ExpandingCollapsingBrowser extends AbstractDSpaceTransformer implem
 
 
     /**
-     * Add a community-browser division that includes refrences to community and
+     * Add a community-browser division that includes references to community and
      * collection metadata.
      */
     public void addBody(Body body) throws SAXException, WingException,
@@ -212,11 +195,11 @@ public class ExpandingCollapsingBrowser extends AbstractDSpaceTransformer implem
     } 
     
     /**
-     * Recursively build an includeset of the community / collection hierarcher based upon
+     * Recursively build an includeset of the community / collection hierarchery based upon
      * the given NodeTree.
      * 
      * @param referenceSet The include set
-     * @param node The current node of the hierarch.
+     * @param node The current node of the hierarchy.
      */
     public void buildReferenceSet(ReferenceSet referenceSet, TreeNode node) throws WingException
     {
@@ -262,7 +245,7 @@ public class ExpandingCollapsingBrowser extends AbstractDSpaceTransformer implem
 
     /**
      * construct a tree structure of communities and collections. The results 
-     * of this hirarchy are cached so calling it multipletimes is acceptable.
+     * of this hierarchy are cached so calling it multiple times is acceptable.
      * 
      * @param communities The root level communities
      * @return A root level node.
@@ -318,7 +301,7 @@ public class ExpandingCollapsingBrowser extends AbstractDSpaceTransformer implem
         /** The object this node represents */
         private DSpaceObject dso;
 
-        /** The level in the hirarchy that this node is at. */
+        /** The level in the hierarchy that this node is at. */
         private int level;
 
         /** All children of this node */
@@ -357,7 +340,7 @@ public class ExpandingCollapsingBrowser extends AbstractDSpaceTransformer implem
         }
 
         /**
-         * @return The current level in the hirarchy of this node.
+         * @return The current level in the hierarchy of this node.
          */
         public int getLevel()
         {
@@ -385,9 +368,7 @@ public class ExpandingCollapsingBrowser extends AbstractDSpaceTransformer implem
             }
             return results;
         }
-    }
-
-    
+    }    
 
 }
 
