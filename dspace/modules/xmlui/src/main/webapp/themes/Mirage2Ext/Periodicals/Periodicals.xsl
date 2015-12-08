@@ -47,6 +47,25 @@
         </p>
     </xsl:template>
 
+    <xsl:template name="string-replace-all">
+      <xsl:param name="text" />
+      <xsl:param name="replace" />
+      <xsl:param name="by" />
+      <xsl:choose>
+        <xsl:when test="contains($text, $replace)">
+          <xsl:value-of select="substring-before($text,$replace)" />
+          <xsl:value-of select="$by" />
+          <xsl:call-template name="string-replace-all">
+            <xsl:with-param name="text" select="substring-after($text,$replace)" />
+            <xsl:with-param name="replace" select="$replace" />
+            <xsl:with-param name="by" select="$by" />
+          </xsl:call-template>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:value-of select="$text" />
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:template>
 
     <!-- Iterate over the <tdl:issue> tags and group using the Muenchian method -->
     <xsl:template match="tdl:issue">
@@ -54,6 +73,14 @@
         <xsl:variable name="query_string" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='search' and @qualifier='queryField']" />
         <xsl:variable name="context_path" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath']" />
         <xsl:variable name="collection_handle" select="substring-after($document/dri:meta/dri:pageMeta/dri:metadata[@element='focus' and @qualifier='container'], ':')" />
+        <xsl:variable name="collection_title" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='title']" />
+        <xsl:variable name="numEncoded">
+          <xsl:call-template name="string-replace-all">
+            <xsl:with-param name="text" select="@num" />
+            <xsl:with-param name="replace" select="'&amp;'" />
+            <xsl:with-param name="by" select="'%26'" />
+          </xsl:call-template>
+        </xsl:variable>
         
         <div class="journal-volume-group">
         
@@ -62,23 +89,37 @@
                 <xsl:value-of select="@vol" />
             </h2>
             <xsl:for-each select="key('issues-by-vol', @vol)">
-            <p>
-                <strong>
-                    <xsl:text>Issues </xsl:text>
-                    <xsl:value-of select="@num" />
-                    <xsl:text> (</xsl:text>
-                    <xsl:value-of select="@year" />
-                    <xsl:text>)</xsl:text>
-                    <xsl:if test="@name != ''">
-                        <xsl:text> :: </xsl:text>
-                        <xsl:value-of select="@name" />
-                    </xsl:if>
-                </strong> <br />
-                <xsl:variable name="index"><xsl:if test="@index"><xsl:value-of select="@index"/></xsl:if>
-                <xsl:if test="not(@index)"><xsl:text>series</xsl:text></xsl:if></xsl:variable>
-                <a href="{$context_path}/handle/{$collection_handle}{$discoveryUrl}?{$query_string}={$index}:vol. {@vol} no. {@num}">Browse Issue</a> |
-                <a href="{$context_path}/handle/{@handle}">Download Complete Issue</a>
-            </p>
+                <p>
+                    <strong>
+                        <xsl:text>Issues </xsl:text>
+                        <xsl:value-of select="@num" />
+                        <xsl:text> (</xsl:text>
+                        <xsl:value-of select="@year" />
+                        <xsl:text>)</xsl:text>
+                        <xsl:if test="@name != ''">
+                            <xsl:text> :: </xsl:text>
+                            <xsl:value-of select="@name" />
+                        </xsl:if>
+                    </strong> <br />
+                    <xsl:variable name="index"><xsl:if test="@index"><xsl:value-of select="@index"/></xsl:if>
+                    <xsl:if test="not(@index)"><xsl:text>series</xsl:text></xsl:if></xsl:variable>
+                    <xsl:element name="a">
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="$context_path" />
+                            <xsl:text>/handle/</xsl:text>
+                            <xsl:value-of select="$collection_handle" />
+                            <xsl:value-of select="$discoveryUrl" />
+                            <xsl:text>?filtertype_1=Series&amp;filter_relational_operator_1=equals&amp;filter_1=</xsl:text>
+                            <xsl:value-of select="$collection_title" />
+                            <xsl:text>%3A+Vol.+</xsl:text>
+                            <xsl:value-of select="@vol" />
+                            <xsl:text>%2C+Nos.+</xsl:text>
+                            <xsl:value-of select="$numEncoded" />
+                        </xsl:attribute>
+                        <xsl:text>Browse Issue</xsl:text>
+                    </xsl:element>    
+                     | <a href="{$context_path}/handle/{@handle}">Download Complete Issue</a>
+                </p>
             </xsl:for-each>
         
         </div>
