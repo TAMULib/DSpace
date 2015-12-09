@@ -91,7 +91,7 @@
              TAMU ASPECTS
              ============ -->
 
-        <aspect name="TDL" path="resource://aspects/TexasDigitalLibrary/" />
+        <aspect name="Community Tree Browser" path="resource://aspects/CommunityTreeBrowser/" />
         <aspect name="AlumReq" path="resource://aspects/ETDAlumniRequest/" />
         <aspect name="Metadata Tree Browser" path="resource://aspects/MetadataTreeBrowser/" />
 

@@ -54,10 +54,10 @@
     </xsl:template>
 
     <!-- TAMU customization for community level expanding/collapsing browser -->
-    <xsl:template match="dri:referenceSet[@id='org.tdl.dspace.communityview.ExpandingCollapsingBrowser.referenceSet.community-browser']/dri:reference/dri:referenceSet">
+    <xsl:template match="dri:referenceSet[@id='org.tdl.dspace.communityview.CommunityTreeBrowser.referenceSet.community-browser']/dri:reference/dri:referenceSet">
         <!-- preserve the section header -->
         <xsl:apply-templates select="dri:head"/>
-        <div id="{ancestor::dri:referenceSet[@id='org.tdl.dspace.communityview.ExpandingCollapsingBrowser.referenceSet.community-browser']/@id}" rend="community-browser-wrapper">
+        <div id="{ancestor::dri:referenceSet[@id='org.tdl.dspace.communityview.CommunityTreeBrowser.referenceSet.community-browser']/@id}" rend="community-browser-wrapper">
             <!-- TAMU Customization - Provide expand/collapse all buttons for the browser -->
             <p rend="community-browser-expander">
                 <xref target="#" rend="expand-all btn btn-default btn-sm">
@@ -82,7 +82,7 @@
         <div>
             <xsl:attribute name="rend">
                 <xsl:text>row community-browser-row</xsl:text>
-                <xsl:if test="ancestor::dri:referenceSet[1][@id='org.tdl.dspace.communityview.ExpandingCollapsingBrowser.referenceSet.community-browser'] and position() mod 2 = 0">
+                <xsl:if test="ancestor::dri:referenceSet[1][@id='org.tdl.dspace.communityview.CommunityTreeBrowser.referenceSet.community-browser'] and position() mod 2 = 0">
                     <xsl:text> odd-community-browser-row</xsl:text>
                 </xsl:if>
             </xsl:attribute>
