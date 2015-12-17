@@ -925,9 +925,28 @@
                   m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
                   })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
 
+                  ga('create', 'UA-54069646-7', 'auto', {'name': 'allSites'}); 
+                  ga('allSites.send', 'pageview');
+
                   ga('create', '</xsl:text><xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='google'][@qualifier='analytics']"/><xsl:text>', '</xsl:text><xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='request'][@qualifier='serverName']"/><xsl:text>');
                   ga('send', 'pageview');
            </xsl:text></script>
+
+           <script type="text/javascript"><xsl:text>
+            /**
+            * Function that tracks a click on an outbound link in Google Analytics.
+            * This function takes a valid URL string as an argument, and uses that URL string
+            * as the event label.
+            */
+            var trackOutboundLink = function(url) {
+               ga('send', 'event', 'outbound', 'click', url, {'hitCallback':
+                 function () {
+                 document.location = url;
+                 }
+               });
+            }
+            </xsl:text></script>
+
         </xsl:if>
     </xsl:template>
 
