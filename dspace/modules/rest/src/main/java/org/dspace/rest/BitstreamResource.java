@@ -49,6 +49,8 @@ import org.dspace.usage.UsageEvent;
 
 /**
  * @author Rostislav Novak (Computing and Information Centre, CTU in Prague)
+ * @author James Creel (jcreel@library.tamu.edu)
+ * @author Jeremy Huff (huff@library.tamu.edu)
  */
 // Every DSpace class used without namespace is from package
 // org.dspace.rest.common.*. Otherwise namespace is defined.
@@ -399,13 +401,13 @@ public class BitstreamResource extends Resource
     }
 
     /**
-     * Update bitstream metadata. Replaces everything on targeted bitstream.
+     * Update bitstream metadata. Replaces format, sequenceId, bundle, and policies on targeted bitstream.
      * May throw WebApplicationException caused by two exceptions:
      * SQLException, if there was a problem with the database. AuthorizeException if
      * there was a problem with the authorization to edit bitstream metadata.
      * 
      * @param bitstreamId
-     *            Id of bistream to be updated.
+     *            Id of bitstream to be updated.
      * @param bitstream
      *            Bitstream with will be placed. It must have filled user
      *            credentials.
@@ -457,36 +459,39 @@ public class BitstreamResource extends Resource
                 dspaceBitstream.setSequenceID(sequenceId);
             }
           
-            //Add bitstream to newBundle
-            Item parentItem = (Item) dspaceBitstream.getParentObject();
-            Bundle newBundle = null;
-            for(Bundle existingBundle : parentItem.getBundles()) {
-            	if(existingBundle.getName().equals(bitstream.getBundleName())) {
-            		log.info("\n***Setting newBundle to existing bundle" + existingBundle.getName() + "***\n");
-            		newBundle = existingBundle;
-            		break;
-            	} else {
-            		newBundle = parentItem.createBundle(bitstream.getBundleName());
-            		log.info("\n***Creating newBundle" + newBundle.getName() + "***\n");
-            	}
-            	
-            }
-            
-            if(newBundle != null) {
-            	//Clear the Bitstream from its current bundles
-                Bundle[] bundles = dspaceBitstream.getBundles();
-                for(Bundle bundle : bundles) {          
-                	try {
-                		log.info("\n***Removing Bitstream from bundle " + bundle.getName() + "***\n");
-    					bundle.removeBitstream(dspaceBitstream);
-    				} catch (IOException e) {
-    					// TODO Auto-generated catch block
-    					e.printStackTrace();
-    				}
-                }
-                
-                log.info("\n***Adding bitstream to bundle: " + newBundle.getName() + "***\n");
-                newBundle.addBitstream(dspaceBitstream);
+            if(bitstream.getBundleName() != null)
+            {
+            	//find the bundle with the desired name or create it if necessary
+            	Item parentItem = (Item) dspaceBitstream.getParentObject();
+		        Bundle namedBundle = null;
+		        for(Bundle existingBundle : parentItem.getBundles()) {
+		        	if(existingBundle.getName().equals(bitstream.getBundleName())) {
+		        		namedBundle = existingBundle;
+		        		break;
+		        	} else {
+		        		namedBundle = parentItem.createBundle(bitstream.getBundleName());
+		        		
+		        	}		        	
+		        }
+		        
+		        if(namedBundle != null) 
+		        {
+		        	log.trace("Placing bitstream in bundle " + bitstream.getBundleName());
+		        	
+		        	//remove the bitstream from its current bundles
+		            Bundle[] bundles = dspaceBitstream.getBundles();
+		            for(Bundle bundle : bundles) {          
+		            	try {
+		        			bundle.removeBitstream(dspaceBitstream);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		            }
+		            
+		            //put the bitstream in the named bundle
+		            namedBundle.addBitstream(dspaceBitstream);
+		        }
             }
             
             dspaceBitstream.update();
