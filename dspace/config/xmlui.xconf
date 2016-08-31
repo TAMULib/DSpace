@@ -201,9 +201,6 @@
         <!-- Primeros Book Reader Theme -->
         <theme name="Primeros Libros Collection" handle="1969.1/92213" path="Mirage2Ext/PrimerosLibros/"/>
 
-        <!-- Geofolios -->
-        <theme name="Geofolios Collection" handle="1969.1/2490" path="Mirage2Ext/Geofolios/"/> 
-
         <!-- ESL -->
         <theme name="ESL Community" handle="1969.1/1656" path="Mirage2Ext/ESL/"/>
 
