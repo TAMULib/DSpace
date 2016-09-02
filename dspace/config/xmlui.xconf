@@ -196,6 +196,7 @@
         <theme name="Historic Maps of Cuba" handle="1969.1/86434" path="Mirage2Ext/ImageGallery/"/>
         <theme name="WWI Post Cards" handle="1969.1/128952" path="Mirage2Ext/ImageGallery/"/>
         <theme name="Voucher XRays" handle="1969.1/148733" path="Mirage2Ext/ImageGallery/"/>
+        <theme name="CVMBS photo collection" handle="1969.1/155981" path="Mirage2Ext/ImageGallery/"/>
 
         <!-- Primeros Book Reader Theme -->
         <theme name="Primeros Libros Collection" handle="1969.1/92213" path="Mirage2Ext/PrimerosLibros/"/>
@@ -213,6 +214,7 @@
    
         <!-- Mirage 2 theme, @mire contributed theme, customized for TAMU through module -->
         <theme name="Mirage 2" regex=".*" path="Mirage2/" />
+
 
         <!-- Mirage theme, @mire contributed theme, default since DSpace 3.0 -->
         <!-- <theme name="Atmire Mirage Theme" regex=".*" path="Mirage/" /> -->
