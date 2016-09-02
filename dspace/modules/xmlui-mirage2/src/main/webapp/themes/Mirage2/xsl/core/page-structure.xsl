@@ -151,7 +151,7 @@
                                             <xsl:apply-templates select="dri:options"/>
                                             <!-- TAMU Customization - add link -->
                                             <div class="text-center">
-                                                <a href="http://scholarlycommunication.library.tamu.edu/repository-getting-started/help.html">Help and Documentation</a>
+                                                <a href="http://library.tamu.edu/services/scholarly_communication/deposit/getting_started.html">Help and Documentation</a>
                                             </div>
                                             <!-- TAMU Customization - addthis widget -->
                                             <!-- Go to www.addthis.com/dashboard to customize your tools -->
