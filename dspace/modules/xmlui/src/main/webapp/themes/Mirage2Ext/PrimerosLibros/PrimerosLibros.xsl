@@ -45,12 +45,12 @@
     
     <!-- Global variable to get the URL to the Djatoka image server from the metadata -->
     <xsl:variable name="image-server-url" select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme' and @qualifier='image-server'][1]/node()"/>
-    <xsl:variable name="django-app-url" select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme' and @qualifier='django-app'][1]/node()"/>
+    <xsl:variable name="image-server-resolver">
+        <xsl:value-of select="$image-server-url"></xsl:value-of>
+        <xsl:text>adore-djatoka/resolver</xsl:text>
+    </xsl:variable>
     <!--<xsl:variable name="django-app-url"><xsl:text>http://h012.library.tamu.edu/book/oai:labs.library.tamu.edu:</xsl:text></xsl:variable>-->
-    
-    
-    
-
+    <xsl:variable name="django-app-url" select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='theme' and @qualifier='django-app'][1]/node()"/>
     
     
     <!-- Override the template that generates elements for each item reference in the list --> 
@@ -210,8 +210,8 @@
                                         <xsl:value-of select="substring($image-title,9)" /> 
                                         </xsl:attribute>--> 
                                     <xsl:attribute name="href">
-                                        <xsl:value-of select="$image-server-url"/>
-                                        <xsl:text>resolver?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
+                                        <xsl:value-of select="$image-server-resolver"/>
+                                        <xsl:text>?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
                                         <xsl:value-of select="url:encode($repository-url)"/>
                                         <xsl:value-of select="url:encode($jp2-url)"/>
                                         <xsl:text>&amp;svc_id=info:lanl-repo/svc/getRegion&amp;svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&amp;svc.format=image/jpeg&amp;svc.scale=600</xsl:text>
@@ -224,8 +224,8 @@
                                                     <xsl:value-of select="$thumb-url" />
                                                 </xsl:when>
                                                 <xsl:otherwise>
-                                                    <xsl:value-of select="$image-server-url"/>
-                                                    <xsl:text>resolver?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
+                                                    <xsl:value-of select="$image-server-resolver"/>
+                                                    <xsl:text>?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
                                                     <xsl:value-of select="url:encode($repository-url)"/>
                                                     <xsl:value-of select="url:encode($jp2-url)"/>
                                                     <xsl:text>&amp;svc_id=info:lanl-repo/svc/getRegion&amp;svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&amp;svc.format=image/jpeg&amp;svc.scale=172</xsl:text>
@@ -292,8 +292,8 @@
                                         </a>
                                         <a>
                                             <xsl:attribute name="href">
-                                                <xsl:value-of select="$image-server-url"/>
-                                                <xsl:text>resolver?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
+                                                <xsl:value-of select="$image-server-resolver"/>
+                                                <xsl:text>?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
                                                 <xsl:value-of select="url:encode($repository-url)"/>
                                                 <xsl:value-of select="url:encode($jp2-url)"/>
                                                 <xsl:text>&amp;svc_id=info:lanl-repo/svc/getRegion&amp;svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&amp;svc.format=image/jpeg&amp;svc.level=6</xsl:text>
@@ -420,8 +420,8 @@
                       <xsl:value-of select="$thumb-url-alt" />
                             </xsl:when>
                             <xsl:otherwise>
-                      <xsl:value-of select="$image-server-url"/>
-                                <xsl:text>resolver?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
+                      <xsl:value-of select="$image-server-resolver"/>
+                                <xsl:text>?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
                                 <xsl:value-of select="url:encode($repository-url)"/>
                                 <xsl:value-of select="url:encode($jp2-url)"/>
                                 <xsl:text>&amp;svc_id=info:lanl-repo/svc/getRegion&amp;svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&amp;svc.format=image/jpeg&amp;svc.scale=172</xsl:text>
@@ -496,8 +496,8 @@
                        </a>
                    <a>
                     <xsl:attribute name="href">
-                        <xsl:value-of select="$image-server-url"/>
-                        <xsl:text>resolver?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
+                        <xsl:value-of select="$image-server-resolver"/>
+                        <xsl:text>?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
                         <xsl:value-of select="url:encode($repository-url)"/>
                         <xsl:value-of select="url:encode($jp2-url)"/>
                         <xsl:text>&amp;svc_id=info:lanl-repo/svc/getRegion&amp;svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&amp;svc.format=image/jpeg&amp;svc.level=6</xsl:text>
@@ -569,8 +569,8 @@
                 <xsl:variable name="thumb-handle" select="./handle[@type='thumbnail']" />
                 <a rel="lightbox" alt="Click for a larger preview" title="View preview" class="lightboxlink">
                     <xsl:attribute name="href">
-                        <xsl:value-of select="$image-server-url"/>
-                        <xsl:text>resolver?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
+                        <xsl:value-of select="$image-server-resolver"/>
+                        <xsl:text>?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
                         <xsl:value-of select="url:encode($repository-url)"/>
                         <xsl:value-of select="url:encode($jp2-handle)"/>
                         <xsl:text>&amp;svc_id=info:lanl-repo/svc/getRegion&amp;svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&amp;svc.format=image/jpeg&amp;svc.scale=600</xsl:text>
@@ -582,8 +582,8 @@
                                     <xsl:value-of select="$thumb-handle" />
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <xsl:value-of select="$image-server-url"/>
-                                    <xsl:text>resolver?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
+                                    <xsl:value-of select="$image-server-resolver"/>
+                                    <xsl:text>?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
                                     <xsl:value-of select="url:encode($repository-url)"/>
                                     <xsl:value-of select="url:encode($jp2-handle)"/>
                                     <xsl:text>&amp;svc_id=info:lanl-repo/svc/getRegion&amp;svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&amp;svc.format=image/jpeg&amp;svc.scale=172</xsl:text>
@@ -612,8 +612,8 @@
                         </a>
                         <a>
                             <xsl:attribute name="href">
-                                <xsl:value-of select="$image-server-url"/>
-                                <xsl:text>resolver?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
+                                <xsl:value-of select="$image-server-resolver"/>
+                                <xsl:text>?url_ver=Z39.88-2004&amp;rft_id=</xsl:text>
                                 <xsl:value-of select="url:encode($repository-url)"/>
                                 <xsl:value-of select="url:encode($jp2-handle)"/>
                                 <xsl:text>&amp;svc_id=info:lanl-repo/svc/getRegion&amp;svc_val_fmt=info:ofi/fmt:kev:mtx:jpeg2000&amp;svc.format=image/jpeg&amp;svc.level=6</xsl:text>
