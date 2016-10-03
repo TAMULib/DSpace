@@ -120,6 +120,13 @@
                             </xsl:if>
                         </fieldset>
                     </form>
+                    <a>
+                        <xsl:attribute name="href">
+                            <xsl:value-of select="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='search'][@qualifier='advancedURL']"></xsl:value-of>
+                            <xsl:text>#advancedSearch</xsl:text>
+                        </xsl:attribute>
+                        <xsl:text>Advanced Search</xsl:text>
+                    </a>
                 </div>
             </xsl:if>
             <xsl:apply-templates/>
