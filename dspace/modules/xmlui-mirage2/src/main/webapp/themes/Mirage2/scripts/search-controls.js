@@ -206,6 +206,10 @@
         });
 
         $('.hide-advanced-filters').click(function () {
+            if(window.location.hash) {
+                window.location.hash = '';
+            }
+
             var wrapper = $('#aspect_discovery_SimpleSearch_div_discovery-filters-wrapper');
             wrapper.parent().find('.discovery-filters-wrapper-head').fadeOut(200, function() {
                 $(this).addClass('hidden').removeAttr('style');
@@ -266,6 +270,11 @@
             $this.closest('.open').removeClass('open');
             return false;
         });
+
+        if(window.location.hash) {
+            $('.show-advanced-filters').click();
+        }
+
     }
 
     function backupOriginalFilters() {
