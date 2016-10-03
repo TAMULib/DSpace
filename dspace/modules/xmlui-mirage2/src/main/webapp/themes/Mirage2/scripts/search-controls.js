@@ -206,10 +206,6 @@
         });
 
         $('.hide-advanced-filters').click(function () {
-            if(window.location.hash) {
-                window.location.hash = '';
-            }
-
             var wrapper = $('#aspect_discovery_SimpleSearch_div_discovery-filters-wrapper');
             wrapper.parent().find('.discovery-filters-wrapper-head').fadeOut(200, function() {
                 $(this).addClass('hidden').removeAttr('style');
@@ -271,9 +267,8 @@
             return false;
         });
 
-        if(window.location.hash) {
-            $('.show-advanced-filters').click();
-        }
+        //TAMU Customization - Have the advanced filters exposed by default
+        $('.show-advanced-filters').click();
 
     }
 
