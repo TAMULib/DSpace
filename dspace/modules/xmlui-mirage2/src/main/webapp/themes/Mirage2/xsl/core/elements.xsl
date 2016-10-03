@@ -582,6 +582,17 @@
             <xsl:apply-templates select="*[not(name()='head')]"/>
 
         </form>
+
+        <!-- TAMU Customization - Show the Advanced Search link for collection/community searches -->
+        <xsl:if test="(@id='aspect.discovery.CollectionSearch.div.collection-search') or (@id='aspect.discovery.CommunitySearch.div.community-search')">
+            <a>
+                <xsl:attribute name="href">
+                    <xsl:value-of select="@action"></xsl:value-of>
+                </xsl:attribute>
+                <xsl:text>Advanced Search</xsl:text>
+            </a>
+        </xsl:if>
+
         <!-- JS to scroll form to DIV parent of "Add" button if jump-to -->
         <xsl:if test="/dri:document/dri:meta/dri:pageMeta/dri:metadata[@element='page'][@qualifier='jumpTo']">
             <script type="text/javascript">
