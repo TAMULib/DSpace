@@ -589,7 +589,7 @@ public class ItemsResource extends Resource
         DCDate now = DCDate.getCurrent();
         String provDescription;
 		try {
-			provDescription = "Bitsreams updated through the REST API on " + now
+			provDescription = "Bitsreams updated through the REST API by "+context.getCurrentUser().getFullName()+" on " + now
 			        + " (GMT). " +  org.dspace.content.InstallItem.getBitstreamProvenanceMessage(dspaceItem);
 	    	log.info("Updating Item provenance with new bitstream data: "+provDescription);
 			// Add provenance description
