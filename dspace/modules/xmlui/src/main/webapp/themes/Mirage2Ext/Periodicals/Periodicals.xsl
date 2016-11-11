@@ -74,13 +74,6 @@
         <xsl:variable name="context_path" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='contextPath']" />
         <xsl:variable name="collection_handle" select="substring-after($document/dri:meta/dri:pageMeta/dri:metadata[@element='focus' and @qualifier='container'], ':')" />
         <xsl:variable name="collection_title" select="$document/dri:meta/dri:pageMeta/dri:metadata[@element='title']" />
-        <xsl:variable name="numEncoded">
-          <xsl:call-template name="string-replace-all">
-            <xsl:with-param name="text" select="@num" />
-            <xsl:with-param name="replace" select="'&amp;'" />
-            <xsl:with-param name="by" select="'%26'" />
-          </xsl:call-template>
-        </xsl:variable>
         
         <div class="journal-volume-group">
         
@@ -89,6 +82,14 @@
                 <xsl:value-of select="@vol" />
             </h2>
             <xsl:for-each select="key('issues-by-vol', @vol)">
+                <xsl:variable name="numEncoded">
+                  <xsl:call-template name="string-replace-all">
+                    <xsl:with-param name="text" select="@num" />
+                    <xsl:with-param name="replace" select="'&amp;'" />
+                    <xsl:with-param name="by" select="'%26'" />
+                  </xsl:call-template>
+                </xsl:variable>
+
                 <p>
                     <strong>
                         <xsl:text>Issues </xsl:text>
