@@ -319,6 +319,7 @@ public class BitstreamReader extends AbstractReader implements Recyclable
             {
                 StringBuilder redictURLBuilder = new StringBuilder(request.getContextPath());
                 String requestItemType = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("request.item.type");
+                // If logged in or request item type set to 'all', redirect to restricted resource page, else redirect to login.
                 if (context.getCurrentUser() != null || StringUtils.equalsIgnoreCase("all", requestItemType)) {
                     // A user is logged in, but they are not authorized to read this bitstream,
                     // instead of asking them to login again we'll point them to a friendly error
