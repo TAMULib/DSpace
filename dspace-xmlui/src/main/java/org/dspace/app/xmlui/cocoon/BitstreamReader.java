@@ -314,11 +314,11 @@ public class BitstreamReader extends AbstractReader implements Recyclable
                 isAuthorized = false;
                 log.info(LogManager.getHeader(context, "view_bitstream", "handle=" + item.getHandle() + ",withdrawn=true"));
             }
-            // It item-request is enabled to all request we redirect to restricted-resource immediately without login request  
-            String requestItemType = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("request.item.type");
+            // If item-request is enabled to all request, we redirect to restricted-resource immediately without login request
             if (!isAuthorized)
             {
-                if(context.getCurrentUser() != null || StringUtils.equalsIgnoreCase("all", requestItemType)){
+                String requestItemType = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("request.item.type");
+                if (context.getCurrentUser() != null || StringUtils.equalsIgnoreCase("all", requestItemType)) {
                         // A user is logged in, but they are not authorized to read this bitstream,
                         // instead of asking them to login again we'll point them to a friendly error
                         // message that tells them the bitstream is restricted.
@@ -336,9 +336,9 @@ public class BitstreamReader extends AbstractReader implements Recyclable
                         httpResponse.sendRedirect(redictURL);
                         return;
                 }
-                else{
-                	if(StringUtils.isBlank(DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("request.item.type")) ||
-                			                			DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("request.item.type").equalsIgnoreCase("logged")){
+                else {
+                    //if (StringUtils.isBlank(requestItemType) || StringUtils.equalsIgnoreCase("logged", requestItemType)) {
+
                         // The user does not have read access to this bitstream. Interrupt this current request
                         // and then forward them to the login page so that they can be authenticated. Once that is
                         // successful, their request will be resumed.
@@ -351,7 +351,8 @@ public class BitstreamReader extends AbstractReader implements Recyclable
                         objectModel.get(HttpEnvironment.HTTP_RESPONSE_OBJECT);
                         httpResponse.sendRedirect(redictURL);
                         return;
-                	}
+
+                   //}
                 }
             }
 
