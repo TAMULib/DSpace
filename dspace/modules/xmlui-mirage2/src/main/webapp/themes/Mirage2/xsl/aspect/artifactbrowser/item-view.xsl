@@ -750,19 +750,14 @@
 
     <xsl:template name="getFileIcon">
         <xsl:param name="mimetype"/>
-            <i aria-hidden="true">
-                <xsl:attribute name="class">
-                <xsl:text>glyphicon </xsl:text>
-                <xsl:choose>
-                    <xsl:when test="contains(mets:FLocat[@LOCTYPE='URL']/@xlink:href,'isAllowed=n')">
-                        <xsl:text> glyphicon-lock</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text> glyphicon-file</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-                </xsl:attribute>
-            </i>
+			<xsl:choose>
+               <xsl:when test="contains(mets:FLocat[@LOCTYPE='URL']/@xlink:href,'isAllowed=n')">
+                   <i aria-hidden="true" class="glyphicon glyphicon-lock" data-toggle="tooltip" data-placement="right" data-original-title="xmlui.dri2xhtml.METS-1.0.item-files-authorization-required" i18n:attr="data-original-title"></i>
+               </xsl:when>
+               <xsl:otherwise>
+                   <i aria-hidden="true" class="glyphicon glyphicon-file" data-toggle="tooltip" data-placement="right" data-original-title="xmlui.dri2xhtml.METS-1.0.item-files-authorized" i18n:attr="data-original-title"></i>
+               </xsl:otherwise>
+			</xsl:choose>
         <xsl:text> </xsl:text>
     </xsl:template>
 
