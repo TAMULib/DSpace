@@ -6,7 +6,7 @@
  * http://www.dspace.org/license/
  */
 jQuery(document).ready(function() {
-		
-	jQuery('[data-toggle="tooltip"]').tooltip();	
+
+	jQuery('[data-toggle="popover"]').popover(); 
 
 });

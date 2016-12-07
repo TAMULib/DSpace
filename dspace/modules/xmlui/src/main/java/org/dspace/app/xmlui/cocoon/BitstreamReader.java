@@ -274,49 +274,47 @@ public class BitstreamReader extends AbstractReader implements Recyclable
 
             // Is there a User logged in and does the user have access to read it?
             boolean isAuthorized = AuthorizeManager.authorizeActionBoolean(context, bitstream, Constants.READ);
+
             if (item != null && item.isWithdrawn() && !AuthorizeManager.isAdmin(context))
             {
                 isAuthorized = false;
                 log.info(LogManager.getHeader(context, "view_bitstream", "handle=" + item.getHandle() + ",withdrawn=true"));
             }
-            // It item-request is enabled to all request we redirect to restricted-resource immediately without login request  
-            String requestItemType = ConfigurationManager.getProperty("request.item.type");
+            
+            // If item-request is enabled to all request, we redirect to restricted-resource immediately without login request.
             if (!isAuthorized)
             {
-                if(context.getCurrentUser() != null || StringUtils.equalsIgnoreCase("all", requestItemType)){
-                        // A user is logged in, but they are not authorized to read this bitstream,
-                        // instead of asking them to login again we'll point them to a friendly error
-                        // message that tells them the bitstream is restricted.
-                        String redictURL = request.getContextPath() + "/handle/";
-                        if (item!=null){
-                                redictURL += item.getHandle();
-                        }
-                        else if(dso!=null){
-                                redictURL += dso.getHandle();
-                        }
-                        redictURL += "/restricted-resource?bitstreamId=" + bitstream.getID();
+                StringBuilder redictURLBuilder = new StringBuilder(request.getContextPath());
+                String requestItemType =  ConfigurationManager.getProperty("request.item.type");
+                // If logged in or request item type set to 'all', redirect to restricted resource page, else redirect to login.
+                if (context.getCurrentUser() != null || StringUtils.equalsIgnoreCase("all", requestItemType)) {
+                    // A user is logged in, but they are not authorized to read this bitstream,
+                    // instead of asking them to login again we'll point them to a friendly error
+                    // message that tells them the bitstream is restricted.
 
-                        HttpServletResponse httpResponse = (HttpServletResponse)
-                        objectModel.get(HttpEnvironment.HTTP_RESPONSE_OBJECT);
-                        httpResponse.sendRedirect(redictURL);
-                        return;
+                    // Redirect to restricted resource page with handle and bitstream id
+                    redictURLBuilder.append("/handle/")
+                        .append(item != null ? item.getHandle() : dso != null ? dso.getHandle() : "")
+                        .append("/restricted-resource?bitstreamId=" + bitstream.getID());
+
+                    HttpServletResponse httpResponse = (HttpServletResponse)
+                    objectModel.get(HttpEnvironment.HTTP_RESPONSE_OBJECT);
+                    httpResponse.sendRedirect(redictURLBuilder.toString());
+                    return;
                 }
-                else{
-                    if(ConfigurationManager.getProperty("request.item.type")==null||
-                                                        ConfigurationManager.getProperty("request.item.type").equalsIgnoreCase("logged")){
-                        // The user does not have read access to this bitstream. Interrupt this current request
-                        // and then forward them to the login page so that they can be authenticated. Once that is
-                        // successful, their request will be resumed.
-                        AuthenticationUtil.interruptRequest(objectModel, AUTH_REQUIRED_HEADER, AUTH_REQUIRED_MESSAGE, null);
+                else {
+                    // The user is not logged in and request item types is not 'all'. Interrupt this current request
+                    // and then forward them to the login page so that they can be authenticated. Once that is
+                    // successful, their request will be resumed.
+                    AuthenticationUtil.interruptRequest(objectModel, AUTH_REQUIRED_HEADER, AUTH_REQUIRED_MESSAGE, null);
 
-                        // Redirect
-                        String redictURL = request.getContextPath() + "/login";
+                    // Redirect to login
+                    redictURLBuilder.append("/login");
 
-                        HttpServletResponse httpResponse = (HttpServletResponse)
-                        objectModel.get(HttpEnvironment.HTTP_RESPONSE_OBJECT);
-                        httpResponse.sendRedirect(redictURL);
-                        return;
-                    }
+                    HttpServletResponse httpResponse = (HttpServletResponse)
+                    objectModel.get(HttpEnvironment.HTTP_RESPONSE_OBJECT);
+                    httpResponse.sendRedirect(redictURLBuilder.toString());
+                    return;
                 }
             }
 
@@ -368,6 +366,7 @@ public class BitstreamReader extends AbstractReader implements Recyclable
 
             this.bitstreamMimeType = bitstream.getFormat().getMIMEType();
             this.bitstreamName = bitstream.getName();
+
             if (context.getCurrentUser() == null)
             {
                 this.isAnonymouslyReadable = true;
@@ -419,7 +418,7 @@ public class BitstreamReader extends AbstractReader implements Recyclable
             
             // If we created the database connection close it, otherwise leave it open.
             if (BitstreamReaderOpenedContext)
-                context.complete();
+            	context.complete();
         }
         catch (SQLException sqle)
         {

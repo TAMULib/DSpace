@@ -445,6 +445,8 @@
                     <xsl:value-of select="$href"/>
                 </xsl:attribute>
                 <xsl:call-template name="getFileIcon">
+                	<xsl:with-param name="href" select="$href"/>
+                	<xsl:with-param name="title" select="$title"/>
                     <xsl:with-param name="mimetype">
                         <xsl:value-of select="substring-before($mimetype,'/')"/>
                         <xsl:text>/</xsl:text>
@@ -749,15 +751,17 @@
     </xsl:template>
 
     <xsl:template name="getFileIcon">
+    	<xsl:param name="href"/>
+        <xsl:param name="title"/>
         <xsl:param name="mimetype"/>
-			<xsl:choose>
-               <xsl:when test="contains(mets:FLocat[@LOCTYPE='URL']/@xlink:href,'isAllowed=n')">
-                   <i aria-hidden="true" class="glyphicon glyphicon-lock" data-toggle="tooltip" data-placement="right" data-original-title="xmlui.dri2xhtml.METS-1.0.item-files-authorization-required" i18n:attr="data-original-title"></i>
-               </xsl:when>
-               <xsl:otherwise>
-                   <i aria-hidden="true" class="glyphicon glyphicon-file" data-toggle="tooltip" data-placement="right" data-original-title="xmlui.dri2xhtml.METS-1.0.item-files-authorized" i18n:attr="data-original-title"></i>
-               </xsl:otherwise>
-			</xsl:choose>
+		<xsl:choose>
+              <xsl:when test="contains($href,'isAllowed=n')">
+                  <i aria-hidden="true" class="glyphicon glyphicon-lock" data-toggle="popover" data-placement="right" data-trigger="hover" title="{$title}" data-content="xmlui.dri2xhtml.METS-1.0.item-files-authorization-required" i18n:attr="data-content"></i>
+              </xsl:when>
+              <xsl:otherwise>
+                  <i aria-hidden="true" class="glyphicon glyphicon-file" data-toggle="popover" data-placement="right" data-trigger="hover" title="{$title}" data-content="xmlui.dri2xhtml.METS-1.0.item-files-authorized" i18n:attr="data-content"></i>
+              </xsl:otherwise>
+		</xsl:choose>
         <xsl:text> </xsl:text>
     </xsl:template>
 
