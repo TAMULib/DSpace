@@ -3,6 +3,7 @@ package edu.tamu.dspace.curate;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import org.apache.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Bitstream;
 import org.dspace.content.Bundle;
@@ -17,6 +18,7 @@ public class DeleteThumbnails extends AbstractCurationTask {
 
 	private int result = Curator.CURATE_SUCCESS;
 	private StringBuilder sb = new StringBuilder();
+	private static Logger log = Logger.getLogger(DeleteThumbnails.class);
 
 	@Override
 	public void init(Curator curator, String taskId) throws IOException {
@@ -31,6 +33,7 @@ public class DeleteThumbnails extends AbstractCurationTask {
 			this.setResult(sb.toString());
 			return Curator.CURATE_FAIL;
 		} else {
+			log.info("Distributing curation task among members of DSO " + dso.getHandle() + " (" + dso.getID() + ")");
 			distribute(dso);
 			this.setResult(sb.toString());
 			return result;
@@ -40,7 +43,9 @@ public class DeleteThumbnails extends AbstractCurationTask {
 	@Override
 	protected void performItem(Item item) throws SQLException, IOException {
 		Context context = Curator.curationContext();
+		log.info("Deleting thumbnails for item " + item.getID());
 		try {
+			
 			int count = 0;
 			for (Bundle bundle : item.getBundles("THUMBNAIL")) {
 				for (Bitstream bitstream : bundle.getBitstreams()) {
