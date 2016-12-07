@@ -327,8 +327,7 @@ public class BitstreamReader extends AbstractReader implements Recyclable
 
                     // Redirect to restricted resource page with handle and bitstream id
                     redictURLBuilder.append("/handle/")
-                        .append(item != null ? item.getHandle() : "")
-                        .append(dso != null ? dso.getHandle() : "")
+                        .append(item != null ? item.getHandle() : dso != null ? dso.getHandle() : "")
                         .append("/restricted-resource?bitstreamId=" + bitstream.getID());
 
                     HttpServletResponse httpResponse = (HttpServletResponse)
