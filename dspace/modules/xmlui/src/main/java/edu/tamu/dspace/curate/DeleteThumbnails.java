@@ -28,16 +28,22 @@ public class DeleteThumbnails extends AbstractCurationTask {
 
 	@Override
 	public int perform(DSpaceObject dso) throws IOException {
+		int result = Curator.CURATE_UNSET;
 		if (dso.getType() == Constants.SITE) {
 			sb.append("Cannot perform this task at site level.");
 			this.setResult(sb.toString());
-			return Curator.CURATE_FAIL;
-		} else {
-			log.info("Distributing curation task among members of DSO " + dso.getHandle() + " (" + dso.getID() + ")");
+			result = Curator.CURATE_FAIL;
+		} else if(dso.getType() == Constants.ITEM) {
+			log.info("Doing nothing because this is an ITEM and we are relying on distribute to have called performItem somehow.");
+			result = Curator.CURATE_SUCCESS;
+		}
+		else {
+			log.info("Distributing curation task among members of DSO handle (id): " + dso.getHandle() + " (" + dso.getID() + ")");
 			distribute(dso);
 			this.setResult(sb.toString());
-			return result;
+			result = Curator.CURATE_SUCCESS;
 		}
+		return result;
 	}
 
 	@Override
