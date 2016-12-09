@@ -31,7 +31,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 public class PelicanGeoparserTask extends AbstractCurationTask {
 
     /** log4j category */
-    private static Logger log = Logger.getLogger(ConfigurationManager.class);
+    private static Logger log = Logger.getLogger(PelicanGeoparserTask.class);
 
     /** used for output of curation task results */
     private static StringBuilder sb = new StringBuilder();
