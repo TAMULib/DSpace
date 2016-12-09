@@ -16,82 +16,63 @@ import org.dspace.curate.AbstractCurationTask;
 import org.dspace.curate.Curator;
 import org.dspace.eperson.Group;
 
-
 public class ReportRestrictedItems extends AbstractCurationTask {
-    
+
     private int result = Curator.CURATE_SUCCESS;
     private StringBuilder sb = new StringBuilder();
-    
-    @Override 
-    public void init(Curator curator, String taskId) throws IOException
-    {
-	sb = new StringBuilder();
+
+    @Override
+    public void init(Curator curator, String taskId) throws IOException {
+        sb = new StringBuilder();
         super.init(curator, taskId);
     }
 
     @Override
-    public int perform(DSpaceObject dso) throws IOException 
-    {
-//	if (dso.getType() == Constants.ITEM) {
-//	    try {
-//		performItem((Item)dso);
-//	    } catch (SQLException e) {
-//		return Curator.CURATE_ERROR;
-//	    }
-//	}
-//	else
-//	    return Curator.CURATE_SKIP;
-	
-	//if (result != Curator.CURATE_ERROR)
-    	if(dso.getType() == Constants.SITE) {
-    		sb.append("Cannot perform this task at site level.");
-	    	this.setResult(sb.toString());
-	    	return Curator.CURATE_FAIL;
-    	} else {
-        	distribute(dso);
-    	}
-    	
-    	this.setResult(sb.toString());	
-		return result;
+    public int perform(DSpaceObject dso) throws IOException {
+        if (dso.getType() == Constants.SITE) {
+            sb.append("Cannot perform this task at site level.");
+            this.setResult(sb.toString());
+            return Curator.CURATE_FAIL;
+        } else {
+            distribute(dso);
+        }
+
+        this.setResult(sb.toString());
+        return result;
     }
-    
-    
+
     @Override
-    protected void performItem(Item item) throws SQLException, IOException
-    {
-	Context context = new Context();
-	
-        try 
-        {
+    protected void performItem(Item item) throws SQLException, IOException {
+        Context context = new Context();
+
+        try {
             boolean restrcitedItem;
             if (AuthorizeManager.authorizeActionBoolean(context, item, Constants.READ))
-        	restrcitedItem = false;
+                restrcitedItem = false;
             else
-        	restrcitedItem = true;
-            
+                restrcitedItem = true;
+
             int restrictedBitstreams = 0;
-	    for (Bundle bundle : item.getBundles()) {
-		for (Bitstream bitstream : bundle.getBitstreams()) {
-		    if (!AuthorizeManager.authorizeActionBoolean(context, bitstream, Constants.READ))
-			restrictedBitstreams++;
-		}
-	    }
-	    if (restrcitedItem || restrictedBitstreams > 0) 
-	    {
-		sb.append(item.getHandle() + ": ");
+            for (Bundle bundle : item.getBundles()) {
+                for (Bitstream bitstream : bundle.getBitstreams()) {
+                    if (!AuthorizeManager.authorizeActionBoolean(context, bitstream, Constants.READ))
+                        restrictedBitstreams++;
+                }
+            }
+            if (restrcitedItem || restrictedBitstreams > 0) {
+                sb.append(item.getHandle() + ": ");
 
-		if (restrcitedItem)
-		    sb.append("item restricted");
-		else
-		    sb.append("item open");
+                if (restrcitedItem)
+                    sb.append("item restricted");
+                else
+                    sb.append("item open");
 
-		sb.append(", " + restrictedBitstreams + " restricted bitstreams.\n");
-	    }
-	} finally {
-		if (context != null)
-			context.complete();
-	}
+                sb.append(", " + restrictedBitstreams + " restricted bitstreams.\n");
+            }
+        } finally {
+            if (context != null)
+                context.complete();
+        }
     }
-    
 
 }
