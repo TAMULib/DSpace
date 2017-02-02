@@ -2060,7 +2060,9 @@ public class ItemImport
                     //regex supports either windows or *nix file paths
                     String[] entryChunks = entry.getName().split("/|\\\\");
                     if(entryChunks.length > 2) {
-                        if(sourceDirForZip == sourcedir) {
+                        //Exclude directories beginning with the prefix "__" indicating a hidden directory.
+                        //This will eliminiate, e.g., "__MACOSX" which breaks the importer
+                        if(sourceDirForZip == sourcedir && !entryChunks[0].startsWith("__")) {
                             sourceDirForZip = sourcedir + "/" + entryChunks[0];
                         }
                     }

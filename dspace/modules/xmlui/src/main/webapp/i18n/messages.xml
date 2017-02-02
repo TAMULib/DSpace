@@ -2254,6 +2254,9 @@
 	<message key="xmlui.dri2xhtml.METS-1.0.item-files-access-rights">Read access available for</message>
 	<message key="xmlui.dri2xhtml.METS-1.0.item-no-files">There are no files associated with this item.</message>
 
+	<message key="xmlui.dri2xhtml.METS-1.0.item-files-authorization-required">You are not authorized to download this bitstream!</message>
+	<message key="xmlui.dri2xhtml.METS-1.0.item-files-authorized">You are authorized to download this bitstream!</message>
+
 	<message key="xmlui.dri2xhtml.METS-1.0.size-bytes">bytes</message>
 	<message key="xmlui.dri2xhtml.METS-1.0.size-kilobytes">Kb</message>
 	<message key="xmlui.dri2xhtml.METS-1.0.size-megabytes">Mb</message>

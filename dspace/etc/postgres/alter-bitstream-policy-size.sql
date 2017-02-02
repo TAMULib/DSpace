@@ -1,0 +1,1 @@
+ALTER TABLE resourcepolicy ALTER COLUMN rpdescription SET DATA TYPE varchar(255);
