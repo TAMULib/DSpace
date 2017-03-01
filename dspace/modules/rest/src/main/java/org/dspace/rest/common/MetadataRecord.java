@@ -4,6 +4,13 @@ import java.util.List;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+/**
+ * Class to hold MetadataEntry objects so multiple records can be returned. 
+ * 
+ * @author Ryan Laddusaw (rladdusaw@library.tamu.edu)
+ * 
+ */
+
 @XmlRootElement(name = "metadatarecord")
 public class MetadataRecord
 {
