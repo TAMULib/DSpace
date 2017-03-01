@@ -1,7 +1,6 @@
 package org.dspace.rest;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,40 +43,22 @@ public class AdvisorResource extends Resource
 		log.info("Reading items (advisor uri: " + advisor_uri +")");
 		org.dspace.core.Context context = null;
 		List<MetadataRecord> records = new ArrayList<MetadataRecord>();
-		String decoded_uri = null;
-		
-		try
-		{
-			System.out.println("\nEncoded URI is: " + advisor_uri);
-			decoded_uri = java.net.URLDecoder.decode(advisor_uri, "UTF-8");
-			System.out.println("\nDecoded URI is: " + decoded_uri);
-		}
-		catch (UnsupportedEncodingException e)
-		{
-			processException("Could not decode URI: " + advisor_uri + ". UnsupportedEncodingException. Message: " + e, context);
-		}
 		
 		try
 		{
 			context = createContext(getUser(headers));
-			System.out.println("\nContext created\n");
-			ItemIterator dspaceItems = org.dspace.content.Item.findByAuthorityValue(context, "dc", "contributor", "advisor", decoded_uri);
-			System.out.println("\nItems found:\n");
+			ItemIterator dspaceItems = org.dspace.content.Item.findByAuthorityValue(context, "dc", "contributor", "advisor", advisor_uri);
 			while (dspaceItems.hasNext())
 			{
 				List<MetadataEntry> metadata = null;
 				MetadataRecord record = null;
-				System.out.println("\nItems have a next item\n");
 				org.dspace.content.Item dspaceItem = dspaceItems.next();
-
 				metadata = new org.dspace.rest.common.Item(dspaceItem, "metadata", context).getMetadata();
 				record = new org.dspace.rest.common.MetadataRecord(metadata);
 				records.add(record);
 				
 			}
-			System.out.println("\nLoop done, completing context\n");
 			context.complete();
-			System.out.println("\nContext complete");
 		}
 		catch (SQLException e)
 		{
@@ -97,7 +78,6 @@ public class AdvisorResource extends Resource
 		}
 		finally
 		{
-			System.out.println("\nAbout to process context\n");
 			processFinally(context);
 		}
 		
