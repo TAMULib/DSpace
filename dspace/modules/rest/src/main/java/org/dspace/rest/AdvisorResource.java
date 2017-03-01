@@ -3,6 +3,7 @@ package org.dspace.rest;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ws.rs.GET;
@@ -42,7 +43,7 @@ public class AdvisorResource extends Resource
 	{
 		log.info("Reading items (advisor uri: " + advisor_uri +")");
 		org.dspace.core.Context context = null;
-		List<MetadataRecord> records = null;
+		List<MetadataRecord> records = new ArrayList<MetadataRecord>();
 		String decoded_uri = null;
 		
 		try
