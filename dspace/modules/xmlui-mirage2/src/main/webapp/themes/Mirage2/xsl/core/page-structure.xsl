@@ -204,6 +204,10 @@
             <!-- Mobile viewport optimized: h5bp.com/viewport -->
             <meta name="viewport" content="width=device-width,initial-scale=1"/>
 
+            <!-- TAMU Customization - put in our Google Search Console Verification Keys -->
+            <meta name="google-site-verification" content="7EzVSdf-O3PoukOoJU-9YRjuOw9meAaZFOKQPZx2FYI" />
+            <meta name="google-site-verification" content="YWE3QshrKEMYA3yVgxybcCDuRWiBfCnFTf9vxGy0frg" />
+
             <link rel="shortcut icon">
                 <xsl:attribute name="href">
                     <xsl:value-of select="$theme-path"/>
