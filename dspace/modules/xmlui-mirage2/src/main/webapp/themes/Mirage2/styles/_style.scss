@@ -265,7 +265,7 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
     color: white;
 }
 
-@media only screen and (max-width: 480px) {
+@media only screen and (max-width: 520px) {
     .tamu-header-display {
         display: none;
     }
@@ -277,7 +277,7 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
     }
 }
 
-@media only screen and (min-width: 480px) {
+@media only screen and (min-width: 520px) {
     .tamu-header-display {
         display: inline;
     }
