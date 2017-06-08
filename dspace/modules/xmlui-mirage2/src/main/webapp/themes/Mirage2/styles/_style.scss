@@ -252,6 +252,17 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
     color: white;
 }
 
+.tamu-header-title a {
+    color: white;
+    text-decoration: none;
+}
+
+.tamu-header-title a:hover {
+    color: white;
+    text-decoration: none;
+    cursor: pointer;
+}
+
 .tamu-header-brand {
     margin-top: 0px;
 }
@@ -271,9 +282,6 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
     }
     .tamu-header-display-meadia {
         display: inline;
-    }
-    .tamu-header-title {
-        margin-left: 10px !important;
     }
 }
 

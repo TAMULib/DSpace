@@ -387,7 +387,7 @@
 
                         <span class="navbar-brand tamu-header-brand tamu-header-display">                            
                             <a href="http://library.tamu.edu">
-                                <img src="{$theme-path}images/tamu-logo-with-bar.png" />
+                                <img alt="Texas A&amp;M University Libraries" src="{$theme-path}images/tamu-logo-with-bar.png" />
                             </a>
                             <a href="http://library.tamu.edu">
                                 <span class="tamu-header-brand-text">Texas A&amp;M University Libraries</span>
@@ -396,7 +396,7 @@
 
                         <span class="navbar-brand tamu-header-brand tamu-header-display-meadia">                            
                             <a href="http://library.tamu.edu">
-                                <img src="{$theme-path}images/tamu-logo.png" />
+                                <img alt="Texas A&amp;M University Libraries" src="{$theme-path}images/tamu-logo.png" />
                             </a>               
                         </span>
                         
@@ -551,7 +551,7 @@
             <div class="navbar navbar-default tamu-header-title-bar" role="title">
                 <div class="container">
                     <div class="navbar-header tamu-header-title">
-                        OAKTrust
+                        <a href="{$context-path}/">OAKTrust</a>
                     </div>
                 </div>
             </div>
