@@ -369,9 +369,10 @@
         placeholders for header images -->
     <xsl:template name="buildHeader">
 
-
+        <!-- TAMU Customized -->
         <header>
-            <div class="navbar navbar-default navbar-static-top" role="navigation">
+            
+            <div class="navbar navbar-default navbar-static-top tamu-header-nav-bar" role="navigation">
                 <div class="container">
                     <div class="navbar-header">
 
@@ -384,12 +385,21 @@
                             <span class="icon-bar"></span>
                         </button>
 
-                        <a href="{$context-path}/" class="navbar-brand">
-                            <!-- TAMU Customization -->
-                            <img src="{$theme-path}/images/library-logo.png" />
-                        </a>
+                        <span class="navbar-brand tamu-header-brand tamu-header-display">                            
+                            <a href="http://library.tamu.edu">
+                                <img src="{$theme-path}images/tamu-logo-with-bar.png" />
+                            </a>
+                            <a href="http://library.tamu.edu">
+                                <span class="tamu-header-brand-text">Texas A&amp;M University Libraries</span>
+                            </a>                      
+                        </span>
 
-
+                        <span class="navbar-brand tamu-header-brand tamu-header-display-meadia">                            
+                            <a href="http://library.tamu.edu">
+                                <img src="{$theme-path}images/tamu-logo.png" />
+                            </a>               
+                        </span>
+                        
                         <div class="navbar-header pull-right visible-xs hidden-sm hidden-md hidden-lg">
                         <ul class="nav nav-pills pull-left ">
 
@@ -449,6 +459,11 @@
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <li>
+                                        <a href="http://askus.library.tamu.edu">
+                                            <span class="visible-xs glyphicon glyphicon-question-sign"></span>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <form style="display: inline" action="{/dri:document/dri:meta/dri:userMeta/
                             dri:metadata[@element='identifier' and @qualifier='loginURL']}" method="get">
                                             <button class="navbar-toggle navbar-link">
@@ -501,6 +516,11 @@
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <li>
+                                        <a href="http://askus.library.tamu.edu">
+                                            <span class="hidden-xs">Help</span>
+                                        </a>
+                                    </li>
+                                    <li>
                                         <a href="{/dri:document/dri:meta/dri:userMeta/
                             dri:metadata[@element='identifier' and @qualifier='loginURL']}">
                                             <span class="hidden-xs">
@@ -518,6 +538,14 @@
                             <span class="icon-bar"></span>
                             <span class="icon-bar"></span>
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="navbar navbar-default tamu-header-title-bar" role="title">
+                <div class="container">
+                    <div class="navbar-header tamu-header-title">
+                        OAKTrust
                     </div>
                 </div>
             </div>
