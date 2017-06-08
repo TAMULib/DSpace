@@ -242,11 +242,14 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
 }
 
 .tamu-header-title {
+    margin-left: 2px !important;
     margin-top: 13px;
+    font: -webkit-control;
     font-size: 38px;
     font-style: normal;
     font-variant: normal;
     color: white;
+    border-top: 1px solid #8d8d8d;
 }
 
 .tamu-header-brand {
@@ -255,13 +258,14 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
 
 .tamu-header-brand-text {
     margin-left: 10px;
+    font: -webkit-control;
     font-size: 20px;
     font-style: normal;
     font-variant: normal;
     color: white;
 }
 
-@media only screen and (max-width: 768px) {
+@media only screen and (max-width: 480px) {
     .tamu-header-display {
         display: none;
     }
@@ -273,7 +277,7 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
     }
 }
 
-@media only screen and (min-width: 768px) {
+@media only screen and (min-width: 480px) {
     .tamu-header-display {
         display: inline;
     }
