@@ -390,7 +390,7 @@ public interface DSpaceObjectService<T extends DSpaceObject> {
 
     public void update(Context context, T dso) throws SQLException, AuthorizeException;
     
-    public void update(Context context, Item item, boolean versioning) throws SQLException, AuthorizeException;
+    public void update(Context context, T dso, boolean versioning) throws SQLException, AuthorizeException;
 
     public void delete(Context context, T dso) throws SQLException, AuthorizeException, IOException;
 
