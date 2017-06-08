@@ -474,6 +474,6 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         {
             itemService.addMetadata(context, item, MetadataSchema.DC_SCHEMA, "identifier", "uri", null, handleref);
         }
-        itemService.update(context, item);
+        itemService.update(context, item, true);
     }
 }
