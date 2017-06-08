@@ -483,6 +483,17 @@
                         </ul>
                         <ul class="nav navbar-nav pull-left">
                             <xsl:choose>
+                                <xsl:when test="/dri:document/dri:meta/dri:userMeta/@authenticated = 'no'">
+                                    <li>
+                                        <a href="http://askus.library.tamu.edu">
+                                            <span class="hidden-xs">Help</span>
+                                        </a>
+                                    </li>
+                                </xsl:when>
+                            </xsl:choose>
+                        </ul>
+                        <ul class="nav navbar-nav pull-left">
+                            <xsl:choose>
                                 <xsl:when test="/dri:document/dri:meta/dri:userMeta/@authenticated = 'yes'">
                                     <li class="dropdown">
                                         <a id="user-dropdown-toggle" href="#" role="button" class="dropdown-toggle"
@@ -515,11 +526,6 @@
                                     </li>
                                 </xsl:when>
                                 <xsl:otherwise>
-                                    <li>
-                                        <a href="http://askus.library.tamu.edu">
-                                            <span class="hidden-xs">Help</span>
-                                        </a>
-                                    </li>
                                     <li>
                                         <a href="{/dri:document/dri:meta/dri:userMeta/
                             dri:metadata[@element='identifier' and @qualifier='loginURL']}">
