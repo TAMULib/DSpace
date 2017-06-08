@@ -244,7 +244,6 @@ header {
         padding: 20px 0;
     }
     .tamu-header-title {
-        padding-left: 15px;
         font-family: 'Lato', sans-serif;
         font-size: 30px;
         font-style: normal;
@@ -266,7 +265,7 @@ header {
     .tamu-header-brand-text {
         margin-left: 10px;
         font-family: 'Lato', sans-serif;
-        font-size: 20px;
+        font-size: 18px;
         font-style: normal;
         font-variant: normal;
         color: white;
@@ -275,15 +274,20 @@ header {
         .tamu-header-display {
             display: none;
         }
-        .tamu-header-display-meadia {
+        .tamu-header-display-mobile {
             display: inline;
+        }
+    }
+    @media only screen and (max-width: 767px) {
+        .tamu-header-title {
+            padding-left: 15px;
         }
     }
     @media only screen and (min-width: 520px) {
         .tamu-header-display {
             display: inline;
         }
-        .tamu-header-display-meadia {
+        .tamu-header-display-mobile {
             display: none;
         }
     }

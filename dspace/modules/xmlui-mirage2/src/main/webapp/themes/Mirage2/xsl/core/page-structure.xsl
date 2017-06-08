@@ -394,7 +394,7 @@
                             </a>                      
                         </span>
 
-                        <span class="navbar-brand tamu-header-brand tamu-header-display-meadia">                            
+                        <span class="navbar-brand tamu-header-brand tamu-header-display-mobile">
                             <a href="http://library.tamu.edu">
                                 <img alt="Texas A&amp;M University Libraries" src="{$theme-path}images/tamu-logo.png" />
                             </a>               
@@ -459,9 +459,11 @@
                                 </xsl:when>
                                 <xsl:otherwise>
                                     <li>
-                                        <a href="http://askus.library.tamu.edu">
-                                            <span class="visible-xs glyphicon glyphicon-question-sign"></span>
-                                        </a>
+                                        <form style="display: inline" action="http://askus.library.tamu.edu" method="get">
+                                            <button class="navbar-toggle navbar-link">
+                                            <b class="visible-xs glyphicon glyphicon-question-sign" aria-hidden="true"/>
+                                            </button>
+                                        </form>
                                     </li>
                                     <li>
                                         <form style="display: inline" action="{/dri:document/dri:meta/dri:userMeta/
