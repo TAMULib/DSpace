@@ -345,7 +345,8 @@
       <!-- the authority key value -->
       <input>
         <xsl:attribute name="class">
-          <xsl:text>ds-authority-value </xsl:text>
+          <!-- TAMU Customization - add bootstrap form-control css class to authority input -->
+          <xsl:text>ds-authority-value form-control</xsl:text>
           <xsl:choose>
               <xsl:when test="$unlockButton">
                   <xsl:text>ds-authority-visible </xsl:text>

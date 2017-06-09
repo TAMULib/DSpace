@@ -216,3 +216,31 @@ ul#edu_tamu_metadatatreebrowser_BrowseOverview_list_overview-list li ul.sub-list
 #aspect_submission_StepTransformer_list_submit-initial-questions label.control-label {
     display: block;
 }
+
+/******* Authority Control **************/
+
+input.ds-authority-value {
+    display: inline-block;
+    max-width: 260px;
+}
+
+input.ds-authority-value, span.ds-authority-confidence {
+    margin-top: 12px;
+}
+
+/* (This is borrowed and adapted from jspui) for edit-item-form lock button */
+input.ds-authority-lock {
+    vertical-align: middle; 
+    height: 24px;
+    width: 24px;
+    margin-right: 8px;
+    background-repeat: no-repeat; background-color: transparent;
+}
+
+input.ds-authority-lock.is-locked {
+    background-image: url(../images/authority_control/lock24.png);
+}
+
+input.ds-authority-lock.is-unlocked {
+    background-image: url(../images/authority_control/unlock24.png);
+}

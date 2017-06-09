@@ -36,6 +36,10 @@
                 <entry key="dc_contributor_author">
                     <bean class="org.dspace.authority.PersonAuthorityValue"/>
                 </entry>
+                <!-- TAMU Customization - entry for VIVO url authority -->
+                <entry key="dc_contributor_advisor">
+                    <bean class="org.dspace.authority.PersonAuthorityValue"/>
+                </entry>
             </map>
         </property>
     </bean>

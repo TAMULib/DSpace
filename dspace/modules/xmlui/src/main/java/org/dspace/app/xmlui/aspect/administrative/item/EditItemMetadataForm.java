@@ -268,8 +268,9 @@ public class EditItemMetadataForm extends AbstractDSpaceTransformer {
                                 mdValue.setChoices(fieldKey);
                                 if(Params.PRESENTATION_AUTHORLOOKUP.equals(choiceAuthorityService.getPresentation(fieldKey))){
                                     mdValue.setChoicesPresentation(Params.PRESENTATION_AUTHORLOOKUP);
-                                }else{
-                                    mdValue.setChoicesPresentation(Params.PRESENTATION_LOOKUP);
+                                 // TAMU Customization - utilize existing PRESENTATION_NONE constant to expose authority input field without a corresponding lookup field
+                                }else if(!Params.PRESENTATION_NONE.equals(choiceAuthorityService.getPresentation(fieldKey))){
+                                	mdValue.setChoicesPresentation(Params.PRESENTATION_LOOKUP);
                                 }
                                 mdValue.setChoicesClosed(choiceAuthorityService.isClosed(fieldKey));
                             }
