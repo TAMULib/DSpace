@@ -13,6 +13,8 @@ import org.dspace.authorize.factory.AuthorizeServiceFactory;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.authorize.service.ResourcePolicyService;
 import org.dspace.content.Bundle;
+import org.dspace.content.DCDate;
+import org.dspace.content.MetadataSchema;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.*;
 import org.dspace.eperson.factory.EPersonServiceFactory;
@@ -42,6 +44,7 @@ import java.util.List;
  * Class which provide all CRUD methods over items.
  * 
  * @author Rostislav Novak (Computing and Information Centre, CTU in Prague)
+ * @author Jason Savell (jsavell@library.tamu.edu)
  * 
  */
 // Every DSpace class used without namespace is from package org.dspace.rest.common.*. Otherwise namespace is defined.
@@ -57,7 +60,10 @@ public class ItemsResource extends Resource
     protected BundleService bundleService = ContentServiceFactory.getInstance().getBundleService();
     protected ResourcePolicyService resourcePolicyService = AuthorizeServiceFactory.getInstance().getResourcePolicyService();
     protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
-
+    
+    // TAMU Customization
+    protected InstallItemService installItemService = ContentServiceFactory.getInstance().getInstallItemService();
+    
     private static final Logger log = Logger.getLogger(ItemsResource.class);
 
     /**
@@ -541,7 +547,9 @@ public class ItemsResource extends Resource
 
             dspaceBitstream = bitstreamService.find(context, dspaceBitstream.getID());
             bitstream = new Bitstream(dspaceBitstream, servletContext, "", context);
-
+            
+            updateProvenance(context,dspaceItem);
+            
             context.complete();
 
         }
@@ -1018,4 +1026,29 @@ public class ItemsResource extends Resource
         }
         return item;
     }
+    
+    /**
+     * TAMU Customization - Updates the item provenance each time a bitstream is added through the REST API
+     * 
+     * @param context
+     * @param dspaceItem
+     * @throws AuthorizeException 
+     */
+    private void updateProvenance(org.dspace.core.Context context,
+			org.dspace.content.Item dspaceItem) throws AuthorizeException {
+        DCDate now = DCDate.getCurrent();
+        String provDescription;
+		try {
+			provDescription = "Bitsreams updated through the REST API on " + now
+			        + " (GMT). " +  installItemService.getBitstreamProvenanceMessage(context,dspaceItem);
+	    	log.info("Updating Item provenance with new bitstream data: "+provDescription);
+			// Add provenance description
+	        itemService.addMetadata(context, dspaceItem, MetadataSchema.DC_SCHEMA, "description", "provenance", "en", provDescription);
+            itemService.update(context, dspaceItem);
+
+		} catch (SQLException e) {
+            processException("Something get wrong while updating provenance for item(id=" + dspaceItem.getID() + "). SQLException, Message: " + e, context);
+		}
+		
+}
 }

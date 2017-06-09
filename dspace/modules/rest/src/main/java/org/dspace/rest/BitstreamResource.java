@@ -39,6 +39,8 @@ import org.dspace.authorize.factory.AuthorizeServiceFactory;
 import org.dspace.authorize.service.AuthorizeService;
 import org.dspace.authorize.service.ResourcePolicyService;
 import org.dspace.content.BitstreamFormat;
+import org.dspace.content.Bundle;
+import org.dspace.content.Item;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.BitstreamFormatService;
 import org.dspace.content.service.BitstreamService;
@@ -54,6 +56,9 @@ import org.dspace.usage.UsageEvent;
 
 /**
  * @author Rostislav Novak (Computing and Information Centre, CTU in Prague)
+ * @author James Creel (jcreel@library.tamu.edu)
+ * @author Jeremy Huff (huff@library.tamu.edu)
+ * @author Jason Savell (jsavell@library.tamu.edu)
  */
 // Every DSpace class used without namespace is from package
 // org.dspace.rest.common.*. Otherwise namespace is defined.
@@ -473,6 +478,43 @@ public class BitstreamResource extends Resource
             {
                 dspaceBitstream.setSequenceID(sequenceId);
             }
+            
+            // TAMU Customization - start
+            if(bitstream.getBundleName() != null)
+            {
+            	//find the bundle with the desired name or create it if necessary
+//            	Item parentItem = (Item) dspaceBitstream.getParentObject();
+            	Item parentItem = (Item) bitstreamService.getParentObject(context, dspaceBitstream);
+		        Bundle namedBundle = null;
+		        for(Bundle existingBundle : parentItem.getBundles()) {
+		        	if(existingBundle.getName().equals(bitstream.getBundleName())) {
+		        		namedBundle = existingBundle;
+		        		break;
+		        	} else {
+		        		namedBundle = bundleService.create(context, parentItem, bitstream.getBundleName());
+		        	}		        	
+		        }
+		        
+		        if(namedBundle != null) 
+		        {
+		        	log.trace("Placing bitstream in bundle " + bitstream.getBundleName());
+		        	
+		        	//remove the bitstream from its current bundles
+		            List<Bundle> bundles = dspaceBitstream.getBundles();
+		            for(Bundle bundle : bundles) {          
+		            	try {
+		        			bundleService.removeBitstream(context, bundle, dspaceBitstream);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		            }
+		            
+		            //put the bitstream in the named bundle
+		            bundleService.addBitstream(context, namedBundle, dspaceBitstream);
+		        }
+            }            
+            // TAMU Customization - end
 
             bitstreamService.update(context, dspaceBitstream);
 
