@@ -31,6 +31,7 @@ import org.dspace.eperson.EPerson;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.handle.factory.HandleServiceFactory;
 import org.dspace.handle.service.HandleService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.workflow.WorkflowService;
 import org.dspace.workflow.factory.WorkflowServiceFactory;
 
@@ -854,6 +855,7 @@ public class MetadataImport
 
             // look up the value and authority in solr
             List<AuthorityValue> byValue = authorityValueService.findByValue(c, schema, element, qualifier, value);
+            
             AuthorityValue authorityValue = null;
             if (byValue.isEmpty()) {
                 String toGenerate = fromAuthority.generateString() + value;
@@ -1156,9 +1158,15 @@ public class MetadataImport
      */
     private static boolean isAuthorityControlledField(String md)
     {
-        String mdf = StringUtils.substringAfter(md, ":");
-        mdf = StringUtils.substringBefore(mdf, "[");
-        return authorityControlled.contains(mdf);
+        // TAMU Customization - VIVO URLs - Just return true if the metadata field has an authority prefix that matches configuration
+        String customAuthorityPrefix = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("custom.authority.prefix").toLowerCase();
+    	if (customAuthorityPrefix != null && StringUtils.substringBefore(md, ":").equals(customAuthorityPrefix)) {
+    		return true;
+    	} else {
+	        String mdf = StringUtils.substringAfter(md, ":");
+	        mdf = StringUtils.substringBefore(mdf, "[");
+	        return authorityControlled.contains(mdf);
+    	}
     }
 
     /**

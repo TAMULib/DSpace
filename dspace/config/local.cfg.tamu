@@ -340,3 +340,5 @@ choices.presentation.dc.contributor.advisor = none
 authority.controlled.dc.contributor.advisor = true
 #
 authority.author.indexer.field.1=dc.contributor.advisor
+
+custom.authority.prefix=vivo

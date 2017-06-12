@@ -147,10 +147,16 @@ public class DSpaceCSV implements Serializable
                 else if (!"id".equals(element))
                 {
                     String authorityPrefix = "";
+                    // TAMU Customization - VIVO URLs - Get the custom authority prefix configuration
+                    String customAuthorityPrefix = DSpaceServicesFactory.getInstance().getConfigurationService().getProperty("custom.authority.prefix");
                     AuthorityValue authorityValueType = authorityValueService.getAuthorityValueType(element);
                     if (authorityValueType != null) {
                         String authorityType = authorityValueType.getAuthorityType();
                         authorityPrefix = element.substring(0, authorityType.length() + 1);
+                        element = element.substring(authorityPrefix.length());
+                    // TAMU Customization - VIVO URLs - Conditionally allow the authorityPrefix to be built and passed along 
+                    } else if (customAuthorityPrefix != null && element.contains(customAuthorityPrefix+":")) {
+                    	authorityPrefix = element.substring(0, 5);
                         element = element.substring(authorityPrefix.length());
                     }
 
