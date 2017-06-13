@@ -69,10 +69,12 @@ public class VersionManager {
 
             Item item = itemService.find(context, itemID);
 
+            // TAMU customization
             if (authorizeService.authorizeVersioning(context, item) || itemService.canEdit(context, item)) {
                 Version version = versioningService.createNewVersion(context, item, summary);
                 WorkspaceItem wsi = workspaceItemService.findByItem(context, version.getItem());
-                
+
+                // TAMU upstream fix
                 // Force data to be written to the database
                 context.commit();
 
@@ -108,6 +110,7 @@ public class VersionManager {
 
             Item item = itemService.find(context, itemID);
 
+            // TAMU customization
             if (authorizeService.authorizeVersioning(context, item)) {
                 versioningService.updateVersion(context, item, summary);
 

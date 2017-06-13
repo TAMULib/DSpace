@@ -69,6 +69,7 @@ public class VersionHistoryForm extends AbstractDSpaceTransformer {
         boolean isItemView=parameters.getParameter("itemID",null) == null;
         Item item = getItem();
 
+        // TAMU customization
         if(item==null || !authorizeService.authorizeVersioning(this.context, item))
         {
             if(isItemView)
@@ -137,6 +138,8 @@ public class VersionHistoryForm extends AbstractDSpaceTransformer {
     private void createTable(Division main, VersionHistory history, boolean isItemView, Item item) throws WingException, SQLException
     {
         Boolean isVisible = DSpaceServicesFactory.getInstance().getConfigurationService().getBooleanProperty("versioning.item.history.include.submitter", Boolean.FALSE);
+
+        // TAMU customization
         boolean isAuthorized = authorizeService.authorizeVersioning(this.context, item);
         if(isAuthorized)
         {

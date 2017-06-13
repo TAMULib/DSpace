@@ -148,6 +148,7 @@ public interface AuthorizeService {
      */
     public boolean authorizeActionBoolean(Context c, EPerson e, DSpaceObject o, int a, boolean useInheritance) throws SQLException;
 
+    // TAMU customization
     public boolean authorizeVersioning(Context context, DSpaceObject dso) throws SQLException;
     
     ///////////////////////////////////////////////

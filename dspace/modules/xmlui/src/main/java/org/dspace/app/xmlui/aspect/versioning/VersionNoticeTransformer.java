@@ -108,6 +108,7 @@ public class VersionNoticeTransformer extends AbstractDSpaceTransformer {
         //Attempt to retrieve the latest version
         List<Version> allVersions = versioningService.getVersionsByHistory(context, history);
         for (Version version : allVersions) {
+            // TAMU customization
             if (version.getItem().isArchived() || authorizeService.authorizeVersioning(context, item))
             {
                 return version;

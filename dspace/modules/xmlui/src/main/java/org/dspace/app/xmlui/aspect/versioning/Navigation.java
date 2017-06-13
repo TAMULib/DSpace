@@ -170,6 +170,8 @@ public class Navigation extends AbstractDSpaceTransformer implements CacheablePr
     	if (dso != null && dso.getType() == Constants.ITEM)
         {
     		Item item = (Item) dso;
+
+            // TAMU customization
     		if(authorizeService.authorizeVersioning(this.context, item))
             {
                 boolean headAdded=false;

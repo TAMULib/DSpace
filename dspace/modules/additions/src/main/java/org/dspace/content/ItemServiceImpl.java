@@ -426,11 +426,13 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
         }
     }
 
+    // TAMU customized
     @Override
     public void update(Context context, Item item) throws SQLException, AuthorizeException {
         update(context, item, false);
     }
 
+    // TAMU customization
     @Override
     public void update(Context context, Item item, boolean versioning) throws SQLException, AuthorizeException {
         
