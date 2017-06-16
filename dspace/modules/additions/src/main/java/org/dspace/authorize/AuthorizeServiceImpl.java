@@ -208,7 +208,8 @@ public class AuthorizeServiceImpl implements AuthorizeService
 
         return isAuthorized;
     }
-
+    
+    // TAMU Customization
     @Override
     public boolean authorizeVersioning(Context context, DSpaceObject dso) throws SQLException {
         boolean authorized = false;

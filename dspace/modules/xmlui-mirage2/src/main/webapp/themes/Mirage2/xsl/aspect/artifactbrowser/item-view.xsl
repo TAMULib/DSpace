@@ -278,25 +278,46 @@
         </div>
     </xsl:template>
 
+    <!-- TAMU CUstomization - Preferentially show DOIs over URIs if they are present -->
     <xsl:template name="itemSummaryView-DIM-URI">
-        <xsl:if test="dim:field[@element='identifier' and @qualifier='uri' and descendant::text()]">
-            <div class="simple-item-view-uri item-page-field-wrapper table">
-                <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-uri</i18n:text></h5>
-                <span>
-                    <xsl:for-each select="dim:field[@element='identifier' and @qualifier='uri']">
-                        <a>
-                            <xsl:attribute name="href">
+        <xsl:choose>
+            <xsl:when test="dim:field[@element='identifier' and @qualifier='doi' and descendant::text()]">
+                <div class="simple-item-view-uri item-page-field-wrapper table">
+                    <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-doi</i18n:text></h5>
+                    <span>
+                        <xsl:for-each select="dim:field[@element='identifier' and @qualifier='doi']">
+                            <a>
+                                <xsl:attribute name="href">
+                                    <xsl:copy-of select="./node()"/>
+                                </xsl:attribute>
                                 <xsl:copy-of select="./node()"/>
-                            </xsl:attribute>
-                            <xsl:copy-of select="./node()"/>
-                        </a>
-                        <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='uri']) != 0">
-                            <br/>
-                        </xsl:if>
-                    </xsl:for-each>
-                </span>
-            </div>
-        </xsl:if>
+                            </a>
+                            <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='doi']) != 0">
+                                <br/>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </span>
+                </div>
+            </xsl:when>
+            <xsl:otherwise>
+                <div class="simple-item-view-uri item-page-field-wrapper table">
+                    <h5><i18n:text>xmlui.dri2xhtml.METS-1.0.item-uri</i18n:text></h5>
+                    <span>
+                        <xsl:for-each select="dim:field[@element='identifier' and @qualifier='uri']">
+                            <a>
+                                <xsl:attribute name="href">
+                                    <xsl:copy-of select="./node()"/>
+                                </xsl:attribute>
+                                <xsl:copy-of select="./node()"/>
+                            </a>
+                            <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='uri']) != 0">
+                                <br/>
+                            </xsl:if>
+                        </xsl:for-each>
+                    </span>
+                </div>
+            </xsl:otherwise>
+        </xsl:choose>            
     </xsl:template>
 
     <!-- TAMU CUstomization -->
@@ -438,7 +459,10 @@
                 <xsl:attribute name="href">
                     <xsl:value-of select="$href"/>
                 </xsl:attribute>
+                <!--  TAMU Customization -->
                 <xsl:call-template name="getFileIcon">
+                    <xsl:with-param name="href" select="$href"/>
+                    <xsl:with-param name="title" select="$title"/>
                     <xsl:with-param name="mimetype">
                         <xsl:value-of select="substring-before($mimetype,'/')"/>
                         <xsl:text>/</xsl:text>
@@ -741,22 +765,20 @@
             </xsl:otherwise>
         </xsl:choose>
     </xsl:template>
-
+    
+    <!--  TAMU Customization -->
     <xsl:template name="getFileIcon">
+        <xsl:param name="href"/>
+        <xsl:param name="title"/>
         <xsl:param name="mimetype"/>
-            <i aria-hidden="true">
-                <xsl:attribute name="class">
-                <xsl:text>glyphicon </xsl:text>
-                <xsl:choose>
-                    <xsl:when test="contains(mets:FLocat[@LOCTYPE='URL']/@xlink:href,'isAllowed=n')">
-                        <xsl:text> glyphicon-lock</xsl:text>
-                    </xsl:when>
-                    <xsl:otherwise>
-                        <xsl:text> glyphicon-file</xsl:text>
-                    </xsl:otherwise>
-                </xsl:choose>
-                </xsl:attribute>
-            </i>
+            <xsl:choose>
+                <xsl:when test="contains($href,'isAllowed=n')">
+                    <i aria-hidden="true" class="glyphicon glyphicon-lock" data-toggle="popover" data-placement="right" data-trigger="hover" title="{$title}" data-content="xmlui.dri2xhtml.METS-1.0.item-files-authorization-required" i18n:attr="data-content"></i>
+                </xsl:when>
+                <xsl:otherwise>
+                    <i aria-hidden="true" class="glyphicon glyphicon-file" data-toggle="popover" data-placement="right" data-trigger="hover" title="{$title}" data-content="xmlui.dri2xhtml.METS-1.0.item-files-authorized" i18n:attr="data-content"></i>
+                </xsl:otherwise>
+            </xsl:choose>
         <xsl:text> </xsl:text>
     </xsl:template>
 
