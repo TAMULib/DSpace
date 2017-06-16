@@ -70,7 +70,8 @@ public class VersionItemForm extends AbstractDSpaceTransformer {
         // Get our parameters and state
         Item item = getItem();
 
-        //Only (collection) admins or submitter by configuration should be able to create a new version
+        // Only (collection) admins or submitter by configuration should be able to create a new version
+        // TAMU Customization
         if(!authorizeService.authorizeVersioning(this.context, item)){
             throw new AuthorizeException();
         }
