@@ -479,43 +479,6 @@ public class BitstreamResource extends Resource
                 dspaceBitstream.setSequenceID(sequenceId);
             }
             
-            // TAMU Customization - start
-            if(bitstream.getBundleName() != null)
-            {
-            	//find the bundle with the desired name or create it if necessary
-//            	Item parentItem = (Item) dspaceBitstream.getParentObject();
-            	Item parentItem = (Item) bitstreamService.getParentObject(context, dspaceBitstream);
-		        Bundle namedBundle = null;
-		        for(Bundle existingBundle : parentItem.getBundles()) {
-		        	if(existingBundle.getName().equals(bitstream.getBundleName())) {
-		        		namedBundle = existingBundle;
-		        		break;
-		        	} else {
-		        		namedBundle = bundleService.create(context, parentItem, bitstream.getBundleName());
-		        	}		        	
-		        }
-		        
-		        if(namedBundle != null) 
-		        {
-		        	log.trace("Placing bitstream in bundle " + bitstream.getBundleName());
-		        	
-		        	//remove the bitstream from its current bundles
-		            List<Bundle> bundles = dspaceBitstream.getBundles();
-		            for(Bundle bundle : bundles) {          
-		            	try {
-		        			bundleService.removeBitstream(context, bundle, dspaceBitstream);
-						} catch (IOException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-		            }
-		            
-		            //put the bitstream in the named bundle
-		            bundleService.addBitstream(context, namedBundle, dspaceBitstream);
-		        }
-            }            
-            // TAMU Customization - end
-
             bitstreamService.update(context, dspaceBitstream);
 
             if (bitstream.getPolicies() != null)
@@ -523,13 +486,63 @@ public class BitstreamResource extends Resource
                 log.trace("Updating bitstream policies.");
 
                 // Remove all old bitstream policies.
-                authorizeService.removeAllPolicies(context,dspaceBitstream);
+                authorizeService.removeAllPolicies(context, dspaceBitstream);
 
                 // Add all new bitstream policies
                 for (ResourcePolicy policy : bitstream.getPolicies()) {
                     addPolicyToBitstream(context, policy, dspaceBitstream);
                 }
             }
+
+            // TAMU Customization - start
+            if (bitstream.getBundleName() != null) {
+                Item parentItem = (Item) bitstreamService.getParentObject(context, dspaceBitstream);
+
+                // check if bundle with name exists
+                Bundle namedBundle = null;
+                for (Bundle bundle : parentItem.getBundles()) {
+                    if (bundle.getName().equals(bitstream.getBundleName())) {
+                        namedBundle = bundle;
+                        break;
+                    }
+                }
+
+                // if bundle does not exist
+                // - create new bundle with name
+                // - add bitstream to new bundle
+                // - remove bitstream from other bundles
+                if (namedBundle == null) {
+                    // create new bundle
+                    namedBundle = bundleService.create(context, parentItem, bitstream.getBundleName());
+
+                    log.trace("Placing bitstream in new bundle " + bitstream.getBundleName());
+
+                    // put the bitstream in the named bundle
+                    bundleService.addBitstream(context, namedBundle, dspaceBitstream);
+
+                    // remove the bitstream from other bundles
+                    List<Bundle> bundles = dspaceBitstream.getBundles();
+                    for (Bundle bundle : bundles) {
+                        if (!bundle.getName().equals(bitstream.getBundleName())) {
+                            // get bitstream from bundle if exists
+                            org.dspace.content.Bitstream currentBitstream = bundleService.getBitstreamByName(bundle, dspaceBitstream.getName());
+                            if (currentBitstream != null) {
+                                try {
+                                    // remove current bitstream
+                                    bundleService.removeBitstream(context, bundle, currentBitstream);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+
+                    bundleService.update(context, namedBundle);
+                }
+
+            }
+            // TAMU Customization - end
+
 
             context.complete();
 
