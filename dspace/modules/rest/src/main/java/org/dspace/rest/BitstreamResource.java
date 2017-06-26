@@ -507,42 +507,40 @@ public class BitstreamResource extends Resource
                     }
                 }
 
-                // if bundle does not exist
-                // - create new bundle with name
-                // - add bitstream to new bundle
-                // - remove bitstream from other bundles
+                // if bundle does not exist, create new bundle with name
                 if (namedBundle == null) {
                     // create new bundle
+                    log.trace("Creating new bundle " + bitstream.getBundleName());
                     namedBundle = bundleService.create(context, parentItem, bitstream.getBundleName());
-
-                    log.trace("Placing bitstream in new bundle " + bitstream.getBundleName());
-
                     // put the bitstream in the named bundle
+                    log.trace("Placing bitstream in new bundle " + bitstream.getBundleName());
                     bundleService.addBitstream(context, namedBundle, dspaceBitstream);
-
-                    // remove the bitstream from other bundles
-                    List<Bundle> bundles = dspaceBitstream.getBundles();
-                    for (Bundle bundle : bundles) {
-                        if (!bundle.getName().equals(bitstream.getBundleName())) {
-                            // get bitstream from bundle if exists
-                            org.dspace.content.Bitstream currentBitstream = bundleService.getBitstreamByName(bundle, dspaceBitstream.getName());
-                            if (currentBitstream != null) {
-                                try {
-                                    // remove current bitstream
-                                    bundleService.removeBitstream(context, bundle, currentBitstream);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    }
-
                     bundleService.update(context, namedBundle);
+                } else {
+                    // if existing bundle does not contains the bitstream, add it
+                    if (bundleService.getBitstreamByName(namedBundle, dspaceBitstream.getName()) == null) {
+                        log.trace("Placing bitstream in existing bundle " + bitstream.getBundleName());
+                        bundleService.addBitstream(context, namedBundle, dspaceBitstream);
+                        bundleService.update(context, namedBundle);
+                    }
                 }
 
+                // remove the bitstream from other bundles
+                for (Bundle bundle : dspaceBitstream.getBundles()) {
+                    // if bitstream is in an existing bundle, remove it
+                    if (!bundle.getName().equals(bitstream.getBundleName())) {
+                        try {
+                            // remove current bitstream
+                            log.trace("Removing bitstream from bundle " + bitstream.getBundleName());
+                            bundleService.removeBitstream(context, bundle, dspaceBitstream);
+                            bundleService.update(context, bundle);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
             }
             // TAMU Customization - end
-
 
             context.complete();
 
