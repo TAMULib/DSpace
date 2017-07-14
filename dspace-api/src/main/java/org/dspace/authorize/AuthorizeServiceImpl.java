@@ -460,7 +460,6 @@ public class AuthorizeServiceImpl implements AuthorizeService
             return groupService.isMember(c, Group.ADMIN);
         }
     }
-
     @Override
     public boolean isAdmin(Context c, EPerson e) throws SQLException
     {
@@ -478,7 +477,6 @@ public class AuthorizeServiceImpl implements AuthorizeService
             return groupService.isMember(c, e, Group.ADMIN);
         }
     }
-    
     public boolean isCommunityAdmin(Context c) throws SQLException 
     {
         EPerson e = c.getCurrentUser();
@@ -684,7 +682,7 @@ public class AuthorizeServiceImpl implements AuthorizeService
 
         List<Group> groups = new ArrayList<Group>();
         for (ResourcePolicy resourcePolicy : policies) {
-            if(resourcePolicy.getGroup() != null)
+            if(resourcePolicy.getGroup() != null && resourcePolicyService.isDateValid(resourcePolicy))
             {
                 groups.add(resourcePolicy.getGroup());
             }
