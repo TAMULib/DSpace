@@ -352,7 +352,7 @@ public class FlowContainerUtils
 			//System.out.println("Deleting: " + item.getHandle());
 			//ib.itemRemoved(item);
 			collectionService.removeItem(context, collection, item);
-
+			context.uncacheEntity(item);
 		}
 
 		hc.setLastHarvested(null);
@@ -547,15 +547,15 @@ public class FlowContainerUtils
             }else{
                 if (ROLE_WF_STEP1.equals(roleName))
                 {
-                    collection.setWorkflowGroup(1, null);
+                    collection.setWorkflowGroup(context, 1, null);
                 }
                 else if (ROLE_WF_STEP2.equals(roleName))
                 {
-                    collection.setWorkflowGroup(2, null);
+                    collection.setWorkflowGroup(context, 2, null);
                 }
                 else if (ROLE_WF_STEP3.equals(roleName))
                 {
-                    collection.setWorkflowGroup(3, null);
+                    collection.setWorkflowGroup(context, 3, null);
                 }
             }
 		}
