@@ -170,6 +170,8 @@ mail.admin = helpdesk@library.tamu.edu
 # port number of proxy server
 #http.proxy.port =
 
+useProxies = true
+
 ##########################
 # AUTHENTICATION METHODS #
 ##########################
