@@ -263,7 +263,9 @@ ip.member = 	165.95.67.128/25, \
 				192.195.90.230, \
 				192.195.90.205, \
 				165.95.232.0/21,\
-				165.95.232
+				165.95.232, \
+				10.20.0.13, \
+				10.20.0.156
 
 # Authentication headers for Mail, NetID, and Tomcat's Remote User.
 # Supply all parameters possible.
