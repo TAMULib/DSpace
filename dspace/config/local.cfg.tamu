@@ -273,7 +273,13 @@ authentication-shibboleth.email-header = TDL-mail
 firstname-header = TDL-givenName
 lastname-header = TDL-sn
 
-role-header = eduPersonEntitlement
+role-header = scoped-affiliation
+role-header.ignore-scope = false
+
+role.employee@tamu.edu = member, employee
+role.staff@tamu.edu = member, staff
+role.student@tamu.edu = member, student
+role.faculty@tamu.edu = member, faculty
 
 webui.browse.index.1 = dateissued:item:dateissued
 webui.browse.index.2 = author:metadata:dc.contributor.*:text,dc.creator:text
