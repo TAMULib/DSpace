@@ -215,7 +215,7 @@ plugin.sequence.org.dspace.authenticate.AuthenticationMethod = org.dspace.authen
 #                   11.3.4.5/24, \
 #                   12.7.8.9/255.255.128.0
 
-ip.member = 	165.95.67.128/25, \
+authentication-ip.member = 	165.95.67.128/25, \
 				165.95.67.128, \
 				165.95.68.0/25, \
 				165.95.68.0, \
@@ -272,16 +272,16 @@ ip.member = 	165.95.67.128/25, \
 authentication-shibboleth.netid-header = TDL-tamuUID
 authentication-shibboleth.email-header = TDL-mail
 
-firstname-header = TDL-givenName
-lastname-header = TDL-sn
+authentication-shibboleth.firstname-header = TDL-givenName
+authentication-shibboleth.lastname-header = TDL-sn
 
-role-header = scoped-affiliation
-role-header.ignore-scope = false
+authentication-shibboleth.role-header = scoped-affiliation
+authentication-shibboleth.role-header.ignore-scope = false
 
-role.employee@tamu.edu = member, employee
-role.staff@tamu.edu = member, staff
-role.student@tamu.edu = member, student
-role.faculty@tamu.edu = member, faculty
+authentication-shibboleth.role.employee@tamu.edu = member, employee
+authentication-shibboleth.role.staff@tamu.edu = member, staff
+authentication-shibboleth.role.student@tamu.edu = member, student
+authentication-shibboleth.role.faculty@tamu.edu = member, faculty
 
 webui.browse.index.1 = dateissued:item:dateissued
 webui.browse.index.2 = author:metadata:dc.contributor.*:text,dc.creator:text
