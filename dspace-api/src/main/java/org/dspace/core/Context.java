@@ -419,6 +419,8 @@ public class Context
             // commit any changes made as part of the transaction
             if (isValid())
             {
+                // Dispatch events before committing changes to the database,
+                // as the consumers may change something too
                 dispatchEvents();
             }
 
@@ -546,8 +548,8 @@ public class Context
 
         try
         {
-            // Rollback if we have a database connection, and it is NOT Read Only
-            if (isValid())
+            // Rollback ONLY if we have a database connection, and it is NOT Read Only
+            if (isValid() && !isReadOnly())
             {
                 dbConnection.rollback();
             }
