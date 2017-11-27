@@ -42,8 +42,8 @@
      <page number="1">
        <field>
          <dc-schema>dc</dc-schema>
-         <dc-element>contributor</dc-element>
-         <dc-qualifier>author</dc-qualifier>
+         <dc-element>creator</dc-element>
+         <dc-qualifier></dc-qualifier>
          <repeatable>true</repeatable>
          <label>Authors</label>
          <input-type>name</input-type>
@@ -582,8 +582,8 @@ it, please enter the types and the actual numbers or codes.</hint>
      <page number="1">
        <field>
          <dc-schema>dc</dc-schema>
-         <dc-element>contributor</dc-element>
-         <dc-qualifier>author</dc-qualifier>
+         <dc-element>creator</dc-element>
+         <dc-qualifier></dc-qualifier>
          <repeatable>true</repeatable>
          <label>Authors</label>
          <input-type>name</input-type>
