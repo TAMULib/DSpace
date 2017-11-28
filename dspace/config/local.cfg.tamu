@@ -344,6 +344,10 @@ authority.controlled.dc.contributor.advisor = true
 #
 authority.author.indexer.field.1=dc.contributor.advisor
 
+###############
+# ASSUME USER #
+##############
+webui.user.assumelogin = true
 
 #######################
 # TAMU CUSTOMIZATIONS #
