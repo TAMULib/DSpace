@@ -318,7 +318,9 @@ search.index.24 = ispartof:dc.relation.ispartof
 search.index.25 = type:dc.type.*
 search.index.26 = department:thesis.degree.department
 
+##########################
 #### Embargo Settings ####
+##########################
 # DC metadata field to hold the user-supplied embargo terms
 # DC metadata field to hold the user-supplied embargo terms
 embargo.field.terms = local.embargo.terms
@@ -331,7 +333,9 @@ embargo.field.lift = local.embargo.lift
 xmlui.community-list.render.full = true
 xmlui.community-list.render.browse = true
 
+########################################
 #####  Authority Control Settings  #####
+########################################
 plugin.named.org.dspace.content.authority.ChoiceAuthority = \
   org.dspace.content.authority.SolrAuthority = SolrAuthorAuthority
 
@@ -346,7 +350,7 @@ authority.author.indexer.field.1=dc.contributor.advisor
 
 ###############
 # ASSUME USER #
-##############
+###############
 webui.user.assumelogin = true
 
 #######################
