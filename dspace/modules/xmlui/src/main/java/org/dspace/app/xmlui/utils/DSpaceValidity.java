@@ -276,8 +276,9 @@ public class DSpaceValidity implements SourceValidity
             validityKey.append(collectionService.getMetadata(collection, "license"));
             validityKey.append(collectionService.getMetadata(collection, "name")); 
             
+            //TAMU Customization - Skipping caching the collection logo works around DS-3775
             // Add the logo also;
-            this.add(context, collection.getLogo());
+            //this.add(context, collection.getLogo());
             
         }
         else if (dso instanceof Item)
