@@ -268,6 +268,8 @@
                                  </includes>
                                  <excludes>
                                      <exclude>**/node/node_modules/**</exclude>
+                                     <!-- TAMU Customization - Exclude node_modules directory under dspace/modules/xmlui-mirage2/target/themes/Mirage2 from test validation-->
+                                     <exclude>**/**/**/**/node_modules/**</exclude>
                                  </excludes>
                               </validationSet>
                           </validationSets>
