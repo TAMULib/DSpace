@@ -59,6 +59,8 @@ dspace.name = The TAMU Digital Repository
 # But, you may need to modify this if you are running DSpace on a custom port, etc.
 solr.server = http://localhost:8080/solr
 
+oai.url = ${dspace.baseUrl}/dspace-oai
+
 ##########################
 # DATABASE CONFIGURATION #
 ##########################
@@ -352,6 +354,16 @@ authority.author.indexer.field.1=dc.contributor.advisor
 # ASSUME USER #
 ###############
 webui.user.assumelogin = true
+
+#############
+# ANALYTICS #
+#############
+xmlui.google.analytics.key = 
+
+############
+# REQUESTS #
+############
+request.item.type =
 
 ##############
 # STATISTICS #
