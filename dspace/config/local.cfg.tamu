@@ -353,6 +353,21 @@ authority.author.indexer.field.1=dc.contributor.advisor
 ###############
 webui.user.assumelogin = true
 
+##############
+# STATISTICS #
+##############
+# Control if the statistics pages should be only shown to authorized users
+# If enabled, only the administrators for the DSpaceObject will be able to
+# view the statistics.
+# If disabled, anyone with READ permissions on the DSpaceObject will be able
+# to view the statistics.
+#View/download statistics
+usage-statistics.authorization.admin.usage=false
+#Search/search result statistics
+usage-statistics.authorization.admin.search=false
+#Workflow result statistics
+usage-statistics.authorization.admin.workflow=false
+
 #######################
 # TAMU CUSTOMIZATIONS #
 #######################
