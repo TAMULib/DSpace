@@ -126,7 +126,8 @@ public class Navigation extends AbstractDSpaceTransformer implements CacheablePr
                     DSpaceObject dso = HandleUtil.obtainHandle(objectModel);
                     if(dso != null)
                     {
-                        validity.add(context, dso);
+                    	//TAMU Customization - fix hibernate session bug [DS-3775] (pending upstream merge)
+                        validity.add(context, context.reloadEntity(dso));
                     }
 
 		            this.validity = validity.complete();
