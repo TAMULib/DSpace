@@ -88,9 +88,8 @@ public class FullTextContentStreams extends ContentStreamBase
                     // TAMU Customization - Only index text bitstreams that are not restricted
                 	isIndexable = false;
                 	for (ResourcePolicy rp:bundlePolicies) {
-                		
                 		if (rp.getdSpaceObject().getID() == fulltextBitstream.getID()) {
-                			if (rp.getGroup().getName().equals("ANONYMOUS")) {
+                			if (rp.getGroup().getName().equalsIgnoreCase("anonymous")) {
                 				isIndexable = true;
                 			}
                 			break;
