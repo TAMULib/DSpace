@@ -259,6 +259,15 @@ header {
     div.tamu-header-nav-bar {
         background-color: #3c0000;
     }
+    .navbar-nav>li>a {
+        color:#eee;
+        border-right: 1px solid #6a0000;
+    }
+    .navbar-default .navbar-nav>li>a:hover {
+        color:#000;
+        background-color:#ffc222;
+        text-decoration: none;
+    }
     div.tamu-header-title-bar {
         background-color: #500000;
         border-top: 1px solid #8d8d8d;
