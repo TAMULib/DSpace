@@ -389,7 +389,7 @@
                                 <img alt="Texas A&amp;M University Libraries" src="{$theme-path}images/tamu-logo-with-bar.png" />
                             </a>
                             <a href="http://library.tamu.edu">
-                                <span class="tamu-header-brand-text">Texas A&amp;M University Libraries </span>
+                                <span class="tamu-header-brand-text">Texas A&amp;M University Libraries</span>
                             </a>                      
                         </span>
 
