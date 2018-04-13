@@ -380,6 +380,29 @@ usage-statistics.authorization.admin.search=false
 #Workflow result statistics
 usage-statistics.authorization.admin.workflow=false
 
+#### Event System Configuration ####
+
+# Add doi here if you are using org.dspace.identifier.DOIIdentifierProvider to generate DOIs.
+# Adding doi here makes DSpace send metadata updates to your doi registration agency.
+# Add rdf here, if you are using dspace-rdf to export your repository content as RDF.
+event.dispatcher.default.consumers = versioning, discovery, eperson, rdf
+
+
+# modules/rdf.cfg
+
+# These configs are used by dspace-rdf and the buildin Linked Data export (rdfizer)
+
+# Configure if content negotiation should be enabled
+rdf.contentNegotiation.enable = true
+
+# Address of the public SPARQL endpoint
+# DSpace will link to this address and use it if rdf.storage.sparql.endpoint isn't set.
+rdf.public.sparql.endpoint = http://localhost:3030/dspace/sparql
+
+# Address of the endpoint for the SPARQL 1.1 Graph Store HTTP Protocoll
+# This address is used to store data in the triple store.
+rdf.storage.graphstore.endpoint = http://localhost:3030/dspace/data
+
 #######################
 # TAMU CUSTOMIZATIONS #
 #######################
