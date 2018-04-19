@@ -423,7 +423,3 @@ djatoka.url=http://djatoka.library.tamu.edu/
 dspace.oai.url=http://oaktrust.library.tamu.edu/dspace-oai
 
 custom.authority.prefix=vivo
-
-#### Fuseki DSpace Triplestore for RDF webapp ####
-
-fuseki.dspace.store=http://localhost:8983/dspace/sparql
