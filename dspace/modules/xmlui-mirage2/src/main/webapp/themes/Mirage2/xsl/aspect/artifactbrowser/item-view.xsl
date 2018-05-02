@@ -140,6 +140,7 @@
                     <xsl:call-template name="itemSummaryView-DIM-dwc"/>
                     <!-- TAMU Customization -->
                     <xsl:call-template name="itemSummaryView-DIM-citation"/>
+                    <div class='altmetric-embed' data-badge-type='donut' data-doi="10.1038/nature.2012.9872"></div>
                 </div>
             </div>
         </div>
