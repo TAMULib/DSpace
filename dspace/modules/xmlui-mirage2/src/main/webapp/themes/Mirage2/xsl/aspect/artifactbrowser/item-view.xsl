@@ -125,6 +125,8 @@
                     <xsl:if test="$ds_item_view_toggle_url != ''">
                         <xsl:call-template name="itemSummaryView-show-full"/>
                     </xsl:if>
+                    <!-- TAMU Customization -->
+                    <xsl:call-template name="itemSummaryView-altmetric-badge"/>
                 </div>
                 <div class="col-sm-8">
                     <xsl:call-template name="itemSummaryView-DIM-abstract"/>
@@ -140,7 +142,6 @@
                     <xsl:call-template name="itemSummaryView-DIM-dwc"/>
                     <!-- TAMU Customization -->
                     <xsl:call-template name="itemSummaryView-DIM-citation"/>
-                    <div class='altmetric-embed' data-badge-type='donut' data-doi="10.1038/nature.2012.9872"></div>
                 </div>
             </div>
         </div>
@@ -277,6 +278,28 @@
             <!--TAMU Customization - linkable authors -->
             <a href="{$context-path}/browse?type=author&amp;value={node()}"><xsl:copy-of select="node()"/></a>            
         </div>
+    </xsl:template>
+
+    <!-- TAMU Customization - Adding Altmetric badge using DOI over URIs if they are present -->
+    <xsl:template name="itemSummaryView-altmetric-badge">
+        <xsl:choose>
+            <xsl:when test="dim:field[@element='identifier' and @qualifier='doi' and descendant::text()]">
+                <xsl:for-each select="dim:field[@element='identifier' and @qualifier='doi']">
+                    <div class='altmetric-embed' data-badge-popover='right' data-badge-type='donut' data-doi="{./node()}" data-hide-less-than="1"></div>
+                    <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='doi']) != 0">
+                        <br/>
+                    </xsl:if>
+                </xsl:for-each>
+            </xsl:when>
+            <xsl:otherwise>
+                <xsl:for-each select="dim:field[@element='identifier' and @qualifier='uri']">
+                    <div class='altmetric-embed' data-badge-popover='right' data-badge-type='donut' data-handle="{./node()}" data-hide-less-than="1"></div>
+                    <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='uri']) != 0">
+                        <br/>
+                    </xsl:if>
+                </xsl:for-each>
+            </xsl:otherwise>
+        </xsl:choose>
     </xsl:template>
 
     <!-- TAMU CUstomization - Preferentially show DOIs over URIs if they are present -->
