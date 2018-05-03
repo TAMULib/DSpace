@@ -293,7 +293,7 @@
             </xsl:when>
             <xsl:otherwise>
                 <xsl:for-each select="dim:field[@element='identifier' and @qualifier='uri']">
-                    <div class='altmetric-embed' data-badge-popover='right' data-badge-type='donut' data-handle="{./node()}" data-hide-less-than="1"></div>
+                    <div class='altmetric-embed' data-badge-popover='right' data-badge-type='donut' data-handle="{substring-after(./node(),'.net/')}" data-hide-less-than="1"></div>
                     <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='uri']) != 0">
                         <br/>
                     </xsl:if>
