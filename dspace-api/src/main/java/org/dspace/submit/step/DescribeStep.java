@@ -20,15 +20,21 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.log4j.Logger;
-
+import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputsReader;
 import org.dspace.app.util.DCInputsReaderException;
-import org.dspace.app.util.DCInput;
 import org.dspace.app.util.SubmissionInfo;
 import org.dspace.app.util.Util;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.*;
+import org.dspace.content.Collection;
+import org.dspace.content.DCDate;
+import org.dspace.content.DCPersonName;
+import org.dspace.content.DCSeriesNumber;
+import org.dspace.content.Item;
+import org.dspace.content.LocalCreatorList;
+import org.dspace.content.MetadataValue;
 import org.dspace.content.authority.Choices;
 import org.dspace.content.authority.factory.ContentAuthorityServiceFactory;
 import org.dspace.content.authority.service.ChoiceAuthorityService;
@@ -525,6 +531,8 @@ public class DescribeStep extends AbstractProcessingStep
         List<String> lasts = new LinkedList<String>();
         List<String> auths = new LinkedList<String>();
         List<String> confs = new LinkedList<String>();
+        List<String> statuses = new LinkedList<String>();
+        List<String> emails = new LinkedList<String>();
 
         if (repeated)
         {
@@ -532,6 +540,10 @@ public class DescribeStep extends AbstractProcessingStep
                     + "_first");
             lasts = getRepeatedParameter(request, metadataField, metadataField
                     + "_last");
+            statuses = getRepeatedParameter(request, "local_creator", "local_creator_status");
+            emails = getRepeatedParameter(request, "local_creator", "local_creator_email");
+            
+            System.out.println("\n\nMultiple\nStatuses: " + statuses.size() + "\nEmails: " + emails.size() + "\n\n");
 
             if(isAuthorityControlled)
             {
@@ -555,6 +567,9 @@ public class DescribeStep extends AbstractProcessingStep
 
                 firsts.remove(valToRemove);
                 lasts.remove(valToRemove);
+                statuses.remove(valToRemove);
+                emails.remove(valToRemove);
+
                 if(isAuthorityControlled)
                 {
                     if(valToRemove < auths.size())
@@ -572,6 +587,8 @@ public class DescribeStep extends AbstractProcessingStep
             String firstNames = request.getParameter(metadataField + "_first");
             String authority = request.getParameter(metadataField + "_authority");
             String confidence = request.getParameter(metadataField + "_confidence");
+            String status = request.getParameter("local_creator_status");
+            String email = request.getParameter("local_creator_email");
 
             if (lastName != null)
             {
@@ -583,10 +600,17 @@ public class DescribeStep extends AbstractProcessingStep
             }
             auths.add(authority == null ? "" : authority);
             confs.add(confidence == null ? "" : confidence);
+            
+            System.out.println("\n\nSingle\nStatus: " + status + "\nEmail: " + email + "\n\n");
+            statuses.add(status == null ? "" : status);
+            emails.add(email == null ? "" : email);
         }
 
         // Remove existing values, already done in doProcessing see also bug DS-203
         // item.clearMetadata(schema, element, qualifier, Item.ANY);
+        
+        LocalCreatorList formattedFaculty = new LocalCreatorList();
+        LocalCreatorList formattedStudent = new LocalCreatorList();
 
         // Put the names in the correct form
         for (int i = 0; i < lasts.size(); i++)
@@ -645,6 +669,24 @@ public class DescribeStep extends AbstractProcessingStep
                             new DCPersonName(l, f).toString());
                 }
             }
+            
+            String s = statuses.get(i);
+            String e = emails.get(i);
+            
+            
+            
+            if (s.equals("faculty"))
+            {
+                formattedFaculty.addCreator(new ImmutablePair<String, DCPersonName>(e, new DCPersonName(l, f)));
+            }
+            
+        }
+        
+        if (formattedFaculty.getStatusString().equals(""))
+        {
+            System.out.println("\n\n\ncontext: " + context.toString()+ "\nitem: " + item.toString() + "\nSchema: " + schema.toString() + "\nelement: " + element + "\nqualifier: " + qualifier + "\n\n\n");
+//            itemService.addMetadata(context, item, "local", "creator", "faculty", null, formattedFaculty);
+            itemService.setMetadataSingleValue(context, item, "local", "creator", "faculty", null, formattedFaculty.getStatusString());
         }
     }
 

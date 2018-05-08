@@ -23,9 +23,9 @@ import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputSet;
 import org.dspace.app.util.DCInputsReader;
 import org.dspace.app.util.DCInputsReaderException;
-import org.dspace.app.xmlui.utils.UIException;
 import org.dspace.app.xmlui.aspect.submission.AbstractSubmissionStep;
 import org.dspace.app.xmlui.aspect.submission.FlowUtils;
+import org.dspace.app.xmlui.utils.UIException;
 import org.dspace.app.xmlui.wing.Message;
 import org.dspace.app.xmlui.wing.WingException;
 import org.dspace.app.xmlui.wing.element.Body;
@@ -42,11 +42,14 @@ import org.dspace.app.xmlui.wing.element.Select;
 import org.dspace.app.xmlui.wing.element.Text;
 import org.dspace.app.xmlui.wing.element.TextArea;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.*;
+import org.dspace.content.Collection;
+import org.dspace.content.DCDate;
+import org.dspace.content.DCPersonName;
+import org.dspace.content.DCSeriesNumber;
+import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.authority.Choice;
 import org.dspace.content.authority.Choices;
-
 import org.dspace.content.authority.factory.ContentAuthorityServiceFactory;
 import org.dspace.content.authority.service.ChoiceAuthorityService;
 import org.dspace.content.authority.service.MetadataAuthorityService;
@@ -226,7 +229,7 @@ public class DescribeStep extends AbstractSubmissionStep
             }
             else if (inputType.equals("name"))
             {
-                renderNameField(form, fieldName, dcInput, dcValues, readonly);
+                renderNameField(form, fieldName, dcInput, dcValues, readonly, item);
             }
             else if (inputType.equals("date"))
             {
@@ -426,12 +429,27 @@ public class DescribeStep extends AbstractSubmissionStep
      * @param dcValues
      *                      The field's pre-existing values.
      */
-    private void renderNameField(List form, String fieldName, DCInput dcInput, java.util.List<MetadataValue> dcValues, boolean readonly)
+    private void renderNameField(List form, String fieldName, DCInput dcInput, java.util.List<MetadataValue> dcValues, boolean readonly, Item item)
             throws WingException
     {
         // The name field is a composite field containing two text fields, one
         // for first name the other for last name.
         Composite fullName = form.addItem().addComposite(fieldName, "submit-name");
+        
+        Select status = fullName.addSelect("local_creator_status");
+        status.setLabel("Status");
+        status.setRequired();
+        status.setChoices("");
+        status.addOption("", "Select an option");
+        status.addOption("faculty", "TAMU Faculty");
+        status.addOption("student", "TAMU Student");
+        status.addOption("non-tamu-affiliate", "Non TAMU Affiliate");
+        
+        Text email = fullName.addText("local_creator_email");
+        
+        email.setLabel("TAMU Email");
+        email.setHelp("TAMU Email (Optional)");
+        
         Text lastName = fullName.addText(fieldName + "_last");
         Text firstName = fullName.addText(fieldName + "_first");
 
@@ -508,6 +526,15 @@ public class DescribeStep extends AbstractSubmissionStep
                         fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
                     }
                 }
+                int metadataIndex = dcValue.getPlace();
+                java.util.List<MetadataValue> statuses = itemService.getMetadata(item, "local", "creator", "status", null);
+                java.util.List<MetadataValue> emails = itemService.getMetadata(item, "local", "creator", "email", null);
+                System.out.println("\n\n\nstatuses size: " + statuses.size() + "\nemails size: " + emails.size() + "\n\n\n");
+                if (statuses.size() > 0 && emails.size() > 0 )
+                {
+                    status.addInstance().setValue(statuses.get(metadataIndex).getValue() == null ? "" : statuses.get(metadataIndex).getValue());
+                    email.addInstance().setValue(emails.get(metadataIndex).getValue() == null ? "" : emails.get(metadataIndex).getValue());
+                }
             }
         }
         else if (dcValues.size() == 1)
@@ -528,6 +555,8 @@ public class DescribeStep extends AbstractSubmissionStep
                 }
             }
         }
+        
+        
     }
 
     /**
