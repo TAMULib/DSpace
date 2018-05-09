@@ -19,6 +19,7 @@ import javax.servlet.ServletException;
 import org.apache.avalon.framework.parameters.Parameters;
 import org.apache.cocoon.ProcessingException;
 import org.apache.cocoon.environment.SourceResolver;
+import org.apache.commons.lang3.tuple.Pair;
 import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputSet;
 import org.dspace.app.util.DCInputsReader;
@@ -47,6 +48,7 @@ import org.dspace.content.DCDate;
 import org.dspace.content.DCPersonName;
 import org.dspace.content.DCSeriesNumber;
 import org.dspace.content.Item;
+import org.dspace.content.LocalCreatorList;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.authority.Choice;
 import org.dspace.content.authority.Choices;
@@ -436,10 +438,10 @@ public class DescribeStep extends AbstractSubmissionStep
         // for first name the other for last name.
         Composite fullName = form.addItem().addComposite(fieldName, "submit-name");
         
+
         Select status = fullName.addSelect("local_creator_status");
         status.setLabel("Status");
         status.setRequired();
-        status.setChoices("");
         status.addOption("", "Select an option");
         status.addOption("faculty", "TAMU Faculty");
         status.addOption("student", "TAMU Student");
@@ -503,38 +505,35 @@ public class DescribeStep extends AbstractSubmissionStep
             firstName.setDisabled();
             fullName.setDisabled();
         }
+        
+        java.util.List<MetadataValue> faculty = itemService.getMetadata(item, "local", "creator", "faculty", null);
+        java.util.List<MetadataValue> students = itemService.getMetadata(item, "local", "creator", "student", null);
 
         // Setup the field's values
-        if (dcInput.isRepeatable() || dcValues.size() > 1)
+        if ((dcInput.isRepeatable() || dcValues.size() > 1) && !faculty.isEmpty())
         {
-            for (MetadataValue dcValue : dcValues)
+            
+            LocalCreatorList list = new LocalCreatorList(faculty.get(0).getValue());
+            for (Pair<String, DCPersonName> pair : list.getList())
             {
-                DCPersonName dpn = new DCPersonName(dcValue.getValue());
-
-                lastName.addInstance().setValue(dpn.getLastName());
-                firstName.addInstance().setValue(dpn.getFirstNames());
+                System.out.println("\n\nDCPersonName\nFirst: " + pair.getValue().getFirstNames() + "\nLast: " + pair.getValue().getLastName() + "\n\n");
+                lastName.addInstance().setValue(pair.getValue().getLastName());
+                firstName.addInstance().setValue(pair.getValue().getFirstNames());
+                email.addInstance().setValue(pair.getKey());
+                status.addInstance().setOptionSelected("faculty");
                 Instance fi = fullName.addInstance();
-                fi.setValue(dcValue.getValue());
-                if (isAuthorityControlled)
-                {
-                    if (dcValue.getAuthority() == null || dcValue.getAuthority().equals(""))
-                    {
-                        fi.setAuthorityValue("", "blank");
-                    }
-                    else
-                    {
-                        fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
-                    }
-                }
-                int metadataIndex = dcValue.getPlace();
-                java.util.List<MetadataValue> statuses = itemService.getMetadata(item, "local", "creator", "status", null);
-                java.util.List<MetadataValue> emails = itemService.getMetadata(item, "local", "creator", "email", null);
-                System.out.println("\n\n\nstatuses size: " + statuses.size() + "\nemails size: " + emails.size() + "\n\n\n");
-                if (statuses.size() > 0 && emails.size() > 0 )
-                {
-                    status.addInstance().setValue(statuses.get(metadataIndex).getValue() == null ? "" : statuses.get(metadataIndex).getValue());
-                    email.addInstance().setValue(emails.get(metadataIndex).getValue() == null ? "" : emails.get(metadataIndex).getValue());
-                }
+                fi.setValue(pair.getValue().toString() + (pair.getKey().equals("") ? "" : ", " + pair.getKey()) + ", TAMU Faculty");
+//                if (isAuthorityControlled)
+//                {
+//                    if (dcValues. .getAuthority() == null || dcValue.getAuthority().equals(""))
+//                    {
+//                        fi.setAuthorityValue("", "blank");
+//                    }
+//                    else
+//                    {
+//                        fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
+//                    }
+//                }
             }
         }
         else if (dcValues.size() == 1)

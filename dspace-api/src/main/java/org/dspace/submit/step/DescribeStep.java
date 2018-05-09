@@ -682,10 +682,9 @@ public class DescribeStep extends AbstractProcessingStep
             
         }
         
-        if (formattedFaculty.getStatusString().equals(""))
+        if (!formattedFaculty.getStatusString().equals(""))
         {
             System.out.println("\n\n\ncontext: " + context.toString()+ "\nitem: " + item.toString() + "\nSchema: " + schema.toString() + "\nelement: " + element + "\nqualifier: " + qualifier + "\n\n\n");
-//            itemService.addMetadata(context, item, "local", "creator", "faculty", null, formattedFaculty);
             itemService.setMetadataSingleValue(context, item, "local", "creator", "faculty", null, formattedFaculty.getStatusString());
         }
     }

@@ -34,13 +34,14 @@ public class LocalCreatorList {
             if (result.equals("")) {
                 result += entry.getValue().toString() + ", " + entry.getKey();
             } else {
-                result += ", ;" + entry.getValue().toString() + ", " + entry.getKey();
+                result += "; " + entry.getValue().toString() + ", " + entry.getKey();
             }
         }
         return result;
     }
     
     private List<Pair<String, DCPersonName>> parseString(String string) {
+        System.out.println("\n\nString: " + string);
         String[] entries = string.split("; ");
         List<Pair<String, DCPersonName>> tempList = new ArrayList<Pair<String, DCPersonName>>();
         for (String entry : entries) {
@@ -48,9 +49,14 @@ public class LocalCreatorList {
                 tempList.add(new ImmutablePair<String, DCPersonName>("", new DCPersonName(entry.substring(entry.length()-2))));
             } else {
                 int last = entry.lastIndexOf(",");
-                tempList.add(new ImmutablePair<String, DCPersonName>(entry.substring(0, last), new DCPersonName(entry.substring(last+2))));
+                System.out.println("\nString: " + entry + "\nString length: " + entry.length() + "\nlast entry: " + last + "\n\n");
+                tempList.add(new ImmutablePair<String, DCPersonName>(entry.substring(last+2), new DCPersonName(entry.substring(0, last))));
             }
         }
         return tempList;
+    }
+    
+    public List<Pair<String, DCPersonName>> getList() {
+        return this.list;
     }
 }
