@@ -443,7 +443,7 @@ public class DescribeStep extends AbstractSubmissionStep
         status.setLabel("Status");
         status.setRequired();
         status.addOption("", "Select an option");
-        status.addOption("faculty", "TAMU Faculty");
+        status.addOption("faculty", "TAMU Faculty/Staff");
         status.addOption("student", "TAMU Student");
         status.addOption("non-tamu-affiliate", "Non TAMU Affiliate");
         

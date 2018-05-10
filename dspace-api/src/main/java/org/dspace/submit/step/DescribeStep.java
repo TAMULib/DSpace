@@ -9,6 +9,7 @@ package org.dspace.submit.step;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -21,6 +22,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputsReader;
@@ -540,9 +542,33 @@ public class DescribeStep extends AbstractProcessingStep
                     + "_first");
             lasts = getRepeatedParameter(request, metadataField, metadataField
                     + "_last");
+            
+            String[] selected = request.getParameterValues(metadataField + "_selected");
             statuses = getRepeatedParameter(request, "local_creator", "local_creator_status");
             emails = getRepeatedParameter(request, "local_creator", "local_creator_email");
-            
+            if (selected != null)
+            {
+                for (int i = selected.length - 1; i >= 0; i--)
+                {
+                    for (int j = 1; j <= statuses.size(); j++)
+                    {
+                        if (selected[i].equals(metadataField + "_" + j))
+                        {
+                            emails.remove(j-1);
+                            statuses.remove(j-1);
+                        }
+                    }
+                }
+                List<Pair<String, DCPersonName>> updatedList = new ArrayList<Pair<String, DCPersonName>>();
+                for (int i = 0; i < firsts.size(); i++)
+                {
+                    updatedList.add(new ImmutablePair<String, DCPersonName>(emails.get(i), new DCPersonName(lasts.get(i), firsts.get(i))));
+                }
+                LocalCreatorList localCreatorList = new LocalCreatorList(updatedList);
+                System.out.println("\n\nstatusString: " + localCreatorList.getStatusString() + "\n\n");
+                itemService.setMetadataSingleValue(context, item, "local", "creator", "faculty", null, localCreatorList.getStatusString());
+                
+            }
             System.out.println("\n\nMultiple\nStatuses: " + statuses.size() + "\nEmails: " + emails.size() + "\n\n");
 
             if(isAuthorityControlled)

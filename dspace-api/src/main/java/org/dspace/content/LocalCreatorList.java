@@ -32,9 +32,9 @@ public class LocalCreatorList {
         String result = "";
         for (Pair<String, DCPersonName> entry : list) {
             if (result.equals("")) {
-                result += entry.getValue().toString() + ", " + entry.getKey();
+                result += entry.getValue().toString() + (entry.getKey() == "" ? "" : ", " + entry.getKey());
             } else {
-                result += "; " + entry.getValue().toString() + ", " + entry.getKey();
+                result += "; " + entry.getValue().toString() + (entry.getKey() == "" ? "" : ", " + entry.getKey());
             }
         }
         return result;
@@ -44,13 +44,16 @@ public class LocalCreatorList {
         System.out.println("\n\nString: " + string);
         String[] entries = string.split("; ");
         List<Pair<String, DCPersonName>> tempList = new ArrayList<Pair<String, DCPersonName>>();
-        for (String entry : entries) {
-            if (entry.endsWith(", ")) {
-                tempList.add(new ImmutablePair<String, DCPersonName>("", new DCPersonName(entry.substring(entry.length()-2))));
-            } else {
-                int last = entry.lastIndexOf(",");
-                System.out.println("\nString: " + entry + "\nString length: " + entry.length() + "\nlast entry: " + last + "\n\n");
-                tempList.add(new ImmutablePair<String, DCPersonName>(entry.substring(last+2), new DCPersonName(entry.substring(0, last))));
+        if (!string.equals("")) {
+            for (String entry : entries) {
+                String[] chunks = entry.split(", ");
+                if (!chunks[chunks.length-1].contains("@")) {
+                    tempList.add(new ImmutablePair<String, DCPersonName>("", new DCPersonName(entry)));
+                } else {
+                    int last = entry.lastIndexOf(",");
+                    System.out.println("\nString: " + entry + "\nString length: " + entry.length() + "\nlast entry: " + last + "\n\n");
+                    tempList.add(new ImmutablePair<String, DCPersonName>(entry.substring(last+2), new DCPersonName(entry.substring(0, last))));
+                }
             }
         }
         return tempList;
