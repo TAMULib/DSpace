@@ -20,6 +20,7 @@ import org.apache.avalon.framework.parameters.Parameters;
 import org.apache.cocoon.ProcessingException;
 import org.apache.cocoon.environment.SourceResolver;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputSet;
 import org.dspace.app.util.DCInputsReader;
@@ -437,21 +438,18 @@ public class DescribeStep extends AbstractSubmissionStep
         // The name field is a composite field containing two text fields, one
         // for first name the other for last name.
         Composite fullName = form.addItem().addComposite(fieldName, "submit-name");
-        
 
         Select status = fullName.addSelect("local_creator_status");
         status.setLabel("Status");
-        status.setRequired();
         status.addOption("", "Select an option");
         status.addOption("faculty", "TAMU Faculty/Staff");
         status.addOption("student", "TAMU Student");
-        status.addOption("non-tamu-affiliate", "Non TAMU Affiliate");
-        
+        status.addOption("unaffiliated", "Non TAMU Affiliate");
+
         Text email = fullName.addText("local_creator_email");
-        
-        email.setLabel("TAMU Email");
+        email.setLabel("TAMU Email (Optional");
         email.setHelp("TAMU Email (Optional)");
-        
+
         Text lastName = fullName.addText(fieldName + "_last");
         Text firstName = fullName.addText(fieldName + "_first");
 
@@ -505,36 +503,32 @@ public class DescribeStep extends AbstractSubmissionStep
             firstName.setDisabled();
             fullName.setDisabled();
         }
-        
+
         java.util.List<MetadataValue> faculty = itemService.getMetadata(item, "local", "creator", "faculty", null);
         java.util.List<MetadataValue> students = itemService.getMetadata(item, "local", "creator", "student", null);
+        java.util.List<MetadataValue> unaffiliated = itemService.getMetadata(item, "local", "creator", "unaffiliated", null);
 
         // Setup the field's values
-        if ((dcInput.isRepeatable() || dcValues.size() > 1) && !faculty.isEmpty())
+        if ((dcInput.isRepeatable() || dcValues.size() > 1) && (!faculty.isEmpty() || !students.isEmpty() || !unaffiliated.isEmpty()))
         {
-            
-            LocalCreatorList list = new LocalCreatorList(faculty.get(0).getValue());
-            for (Pair<String, DCPersonName> pair : list.getList())
+            LocalCreatorList facultyList = new LocalCreatorList();
+            LocalCreatorList studentList = new LocalCreatorList();
+            LocalCreatorList unaffiliatedList = new LocalCreatorList();
+            if (faculty.size() > 0)
             {
-                System.out.println("\n\nDCPersonName\nFirst: " + pair.getValue().getFirstNames() + "\nLast: " + pair.getValue().getLastName() + "\n\n");
-                lastName.addInstance().setValue(pair.getValue().getLastName());
-                firstName.addInstance().setValue(pair.getValue().getFirstNames());
-                email.addInstance().setValue(pair.getKey());
-                status.addInstance().setOptionSelected("faculty");
-                Instance fi = fullName.addInstance();
-                fi.setValue(pair.getValue().toString() + (pair.getKey().equals("") ? "" : ", " + pair.getKey()) + ", TAMU Faculty");
-//                if (isAuthorityControlled)
-//                {
-//                    if (dcValues. .getAuthority() == null || dcValue.getAuthority().equals(""))
-//                    {
-//                        fi.setAuthorityValue("", "blank");
-//                    }
-//                    else
-//                    {
-//                        fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
-//                    }
-//                }
+                facultyList.setCreators(faculty.get(0).getValue(), "faculty");
             }
+            if (students.size() > 0)
+            {
+                studentList.setCreators(students.get(0).getValue(), "student");
+            }
+            if (unaffiliated.size() > 0)
+            {
+                unaffiliatedList.setCreators(unaffiliated.get(0).getValue(), "unaffiliated");
+            }
+            setNameInstances(facultyList, fullName, lastName, firstName, email, status, "faculty");
+            setNameInstances(studentList, fullName, lastName, firstName, email, status, "student");
+            setNameInstances(unaffiliatedList, fullName, lastName, firstName, email, status, "unaffiliated");
         }
         else if (dcValues.size() == 1)
         {
@@ -554,8 +548,47 @@ public class DescribeStep extends AbstractSubmissionStep
                 }
             }
         }
-        
-        
+    }
+
+    private void setNameInstances(LocalCreatorList list, Composite fullName, Text lastName, Text firstName, Text email, Select status, String creatorStatus) throws WingException {
+        for (Triple<String, String, DCPersonName> triple : list.getList())
+        {
+            lastName.addInstance().setValue(triple.getRight().getLastName());
+            firstName.addInstance().setValue(triple.getRight().getFirstNames());
+            email.addInstance().setValue(triple.getLeft());
+            status.addInstance().setOptionSelected(triple.getMiddle());
+            Instance fi = fullName.addInstance();
+            
+            String statusGloss = ", ";
+            if (triple.getMiddle().equals("faculty"))
+            {
+                statusGloss += "TAMU Faculty/Staff";
+            }
+            else if (triple.getMiddle().equals("student"))
+            {
+                statusGloss += "TAMU Student";
+            }
+            else
+            {
+                statusGloss += "Non-TAMU Affiliate";
+            }
+
+            if (creatorStatus.equals(triple.getMiddle()))
+            {
+                fi.setValue(triple.getRight().toString() + (triple.getLeft().equals("") ? "" : ", " + triple.getLeft()) + statusGloss);
+            }
+//            if (isAuthorityControlled)
+//            {
+//                if (dcValues. .getAuthority() == null || dcValue.getAuthority().equals(""))
+//                {
+//                    fi.setAuthorityValue("", "blank");
+//                }
+//                else
+//                {
+//                    fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
+//                }
+//            }
+        }
     }
 
     /**
