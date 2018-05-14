@@ -232,7 +232,9 @@ public class DescribeStep extends AbstractSubmissionStep
             }
             else if (inputType.equals("name"))
             {
+                // TAMU Customization - Added item parameter
                 renderNameField(form, fieldName, dcInput, dcValues, readonly, item);
+                // End TAMU Customization
             }
             else if (inputType.equals("date"))
             {
@@ -432,6 +434,7 @@ public class DescribeStep extends AbstractSubmissionStep
      * @param dcValues
      *                      The field's pre-existing values.
      */
+    // TAMU Customization - Added Item to method signature
     private void renderNameField(List form, String fieldName, DCInput dcInput, java.util.List<MetadataValue> dcValues, boolean readonly, Item item)
             throws WingException
     {
@@ -439,6 +442,7 @@ public class DescribeStep extends AbstractSubmissionStep
         // for first name the other for last name.
         Composite fullName = form.addItem().addComposite(fieldName, "submit-name");
 
+        // TAMU Customization - Added two new fields to Name Composite field
         Select status = fullName.addSelect("local_creator_status");
         status.setLabel("Status");
         status.addOption("", "Select an option");
@@ -449,6 +453,7 @@ public class DescribeStep extends AbstractSubmissionStep
         Text email = fullName.addText("local_creator_email");
         email.setLabel("TAMU Email (Optional");
         email.setHelp("TAMU Email (Optional)");
+        // End TAMU Customization
 
         Text lastName = fullName.addText(fieldName + "_last");
         Text firstName = fullName.addText(fieldName + "_first");
@@ -504,6 +509,7 @@ public class DescribeStep extends AbstractSubmissionStep
             fullName.setDisabled();
         }
 
+        // TAMU Customization - Generate and set Name Instances for Faculty/Staff, Students, and Unaffiliated
         java.util.List<MetadataValue> faculty = itemService.getMetadata(item, "local", "creator", "faculty", null);
         java.util.List<MetadataValue> students = itemService.getMetadata(item, "local", "creator", "student", null);
         java.util.List<MetadataValue> unaffiliated = itemService.getMetadata(item, "local", "creator", "unaffiliated", null);
@@ -529,6 +535,7 @@ public class DescribeStep extends AbstractSubmissionStep
             setNameInstances(facultyList, fullName, lastName, firstName, email, status, dcValues, "faculty", isAuthorityControlled);
             setNameInstances(studentList, fullName, lastName, firstName, email, status, dcValues, "student", isAuthorityControlled);
             setNameInstances(unaffiliatedList, fullName, lastName, firstName, email, status, dcValues, "unaffiliated", isAuthorityControlled);
+            // End TAMU Customization
         }
         else if (dcValues.size() == 1)
         {
@@ -550,6 +557,7 @@ public class DescribeStep extends AbstractSubmissionStep
         }
     }
 
+    // TAMU Customization - Refactored this out of renderNameField to allow status to be passed in
     private void setNameInstances(LocalCreatorList list, Composite fullName, Text lastName, Text firstName, Text email, Select status, java.util.List<MetadataValue> dcValues, String creatorStatus, boolean isAuthorityControlled) throws WingException {
         for (Triple<String, String, DCPersonName> triple : list.getList())
         {
@@ -594,6 +602,7 @@ public class DescribeStep extends AbstractSubmissionStep
             
         }
     }
+    // End TAMU Customization
 
     /**
      * Render a date field to the DRI document. The date field consists of

@@ -6,6 +6,17 @@ import java.util.List;
 import org.apache.commons.lang3.tuple.ImmutableTriple;
 import org.apache.commons.lang3.tuple.Triple;
 
+/**
+ * 
+ * Utility class for handling string manipulation for the local.creator
+ * disambiguation metadata fields.
+ * 
+ * This class is a TAMU customization.
+ * 
+ * @author Ryan Laddusaw
+ *
+ */
+
 public class LocalCreatorList {
     
     private List<Triple<String, String, DCPersonName>> list;

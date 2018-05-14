@@ -522,6 +522,8 @@ public class DescribeStep extends AbstractProcessingStep
      * @param repeated
      *            set to true if the field is repeatable on the form
      */
+    // TAMU Customization - this method was refactored to create three custom metadata fields.
+    // Customizations include readNames, populateRepeatedProperties, and populateSingleProperties.
     protected void readNames(Context context, HttpServletRequest request, Item item,
             String schema, String element, String qualifier, boolean repeated) throws SQLException {
         String metadataField = metadataFieldService.findByElement(context, schema, element, qualifier).toString();
@@ -741,6 +743,7 @@ public class DescribeStep extends AbstractProcessingStep
         nameFields.get("auths").add(authority == null ? "" : authority);
         nameFields.get("confs").add(confidence == null ? "" : confidence);
     }
+    // End TAMU Customizations
 
     /**
      * Fill out an item's metadata values from a plain standard text field. If
