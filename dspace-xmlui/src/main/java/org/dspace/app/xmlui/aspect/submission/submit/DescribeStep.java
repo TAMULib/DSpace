@@ -526,9 +526,9 @@ public class DescribeStep extends AbstractSubmissionStep
             {
                 unaffiliatedList.setCreators(unaffiliated.get(0).getValue(), "unaffiliated");
             }
-            setNameInstances(facultyList, fullName, lastName, firstName, email, status, "faculty");
-            setNameInstances(studentList, fullName, lastName, firstName, email, status, "student");
-            setNameInstances(unaffiliatedList, fullName, lastName, firstName, email, status, "unaffiliated");
+            setNameInstances(facultyList, fullName, lastName, firstName, email, status, dcValues, "faculty", isAuthorityControlled);
+            setNameInstances(studentList, fullName, lastName, firstName, email, status, dcValues, "student", isAuthorityControlled);
+            setNameInstances(unaffiliatedList, fullName, lastName, firstName, email, status, dcValues, "unaffiliated", isAuthorityControlled);
         }
         else if (dcValues.size() == 1)
         {
@@ -550,7 +550,7 @@ public class DescribeStep extends AbstractSubmissionStep
         }
     }
 
-    private void setNameInstances(LocalCreatorList list, Composite fullName, Text lastName, Text firstName, Text email, Select status, String creatorStatus) throws WingException {
+    private void setNameInstances(LocalCreatorList list, Composite fullName, Text lastName, Text firstName, Text email, Select status, java.util.List<MetadataValue> dcValues, String creatorStatus, boolean isAuthorityControlled) throws WingException {
         for (Triple<String, String, DCPersonName> triple : list.getList())
         {
             lastName.addInstance().setValue(triple.getRight().getLastName());
@@ -577,17 +577,21 @@ public class DescribeStep extends AbstractSubmissionStep
             {
                 fi.setValue(triple.getRight().toString() + (triple.getLeft().equals("") ? "" : ", " + triple.getLeft()) + statusGloss);
             }
-//            if (isAuthorityControlled)
-//            {
-//                if (dcValues. .getAuthority() == null || dcValue.getAuthority().equals(""))
-//                {
-//                    fi.setAuthorityValue("", "blank");
-//                }
-//                else
-//                {
-//                    fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
-//                }
-//            }
+            for (MetadataValue dcValue : dcValues)
+            {
+                if (isAuthorityControlled)
+                {
+                    if (dcValue.getAuthority() == null || dcValue.getAuthority().equals(""))
+                    {
+                        fi.setAuthorityValue("", "blank");
+                    }
+                    else
+                    {
+                        fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
+                    }
+                }
+            }
+            
         }
     }
 
