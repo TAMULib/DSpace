@@ -586,7 +586,10 @@ it, please enter the types and the actual numbers or codes.</hint>
          <repeatable>true</repeatable>
          <label>Authors</label>
          <input-type>name</input-type>
-         <hint>Enter the names of the authors of this item.</hint>
+         <!-- TAMU Customization -->
+         <hint>Enter the names of the authors of this item. For TAMU Faculty,
+                please use TAMU email address (@tamu.edu)</hint>
+         <!-- End Tamu Customization -->
          <required></required>
        </field>
 
