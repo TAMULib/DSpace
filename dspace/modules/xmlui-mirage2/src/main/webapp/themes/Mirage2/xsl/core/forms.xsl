@@ -19,16 +19,16 @@
 -->
 
 <xsl:stylesheet xmlns:i18n="http://apache.org/cocoon/i18n/2.1"
-	xmlns:dri="http://di.tamu.edu/DRI/1.0/"
-	xmlns:mets="http://www.loc.gov/METS/"
-	xmlns:xlink="http://www.w3.org/TR/xlink/"
-	xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
-	xmlns:dim="http://www.dspace.org/xmlns/dspace/dim"
-	xmlns:xhtml="http://www.w3.org/1999/xhtml"
-	xmlns:mods="http://www.loc.gov/mods/v3"
-	xmlns:dc="http://purl.org/dc/elements/1.1/"
-	xmlns="http://www.w3.org/1999/xhtml"
-	exclude-result-prefixes="i18n dri mets xlink xsl dim xhtml mods dc">
+    xmlns:dri="http://di.tamu.edu/DRI/1.0/"
+    xmlns:mets="http://www.loc.gov/METS/"
+    xmlns:xlink="http://www.w3.org/TR/xlink/"
+    xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0"
+    xmlns:dim="http://www.dspace.org/xmlns/dspace/dim"
+    xmlns:xhtml="http://www.w3.org/1999/xhtml"
+    xmlns:mods="http://www.loc.gov/mods/v3"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns="http://www.w3.org/1999/xhtml"
+    exclude-result-prefixes="i18n dri mets xlink xsl dim xhtml mods dc">
 
     <xsl:output indent="yes"/>
 
@@ -1032,25 +1032,17 @@
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name="rounded" select="floor($dividend div $nb_fields)"/>
-        <!-- TAMU Customization - Wrap fields into multiple lines when more than 3 fields -->
         <xsl:variable name="sm_size">
             <xsl:choose>
-                <xsl:when test="$nb_fields = 4">
-                    <xsl:value-of select="floor(2 * ($dividend div $nb_fields))"/>
+                <xsl:when test="position() = last()">
+
+                    <xsl:value-of select="$rounded + ($dividend mod $nb_fields)"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:choose>
-                        <xsl:when test="position() = last()">
-                            <xsl:value-of select="$rounded + ($dividend mod $nb_fields)"/>
-                        </xsl:when>
-                        <xsl:otherwise>
-                            <xsl:value-of select="$rounded"/>
-                        </xsl:otherwise>
-                    </xsl:choose>
+                    <xsl:value-of select="$rounded"/>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
-        <!-- End TAMU Customization -->
 
         <div>
             <xsl:attribute name="class">
