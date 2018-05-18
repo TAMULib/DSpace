@@ -9,6 +9,8 @@ package org.dspace.submit.step;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,15 +22,22 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
+import org.apache.commons.lang3.tuple.Triple;
 import org.apache.log4j.Logger;
-
+import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputsReader;
 import org.dspace.app.util.DCInputsReaderException;
-import org.dspace.app.util.DCInput;
 import org.dspace.app.util.SubmissionInfo;
 import org.dspace.app.util.Util;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.*;
+import org.dspace.content.Collection;
+import org.dspace.content.DCDate;
+import org.dspace.content.DCPersonName;
+import org.dspace.content.DCSeriesNumber;
+import org.dspace.content.Item;
+import org.dspace.content.LocalCreatorList;
+import org.dspace.content.MetadataValue;
 import org.dspace.content.authority.Choices;
 import org.dspace.content.authority.factory.ContentAuthorityServiceFactory;
 import org.dspace.content.authority.service.ChoiceAuthorityService;
@@ -513,6 +522,8 @@ public class DescribeStep extends AbstractProcessingStep
      * @param repeated
      *            set to true if the field is repeatable on the form
      */
+    // TAMU Customization - this method was refactored to create three custom metadata fields.
+    // Customizations include readNames, populateRepeatedProperties, and populateSingleProperties.
     protected void readNames(Context context, HttpServletRequest request, Item item,
             String schema, String element, String qualifier, boolean repeated) throws SQLException {
         String metadataField = metadataFieldService.findByElement(context, schema, element, qualifier).toString();
@@ -521,78 +532,49 @@ public class DescribeStep extends AbstractProcessingStep
         boolean isAuthorityControlled = metadataAuthorityService.isAuthorityControlled(fieldKey);
 
         // Names to add
-        List<String> firsts = new LinkedList<String>();
-        List<String> lasts = new LinkedList<String>();
-        List<String> auths = new LinkedList<String>();
-        List<String> confs = new LinkedList<String>();
+        Map<String, List<String>> nameFields = new HashMap<String, List<String>>();
+        nameFields.put("firsts" , new LinkedList<String>());
+        nameFields.put("lasts" , new LinkedList<String>());
+        nameFields.put("auths" , new LinkedList<String>());
+        nameFields.put("confs" , new LinkedList<String>());
+        nameFields.put("statuses" , new LinkedList<String>());
+        nameFields.put("emails" , new LinkedList<String>());
 
         if (repeated)
         {
-            firsts = getRepeatedParameter(request, metadataField, metadataField
-                    + "_first");
-            lasts = getRepeatedParameter(request, metadataField, metadataField
-                    + "_last");
-
-            if(isAuthorityControlled)
+            String facultyStatusString = populateRepeatedProperties(request, nameFields, metadataField, "faculty", isAuthorityControlled);
+            String studentStatusString = populateRepeatedProperties(request, nameFields, metadataField, "student", isAuthorityControlled);
+            String unaffiliatedStatusString = populateRepeatedProperties(request, nameFields, metadataField, "unaffiliated", isAuthorityControlled);
+            if (!facultyStatusString.equals(""))
             {
-               auths = getRepeatedParameter(request, metadataField, metadataField
-                    + "_authority");
-               confs = getRepeatedParameter(request, metadataField, metadataField
-                    + "_confidence");
-           }
-
-            // Find out if the relevant "remove" button was pressed
-            // TODO: These separate remove buttons are only relevant
-            // for DSpace JSP UI, and the code below can be removed
-            // once the DSpace JSP UI is obsolete!
-            String buttonPressed = Util.getSubmitButton(request, "");
-            String removeButton = "submit_" + metadataField + "_remove_";
-
-            if (buttonPressed.startsWith(removeButton))
+                itemService.setMetadataSingleValue(context, item, "local", "creator", "faculty", null, facultyStatusString);
+            }
+            if (!studentStatusString.equals(""))
             {
-                int valToRemove = Integer.parseInt(buttonPressed
-                        .substring(removeButton.length()));
-
-                firsts.remove(valToRemove);
-                lasts.remove(valToRemove);
-                if(isAuthorityControlled)
-                {
-                    if(valToRemove < auths.size())
-                    {
-                        auths.remove(valToRemove);
-                        confs.remove(valToRemove);
-                    }
-                }
+                itemService.setMetadataSingleValue(context, item, "local", "creator", "student", null, studentStatusString);
+            }
+            if (!unaffiliatedStatusString.equals(""))
+            {
+                itemService.setMetadataSingleValue(context, item, "local", "creator", "unaffiliated", null, unaffiliatedStatusString);
             }
         }
         else
         {
-            // Just a single name
-            String lastName = request.getParameter(metadataField + "_last");
-            String firstNames = request.getParameter(metadataField + "_first");
-            String authority = request.getParameter(metadataField + "_authority");
-            String confidence = request.getParameter(metadataField + "_confidence");
-
-            if (lastName != null)
-            {
-                lasts.add(lastName);
-            }
-            if (firstNames != null)
-            {
-                firsts.add(firstNames);
-            }
-            auths.add(authority == null ? "" : authority);
-            confs.add(confidence == null ? "" : confidence);
+            populateSingleProperties(request, nameFields, metadataField, isAuthorityControlled);
         }
 
         // Remove existing values, already done in doProcessing see also bug DS-203
         // item.clearMetadata(schema, element, qualifier, Item.ANY);
+        
+        LocalCreatorList formattedFaculty = new LocalCreatorList();
+        LocalCreatorList formattedStudent = new LocalCreatorList();
+        LocalCreatorList formattedUnaffiliated = new LocalCreatorList();
 
         // Put the names in the correct form
-        for (int i = 0; i < lasts.size(); i++)
+        for (int i = 0; i < nameFields.get("lasts").size(); i++)
         {
-            String f = firsts.get(i);
-            String l = lasts.get(i);
+            String f = nameFields.get("firsts").get(i);
+            String l = nameFields.get("lasts").get(i);
 
             // only add if lastname is non-empty
             if ((l != null) && !((l.trim()).equals("")))
@@ -623,8 +605,8 @@ public class DescribeStep extends AbstractProcessingStep
                 // Add to the database -- unless required authority is missing
                 if (isAuthorityControlled)
                 {
-                    String authKey = auths.size() > i ? auths.get(i) : null;
-                    String sconf = (authKey != null && confs.size() > i) ? confs.get(i) : null;
+                    String authKey = nameFields.get("auths").size() > i ? nameFields.get("auths").get(i) : null;
+                    String sconf = (authKey != null && nameFields.get("confs").size() > i) ? nameFields.get("confs").get(i) : null;
                     if (metadataAuthorityService.isAuthorityRequired(fieldKey) &&
                         (authKey == null || authKey.length() == 0))
                     {
@@ -645,8 +627,123 @@ public class DescribeStep extends AbstractProcessingStep
                             new DCPersonName(l, f).toString());
                 }
             }
+            
+            String s = nameFields.get("statuses").get(i);
+            String e = nameFields.get("emails").get(i);
+            
+            
+            
+            if (s.equals("faculty"))
+            {
+                formattedFaculty.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
+            }
+            else if (s.equals("student"))
+            {
+                formattedStudent.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
+            }
+            else
+            {
+                formattedUnaffiliated.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
+            }
+            
+        }
+        
+        if (!formattedFaculty.getStatusString().equals(""))
+        {
+            itemService.setMetadataSingleValue(context, item, "local", "creator", "faculty", null, formattedFaculty.getStatusString());
+        }
+        else
+        {
+            itemService.clearMetadata(context, item, "local", "creator", "faculty", null);
+        }
+        if (!formattedStudent.getStatusString().equals(""))
+        {
+            itemService.setMetadataSingleValue(context, item, "local", "creator", "student", null, formattedStudent.getStatusString());
+        }
+        else
+        {
+            itemService.clearMetadata(context, item, "local", "creator", "student", null);
+        }
+        if (!formattedUnaffiliated.getStatusString().equals(""))
+        {
+            itemService.setMetadataSingleValue(context, item, "local", "creator", "unaffiliated", null, formattedUnaffiliated.getStatusString());
+        }
+        else
+        {
+            itemService.clearMetadata(context, item, "local", "creator", "unaffiliated", null);
         }
     }
+    
+    private String populateRepeatedProperties(HttpServletRequest request, Map<String, List<String>> nameFields, String metadataField, String status, boolean isAuthorityControlled) {
+        List<String> firsts = nameFields.put("firsts", getRepeatedParameter(request, metadataField, metadataField + "_first"));
+        List<String> lasts = nameFields.put("lasts", getRepeatedParameter(request, metadataField, metadataField + "_last"));
+        List<String> statuses = nameFields.put("statuses", getRepeatedParameter(request, "local_creator", "local_creator_status"));
+        List<String> emails = nameFields.put("emails", getRepeatedParameter(request, "local_creator", "local_creator_email"));
+        
+        if (isAuthorityControlled)
+        {
+           nameFields.put("auths", getRepeatedParameter(request, metadataField, metadataField + "_authority"));
+           nameFields.put("confs", getRepeatedParameter(request, metadataField, metadataField + "_confidence"));
+        }
+        
+        // Remove anything without a matching status
+        for (int i = statuses.size() - 1; i >= 0; i--)
+        {
+            if (!statuses.get(i).equals(status))
+            {
+                firsts.remove(i);
+                lasts.remove(i);
+                statuses.remove(i);
+                emails.remove(i);
+            }
+        }
+        
+        // Removing email and status values manually since they are not on dc.creator
+        String statusString = "";
+        String[] selected = request.getParameterValues(metadataField + "_selected");
+        if (selected != null)
+        {
+            for (int i = selected.length - 1; i >= 0; i--)
+            {
+                for (int j = 1; j <= nameFields.get("statuses").size(); j++)
+                {
+                    if (selected[i].equals(metadataField + "_" + j))
+                    {
+                        nameFields.get("emails").remove(j-1);
+                        nameFields.get("statuses").remove(j-1);
+                    }
+                }
+            }
+            List<Triple<String, String, DCPersonName>> updatedList = new ArrayList<Triple<String, String, DCPersonName>>();
+            for (int i = 0; i < nameFields.get("firsts").size(); i++)
+            {
+                updatedList.add(new ImmutableTriple<String, String, DCPersonName>(nameFields.get("emails").get(i), status, new DCPersonName(nameFields.get("lasts").get(i), nameFields.get("firsts").get(i))));
+            }
+            LocalCreatorList localCreatorList = new LocalCreatorList(updatedList);
+            statusString = localCreatorList.getStatusString();
+        }
+        return statusString;
+    }
+    
+    private void populateSingleProperties(HttpServletRequest request, Map<String, List<String>> nameFields, String metadataField, boolean isAuthorityControlled) {
+        // Just a single name
+        String lastName = request.getParameter(metadataField + "_last");
+        String firstNames = request.getParameter(metadataField + "_first");
+        String authority = request.getParameter(metadataField + "_authority");
+        String confidence = request.getParameter(metadataField + "_confidence");
+
+        if (lastName != null)
+        {
+            nameFields.get("lasts").add(lastName);
+        }
+        if (firstNames != null)
+        {
+            nameFields.get("firsts").add(firstNames);
+        }
+        nameFields.get("auths").add(authority == null ? "" : authority);
+        nameFields.get("confs").add(confidence == null ? "" : confidence);
+    }
+    // End TAMU Customizations
 
     /**
      * Fill out an item's metadata values from a plain standard text field. If

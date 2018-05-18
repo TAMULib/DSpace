@@ -1032,17 +1032,25 @@
             </xsl:choose>
         </xsl:variable>
         <xsl:variable name="rounded" select="floor($dividend div $nb_fields)"/>
+        <!-- TAMU Customization - Wrap fields into multiple lines when more than 3 fields -->
         <xsl:variable name="sm_size">
             <xsl:choose>
-                <xsl:when test="position() = last()">
-
-                    <xsl:value-of select="$rounded + ($dividend mod $nb_fields)"/>
+                <xsl:when test="$nb_fields = 4">
+                    <xsl:value-of select="floor(2 * ($dividend div $nb_fields))"/>
                 </xsl:when>
                 <xsl:otherwise>
-                    <xsl:value-of select="$rounded"/>
+                    <xsl:choose>
+                        <xsl:when test="position() = last()">
+                            <xsl:value-of select="$rounded + ($dividend mod $nb_fields)"/>
+                        </xsl:when>
+                        <xsl:otherwise>
+                            <xsl:value-of select="$rounded"/>
+                        </xsl:otherwise>
+                    </xsl:choose>
                 </xsl:otherwise>
             </xsl:choose>
         </xsl:variable>
+        <!-- End TAMU Customization -->
 
         <div>
             <xsl:attribute name="class">

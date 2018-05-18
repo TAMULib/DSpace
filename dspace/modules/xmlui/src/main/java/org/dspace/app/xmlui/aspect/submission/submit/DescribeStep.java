@@ -19,13 +19,15 @@ import javax.servlet.ServletException;
 import org.apache.avalon.framework.parameters.Parameters;
 import org.apache.cocoon.ProcessingException;
 import org.apache.cocoon.environment.SourceResolver;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.commons.lang3.tuple.Triple;
 import org.dspace.app.util.DCInput;
 import org.dspace.app.util.DCInputSet;
 import org.dspace.app.util.DCInputsReader;
 import org.dspace.app.util.DCInputsReaderException;
-import org.dspace.app.xmlui.utils.UIException;
 import org.dspace.app.xmlui.aspect.submission.AbstractSubmissionStep;
 import org.dspace.app.xmlui.aspect.submission.FlowUtils;
+import org.dspace.app.xmlui.utils.UIException;
 import org.dspace.app.xmlui.wing.Message;
 import org.dspace.app.xmlui.wing.WingException;
 import org.dspace.app.xmlui.wing.element.Body;
@@ -42,11 +44,15 @@ import org.dspace.app.xmlui.wing.element.Select;
 import org.dspace.app.xmlui.wing.element.Text;
 import org.dspace.app.xmlui.wing.element.TextArea;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.content.*;
+import org.dspace.content.Collection;
+import org.dspace.content.DCDate;
+import org.dspace.content.DCPersonName;
+import org.dspace.content.DCSeriesNumber;
+import org.dspace.content.Item;
+import org.dspace.content.LocalCreatorList;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.authority.Choice;
 import org.dspace.content.authority.Choices;
-
 import org.dspace.content.authority.factory.ContentAuthorityServiceFactory;
 import org.dspace.content.authority.service.ChoiceAuthorityService;
 import org.dspace.content.authority.service.MetadataAuthorityService;
@@ -226,7 +232,9 @@ public class DescribeStep extends AbstractSubmissionStep
             }
             else if (inputType.equals("name"))
             {
-                renderNameField(form, fieldName, dcInput, dcValues, readonly);
+                // TAMU Customization - Added item parameter
+                renderNameField(form, fieldName, dcInput, dcValues, readonly, item);
+                // End TAMU Customization
             }
             else if (inputType.equals("date"))
             {
@@ -426,12 +434,27 @@ public class DescribeStep extends AbstractSubmissionStep
      * @param dcValues
      *                      The field's pre-existing values.
      */
-    private void renderNameField(List form, String fieldName, DCInput dcInput, java.util.List<MetadataValue> dcValues, boolean readonly)
+    // TAMU Customization - Added Item to method signature
+    private void renderNameField(List form, String fieldName, DCInput dcInput, java.util.List<MetadataValue> dcValues, boolean readonly, Item item)
             throws WingException
     {
         // The name field is a composite field containing two text fields, one
         // for first name the other for last name.
         Composite fullName = form.addItem().addComposite(fieldName, "submit-name");
+
+        // TAMU Customization - Added two new fields to Name Composite field
+        Select status = fullName.addSelect("local_creator_status");
+        status.setLabel("Status");
+        status.addOption("", "Select an option");
+        status.addOption("faculty", "TAMU Faculty/Staff");
+        status.addOption("student", "TAMU Student");
+        status.addOption("unaffiliated", "Non TAMU Affiliate");
+
+        Text email = fullName.addText("local_creator_email");
+        email.setLabel("TAMU Email (Optional");
+        email.setHelp("TAMU Email (Optional)");
+        // End TAMU Customization
+
         Text lastName = fullName.addText(fieldName + "_last");
         Text firstName = fullName.addText(fieldName + "_first");
 
@@ -486,29 +509,33 @@ public class DescribeStep extends AbstractSubmissionStep
             fullName.setDisabled();
         }
 
-        // Setup the field's values
-        if (dcInput.isRepeatable() || dcValues.size() > 1)
-        {
-            for (MetadataValue dcValue : dcValues)
-            {
-                DCPersonName dpn = new DCPersonName(dcValue.getValue());
+        // TAMU Customization - Generate and set Name Instances for Faculty/Staff, Students, and Unaffiliated
+        java.util.List<MetadataValue> faculty = itemService.getMetadata(item, "local", "creator", "faculty", null);
+        java.util.List<MetadataValue> students = itemService.getMetadata(item, "local", "creator", "student", null);
+        java.util.List<MetadataValue> unaffiliated = itemService.getMetadata(item, "local", "creator", "unaffiliated", null);
 
-                lastName.addInstance().setValue(dpn.getLastName());
-                firstName.addInstance().setValue(dpn.getFirstNames());
-                Instance fi = fullName.addInstance();
-                fi.setValue(dcValue.getValue());
-                if (isAuthorityControlled)
-                {
-                    if (dcValue.getAuthority() == null || dcValue.getAuthority().equals(""))
-                    {
-                        fi.setAuthorityValue("", "blank");
-                    }
-                    else
-                    {
-                        fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
-                    }
-                }
+        // Setup the field's values
+        if ((dcInput.isRepeatable() || dcValues.size() > 1) && (!faculty.isEmpty() || !students.isEmpty() || !unaffiliated.isEmpty()))
+        {
+            LocalCreatorList facultyList = new LocalCreatorList();
+            LocalCreatorList studentList = new LocalCreatorList();
+            LocalCreatorList unaffiliatedList = new LocalCreatorList();
+            if (faculty.size() > 0)
+            {
+                facultyList.setCreators(faculty.get(0).getValue(), "faculty");
             }
+            if (students.size() > 0)
+            {
+                studentList.setCreators(students.get(0).getValue(), "student");
+            }
+            if (unaffiliated.size() > 0)
+            {
+                unaffiliatedList.setCreators(unaffiliated.get(0).getValue(), "unaffiliated");
+            }
+            setNameInstances(facultyList, fullName, lastName, firstName, email, status, dcValues, "faculty", isAuthorityControlled);
+            setNameInstances(studentList, fullName, lastName, firstName, email, status, dcValues, "student", isAuthorityControlled);
+            setNameInstances(unaffiliatedList, fullName, lastName, firstName, email, status, dcValues, "unaffiliated", isAuthorityControlled);
+            // End TAMU Customization
         }
         else if (dcValues.size() == 1)
         {
@@ -529,6 +556,53 @@ public class DescribeStep extends AbstractSubmissionStep
             }
         }
     }
+
+    // TAMU Customization - Refactored this out of renderNameField to allow status to be passed in
+    private void setNameInstances(LocalCreatorList list, Composite fullName, Text lastName, Text firstName, Text email, Select status, java.util.List<MetadataValue> dcValues, String creatorStatus, boolean isAuthorityControlled) throws WingException {
+        for (Triple<String, String, DCPersonName> triple : list.getList())
+        {
+            lastName.addInstance().setValue(triple.getRight().getLastName());
+            firstName.addInstance().setValue(triple.getRight().getFirstNames());
+            email.addInstance().setValue(triple.getLeft());
+            status.addInstance().setOptionSelected(triple.getMiddle());
+            Instance fi = fullName.addInstance();
+            
+            String statusGloss = ", ";
+            if (triple.getMiddle().equals("faculty"))
+            {
+                statusGloss += "TAMU Faculty/Staff";
+            }
+            else if (triple.getMiddle().equals("student"))
+            {
+                statusGloss += "TAMU Student";
+            }
+            else
+            {
+                statusGloss += "Non-TAMU Affiliate";
+            }
+
+            if (creatorStatus.equals(triple.getMiddle()))
+            {
+                fi.setValue(triple.getRight().toString() + (triple.getLeft().equals("") ? "" : ", " + triple.getLeft()) + statusGloss);
+            }
+            for (MetadataValue dcValue : dcValues)
+            {
+                if (isAuthorityControlled)
+                {
+                    if (dcValue.getAuthority() == null || dcValue.getAuthority().equals(""))
+                    {
+                        fi.setAuthorityValue("", "blank");
+                    }
+                    else
+                    {
+                        fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
+                    }
+                }
+            }
+            
+        }
+    }
+    // End TAMU Customization
 
     /**
      * Render a date field to the DRI document. The date field consists of
