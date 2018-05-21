@@ -578,7 +578,7 @@ public class DescribeStep extends AbstractSubmissionStep
             }
             else
             {
-                statusGloss += "Non-TAMU Affiliate";
+                statusGloss += "Non TAMU Affiliate/Other";
             }
 
             if (creatorStatus.equals(triple.getMiddle()))
