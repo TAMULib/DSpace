@@ -442,21 +442,21 @@ public class DescribeStep extends AbstractSubmissionStep
         // for first name the other for last name.
         Composite fullName = form.addItem().addComposite(fieldName, "submit-name");
 
+        Text lastName = fullName.addText(fieldName + "_last");
+        Text firstName = fullName.addText(fieldName + "_first");
+
         // TAMU Customization - Added two new fields to Name Composite field
         Select status = fullName.addSelect("local_creator_status");
         status.setLabel("Status");
         status.addOption("", "Select an option");
         status.addOption("faculty", "TAMU Faculty/Staff");
         status.addOption("student", "TAMU Student");
-        status.addOption("unaffiliated", "Non TAMU Affiliate");
+        status.addOption("unaffiliated", "Non TAMU Affiliate/Other");
 
         Text email = fullName.addText("local_creator_email");
-        email.setLabel("TAMU Email (Optional");
-        email.setHelp("TAMU Email (Optional)");
+        email.setLabel("TAMU Email");
+        email.setHelp("TAMU Email");
         // End TAMU Customization
-
-        Text lastName = fullName.addText(fieldName + "_last");
-        Text firstName = fullName.addText(fieldName + "_first");
 
         // Setup the full name
         fullName.setLabel(dcInput.getLabel());

@@ -626,26 +626,23 @@ public class DescribeStep extends AbstractProcessingStep
                     itemService.addMetadata(context, item, schema, element, qualifier, null,
                             new DCPersonName(l, f).toString());
                 }
+
+                String s = nameFields.get("statuses").get(i);
+                String e = nameFields.get("emails").get(i);
+
+                if (s.equals("faculty"))
+                {
+                    formattedFaculty.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
+                }
+                else if (s.equals("student"))
+                {
+                    formattedStudent.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
+                }
+                else
+                {
+                    formattedUnaffiliated.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
+                }
             }
-            
-            String s = nameFields.get("statuses").get(i);
-            String e = nameFields.get("emails").get(i);
-            
-            
-            
-            if (s.equals("faculty"))
-            {
-                formattedFaculty.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
-            }
-            else if (s.equals("student"))
-            {
-                formattedStudent.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
-            }
-            else
-            {
-                formattedUnaffiliated.addCreator(new ImmutableTriple<String, String, DCPersonName>(e, s, new DCPersonName(l, f)));
-            }
-            
         }
         
         if (!formattedFaculty.getStatusString().equals(""))

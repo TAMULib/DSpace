@@ -285,7 +285,7 @@
         <xsl:choose>
             <xsl:when test="dim:field[@element='identifier' and @qualifier='doi' and descendant::text()]">
                 <xsl:for-each select="dim:field[@element='identifier' and @qualifier='doi']">
-                    <div class='altmetric-embed' data-badge-popover='right' data-badge-type='donut' data-doi="{./node()}" data-hide-less-than="1"></div>
+                    <div class='altmetric-embed' data-badge-details='right' data-badge-type='donut' data-doi="{./node()}" data-hide-less-than="1"></div>
                     <xsl:if test="count(following-sibling::dim:field[@element='identifier' and @qualifier='doi']) != 0">
                         <br/>
                     </xsl:if>
