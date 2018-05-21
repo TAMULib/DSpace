@@ -232,10 +232,14 @@ public class DescribeStep extends AbstractSubmissionStep
             }
             else if (inputType.equals("name"))
             {
-                // TAMU Customization - Added item parameter
-                renderNameField(form, fieldName, dcInput, dcValues, readonly, item);
-                // End TAMU Customization
+                renderNameField(form, fieldName, dcInput, dcValues, readonly);
             }
+            // TAMU Customization - Added detailed name field
+            else if (inputType.equals("detailed_name"))
+            {
+                renderDetailedNameField(form, fieldName, dcInput, dcValues, readonly, item);
+            }
+            // End TAMU Customization
             else if (inputType.equals("date"))
             {
                 renderDateField(form, fieldName, dcInput, dcValues, readonly);
@@ -434,8 +438,112 @@ public class DescribeStep extends AbstractSubmissionStep
      * @param dcValues
      *                      The field's pre-existing values.
      */
+    private void renderNameField(List form, String fieldName, DCInput dcInput, java.util.List<MetadataValue> dcValues, boolean readonly)
+            throws WingException
+    {
+        // The name field is a composite field containing two text fields, one
+        // for first name the other for last name.
+        Composite fullName = form.addItem().addComposite(fieldName, "submit-name");
+        Text lastName = fullName.addText(fieldName + "_last");
+        Text firstName = fullName.addText(fieldName + "_first");
+
+        // Setup the full name
+        fullName.setLabel(dcInput.getLabel());
+        fullName.setHelp(cleanHints(dcInput.getHints()));
+        if (dcInput.isRequired())
+        {
+            fullName.setRequired();
+        }
+        if (isFieldInError(fieldName))
+        {
+            if (dcInput.getWarning() != null && dcInput.getWarning().length() > 0)
+            {
+                fullName.addError(dcInput.getWarning());
+            }
+            else
+            {
+                fullName.addError(T_required_field);
+            }
+        }
+        if (dcInput.isRepeatable() && !readonly)
+        {
+            fullName.enableAddOperation();
+        }
+        if ((dcInput.isRepeatable() || dcValues.size() > 1) && !readonly)
+        {
+            fullName.enableDeleteOperation();
+        }
+        String fieldKey = metadataAuthorityService.makeFieldKey(dcInput.getSchema(), dcInput.getElement(), dcInput.getQualifier());
+        boolean isAuthorityControlled = metadataAuthorityService.isAuthorityControlled(fieldKey);
+        if (isAuthorityControlled)
+        {
+            fullName.setAuthorityControlled();
+            fullName.setAuthorityRequired(metadataAuthorityService.isAuthorityRequired(fieldKey));
+        }
+        if (choiceAuthorityService.isChoicesConfigured(fieldKey))
+        {
+            fullName.setChoices(fieldKey);
+            fullName.setChoicesPresentation(choiceAuthorityService.getPresentation(fieldKey));
+            fullName.setChoicesClosed(choiceAuthorityService.isClosed(fieldKey));
+        }
+
+        // Setup the first and last name
+        lastName.setLabel(T_last_name_help);
+        firstName.setLabel(T_first_name_help);
+
+        if (readonly)
+        {
+            lastName.setDisabled();
+            firstName.setDisabled();
+            fullName.setDisabled();
+        }
+
+        // Setup the field's values
+        if (dcInput.isRepeatable() || dcValues.size() > 1)
+        {
+            for (MetadataValue dcValue : dcValues)
+            {
+                DCPersonName dpn = new DCPersonName(dcValue.getValue());
+
+                lastName.addInstance().setValue(dpn.getLastName());
+                firstName.addInstance().setValue(dpn.getFirstNames());
+                Instance fi = fullName.addInstance();
+                fi.setValue(dcValue.getValue());
+                if (isAuthorityControlled)
+                {
+                    if (dcValue.getAuthority() == null || dcValue.getAuthority().equals(""))
+                    {
+                        fi.setAuthorityValue("", "blank");
+                    }
+                    else
+                    {
+                        fi.setAuthorityValue(dcValue.getAuthority(), Choices.getConfidenceText(dcValue.getConfidence()));
+                    }
+                }
+            }
+        }
+        else if (dcValues.size() == 1)
+        {
+            DCPersonName dpn = new DCPersonName(dcValues.get(0).getValue());
+
+            lastName.setValue(dpn.getLastName());
+            firstName.setValue(dpn.getFirstNames());
+            if (isAuthorityControlled)
+            {
+                if (dcValues.get(0).getAuthority() == null || dcValues.get(0).getAuthority().equals(""))
+                {
+                    lastName.setAuthorityValue("", "blank");
+                }
+                else
+                {
+                    lastName.setAuthorityValue(dcValues.get(0).getAuthority(), Choices.getConfidenceText(dcValues.get(0).getConfidence()));
+                }
+            }
+        }
+    }
+
     // TAMU Customization - Added Item to method signature
-    private void renderNameField(List form, String fieldName, DCInput dcInput, java.util.List<MetadataValue> dcValues, boolean readonly, Item item)
+    private void renderDetailedNameField(List form, String fieldName, DCInput dcInput, java.util.List<MetadataValue> dcValues, boolean readonly, Item item)
             throws WingException
     {
         // The name field is a composite field containing two text fields, one
