@@ -127,14 +127,16 @@ public class MetadataConverterPlugin implements ConverterPlugin
             if (mapping != null) mappings.add(mapping);
         }
         
+        //TAMU Customization - Map more than just ITEMs
         // should be changed, if Communities and Collections have metadata as well.
+        /*
         if (!(dso instanceof Item))
         {
             log.error("This DspaceObject (" + dsoService.getTypeText(dso) + " " 
                     + dso.getID() + ") should not have bin submitted to this "
                     + "plugin, as it supports Items only!");
             return null;
-        }
+        }*/
         
         List<MetadataValue> metadata_values = dsoService.getMetadata(dso, MetadataSchema.DC_SCHEMA, Item.ANY, Item.ANY, Item.ANY);
         for (MetadataValue value : metadata_values)
@@ -199,8 +201,8 @@ public class MetadataConverterPlugin implements ConverterPlugin
 
     @Override
     public boolean supports(int type) {
-        // should be changed, if Communities and Collections have metadata as well.
-        return (type == Constants.ITEM);
+        //TAMU Customization - Map more than just ITEMs
+        return (type == Constants.ITEM || type == Constants.COLLECTION || type == Constants.COMMUNITY);
     }
     
     protected Model loadConfiguration()
