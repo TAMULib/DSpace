@@ -21,6 +21,7 @@
     TAMU Customizations by 
     Author: James Creel
     Author: Jason Savell
+    Author: Ryan Laddusaw
 -->
 
 <xsl:stylesheet xmlns:i18n="http://apache.org/cocoon/i18n/2.1"
