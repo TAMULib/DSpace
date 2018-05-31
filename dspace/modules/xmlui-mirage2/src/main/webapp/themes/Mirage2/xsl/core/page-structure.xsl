@@ -361,7 +361,8 @@
                 </script>
                 <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">&#160;</script>
             </xsl:if>
-            <!-- TAMU Customization - add altmetric javascript for badge on item pages -->
+
+            <!-- TAMU Customization - Enabling Altmetric badge -->
             <script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
 
         </head>
