@@ -218,7 +218,7 @@ it, please enter the types and the actual numbers or codes.</hint>
                 <input-type>name</input-type>
                 <hint>Enter the names of the authors of this item.</hint>
 		        <!-- TAMU Customization 
-                <input-type>detailed_name</input-type
+                <input-type>detailed_name</input-type>
 		        <hint>Enter the names of the authors of this item. For TAMU Faculty, Staff, and Students
                         please use TAMU email address (@tamu.edu)</hint>
                 End Tamu Customization -->
