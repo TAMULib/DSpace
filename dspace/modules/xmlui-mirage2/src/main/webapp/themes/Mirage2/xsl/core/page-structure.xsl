@@ -21,6 +21,7 @@
     TAMU Customizations by 
     Author: James Creel
     Author: Jason Savell
+    Author: Ryan Laddusaw
 -->
 
 <xsl:stylesheet xmlns:i18n="http://apache.org/cocoon/i18n/2.1"
@@ -360,7 +361,7 @@
                 </script>
                 <script type="text/javascript" src="//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">&#160;</script>
             </xsl:if>
-
+            <!-- TAMU Customization - add altmetric javascript for badge on item pages -->
             <script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
 
         </head>
