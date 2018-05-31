@@ -215,11 +215,13 @@ it, please enter the types and the actual numbers or codes.</hint>
                 <dc-qualifier/>
                 <repeatable>true</repeatable>
                 <label>Authors</label>
-                <input-type>detailed_name</input-type>
-                <!-- TAMU Customization -->
-                <hint>Enter the names of the authors of this item. For TAMU Faculty, Staff, and Students
+                <input-type>name</input-type>
+                <hint>Enter the names of the authors of this item.</hint>
+		        <!-- TAMU Customization 
+                <input-type>detailed_name</input-type
+		        <hint>Enter the names of the authors of this item. For TAMU Faculty, Staff, and Students
                         please use TAMU email address (@tamu.edu)</hint>
-                <!-- End Tamu Customization -->
+                End Tamu Customization -->
                 <required/>
             </field>
 
