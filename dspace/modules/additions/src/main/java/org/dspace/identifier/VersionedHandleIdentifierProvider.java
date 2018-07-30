@@ -125,10 +125,10 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         {
             Item item = (Item) dso;
 
-            // if identifier == 1234.5/100.4 reinstate the version 4 in the 
+            // if identifier == 1234.5/100.4 reinstate the version 4 in the
             // version table if absent
-            
-            
+
+
             Matcher versionHandleMatcher = Pattern.compile("^.*/.*\\.(\\d+)$").matcher(identifier);
             // do we have to register a versioned handle?
             if(versionHandleMatcher.matches())
@@ -140,18 +140,18 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                 } catch (NumberFormatException ex) {
                     throw new IllegalStateException("Cannot detect the interger value of a digit.", ex);
                 }
-                
+
                 // get history
                 VersionHistory history = null;
                 try {
                     history = versionHistoryService.findByItem(context, item);
                 } catch (SQLException ex) {
-                    throw new RuntimeException("Unable to create handle '" 
-                        + identifier + "' for " 
-                        + Constants.typeText[dso.getType()] + " " + dso.getID() 
+                    throw new RuntimeException("Unable to create handle '"
+                        + identifier + "' for "
+                        + Constants.typeText[dso.getType()] + " " + dso.getID()
                         + " in cause of a problem with the database: ", ex);
                 }
-                
+
                 // do we have a version history?
                 if (history != null)
                 {
@@ -162,7 +162,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                     } catch (SQLException ex) {
                         throw new RuntimeException("Problem with the database connection occurd.", ex);
                     }
-                    
+
                     // did we found a version?
                     if (version != null)
                     {
@@ -171,7 +171,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                         {
                             throw new IdentifierException("Trying to register a handle without matching its item's version number.");
                         }
-                        
+
                         // create the handle
                         try {
                             handleService.createHandle(context, dso, identifier);
@@ -179,8 +179,8 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                             return;
                         } catch (AuthorizeException ex) {
                             throw new IdentifierException("Current user does not "
-                                    + "have the privileges to add the handle " 
-                                    + identifier + " to the item's (" 
+                                    + "have the privileges to add the handle "
+                                    + identifier + " to the item's ("
                                     + dso.getID() + ") metadata.", ex);
                         } catch (SQLException | IOException ex) {
                             throw new RuntimeException("Unable to create handle '"
@@ -216,14 +216,14 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                     populateHandleMetadata(context, (Item) dso, identifier);
             }
         } catch (SQLException ex) {
-            throw new RuntimeException("Unable to create handle '" 
-                            + identifier + "' for " 
-                            + Constants.typeText[dso.getType()] + " " + dso.getID() 
+            throw new RuntimeException("Unable to create handle '"
+                            + identifier + "' for "
+                            + Constants.typeText[dso.getType()] + " " + dso.getID()
                             + " in cause of a problem with the database: ", ex);
         } catch (AuthorizeException ex) {
                     throw new IdentifierException("Current user does not "
-                            + "have the privileges to add the handle " 
-                            + identifier + " to the item's (" 
+                            + "have the privileges to add the handle "
+                            + identifier + " to the item's ("
                             + dso.getID() + ") metadata.", ex);
         } catch (IOException ex) {
             throw new RuntimeException("Unable add the handle '"
@@ -248,7 +248,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
     {
         createNewIdentifier(context, item, identifier);
         populateHandleMetadata(context, item, identifier);
-        
+
         VersionHistory vh = versionHistoryService.findByItem(context, item);
         if (vh == null)
         {
@@ -372,21 +372,6 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         return prefix;
     }
 
-    protected static String getCanonicalForm(String handle)
-    {
-
-        // Let the admin define a new prefix, if not then we'll use the
-        // CNRI default. This allows the admin to use "hdl:" if they want to or
-        // use a locally branded prefix handle.myuni.edu.
-        String handlePrefix = ConfigurationManager.getProperty("handle.canonical.prefix");
-        if (handlePrefix == null || handlePrefix.length() == 0)
-        {
-            handlePrefix = "http://hdl.handle.net/";
-        }
-
-        return handlePrefix + handle;
-    }
-
     protected String createNewIdentifier(Context context, DSpaceObject dso, String handleId) throws SQLException {
         if(handleId == null)
         {
@@ -405,11 +390,11 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                     + "items only.");
         }
         Item item = (Item)dso;
-        
+
         // The first version will have a handle like 12345/100 to be backward compatible
         // to DSpace installation that started without versioning.
         // Mint foreach new VERSION an identifier like: 12345/100.versionNumber.
-        
+
         Version version = versionService.getVersion(context, item);
         Version firstVersion = versionHistoryService.getFirstVersion(context, history);
 
@@ -439,17 +424,17 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
         }
         return identifier;
     }
-    
+
     protected void populateHandleMetadata(Context context, Item item, String handle)
             throws SQLException, IOException, AuthorizeException
     {
-        String handleref = getCanonicalForm(handle);
-        // we want to remove the old handle and insert the new. To do so, we 
-        // load all identifiers, clear the metadata field, re add all 
+        String handleref = handleService.getCanonicalForm(handle);
+        // we want to remove the old handle and insert the new. To do so, we
+        // load all identifiers, clear the metadata field, re add all
         // identifiers which are not from type handle and add the new handle.
-        List<MetadataValue> identifiers = itemService.getMetadata(item, 
+        List<MetadataValue> identifiers = itemService.getMetadata(item,
                 MetadataSchema.DC_SCHEMA, "identifier", "uri", Item.ANY);
-        itemService.clearMetadata(context, item, MetadataSchema.DC_SCHEMA, 
+        itemService.clearMetadata(context, item, MetadataSchema.DC_SCHEMA,
                 "identifier", "uri", Item.ANY);
         for (MetadataValue identifier : identifiers)
         {
@@ -460,7 +445,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                 continue;
             }
             log.debug("Preserving identifier " + identifier.getValue());
-            itemService.addMetadata(context, 
+            itemService.addMetadata(context,
                     item,
                     identifier.getMetadataField(),
                     identifier.getLanguage(),
@@ -468,7 +453,7 @@ public class VersionedHandleIdentifierProvider extends IdentifierProvider {
                     identifier.getAuthority(),
                     identifier.getConfidence());
         }
-        
+
         // Add handle as identifier.uri DC value.
         if (StringUtils.isNotBlank(handleref))
         {

@@ -94,12 +94,12 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
     protected HarvestedItemService harvestedItemService;
     @Autowired(required=true)
     protected ConfigurationService configurationService;
-    
+
     @Autowired(required=true)
     protected WorkspaceItemService workspaceItemService;
     @Autowired(required=true)
     protected WorkflowItemService workflowItemService;
-    
+
 
     protected ItemServiceImpl()
     {
@@ -238,10 +238,22 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
     }
 
     @Override
+    public Iterator<Item> findAllByCollection(Context context, Collection collection, Integer limit, Integer offset) throws SQLException {
+        return itemDAO.findAllByCollection(context, collection, limit, offset);
+    }
+
+    @Override
     public Iterator<Item> findInArchiveOrWithdrawnDiscoverableModifiedSince(Context context, Date since)
             throws SQLException
     {
         return itemDAO.findAll(context, true, true, true, since);
+    }
+
+	@Override
+    public Iterator<Item> findInArchiveOrWithdrawnNonDiscoverableModifiedSince(Context context, Date since)
+            throws SQLException
+    {
+        return itemDAO.findAll(context, true, true, false, since);
     }
 
     @Override
@@ -425,7 +437,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
             }
         }
     }
-    
+
     // TAMU Customization
     @Override
     public void update(Context context, Item item) throws SQLException, AuthorizeException {
@@ -434,7 +446,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
     // TAMU Customization
     public void update(Context context, Item item, boolean versioning) throws SQLException, AuthorizeException {
-        
+
         if(versioning) {
             if(!authorizeService.authorizeVersioning(context, item)) {
                 throw new AuthorizeException(
@@ -623,7 +635,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 	        	adjustItemPolicies(context, item, item.getOwningCollection());
 	        }
         }
-        
+
         // Write log
         log.info(LogManager.getHeader(context, "reinstate_item", "user="
                 + e.getEmail() + ",item_id=" + item.getID()));
@@ -654,7 +666,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
         // Remove any Handle
         handleService.unbindHandle(context, item);
-        
+
         // remove version attached to the item
         removeVersion(context, item);
 
@@ -817,8 +829,8 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 
             // add default policies only if not already in place
             addDefaultPoliciesNotInPlace(context, item, defaultCollectionPolicies);
-        } 
-        finally 
+        }
+        finally
         {
             context.restoreAuthSystemState();
         }
@@ -957,7 +969,7 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
 		return workspaceItemService.findByItem(context, item) != null
 				|| workflowItemService.findByItem(context, item) != null;
     }
-    
+
     /*
     With every finished submission a bunch of resource policy entries with have null value for the dspace_object column are generated in the database.
 prevent the generation of resource policy entry values with null dspace_object as value
@@ -966,12 +978,12 @@ prevent the generation of resource policy entry values with null dspace_object a
 
     /**
      * Add the default policies, which have not been already added to the given DSpace object
-     * 
+     *
      * @param context
      * @param dso
      * @param defaultCollectionPolicies
      * @throws SQLException
-     * @throws AuthorizeException 
+     * @throws AuthorizeException
      */
     protected void addDefaultPoliciesNotInPlace(Context context, DSpaceObject dso, List<ResourcePolicy> defaultCollectionPolicies) throws SQLException, AuthorizeException
     {
@@ -1206,12 +1218,26 @@ prevent the generation of resource policy entry values with null dspace_object a
     }
 
     @Override
+    public int countAllItems(Context context, Collection collection) throws SQLException {
+        return itemDAO.countItems(context, collection, true, false) + itemDAO.countItems(context, collection, false, true);
+    }
+
+    @Override
     public int countItems(Context context, Community community) throws SQLException {
         // First we need a list of all collections under this community in the hierarchy
         List<Collection> collections = communityService.getAllCollections(context, community);
-        
+
         // Now, lets count unique items across that list of collections
         return itemDAO.countItems(context, collections, true, false);
+    }
+
+    @Override
+    public int countAllItems(Context context, Community community) throws SQLException {
+        // First we need a list of all collections under this community in the hierarchy
+        List<Collection> collections = communityService.getAllCollections(context, community);
+
+        // Now, lets count unique items across that list of collections
+        return itemDAO.countItems(context, collections, true, false) + itemDAO.countItems(context, collections, false, true);
     }
 
     @Override
@@ -1264,13 +1290,13 @@ prevent the generation of resource policy entry values with null dspace_object a
 
     @Override
     public boolean canCreateNewVersion(Context context, Item item) throws SQLException{
-        if (authorizeService.isAdmin(context, item)) 
+        if (authorizeService.isAdmin(context, item))
         {
             return true;
         }
 
         if (context.getCurrentUser() != null
-                && context.getCurrentUser().equals(item.getSubmitter())) 
+                && context.getCurrentUser().equals(item.getSubmitter()))
         {
             return configurationService.getPropertyAsType(
                     "versioning.submitterCanCreateNewVersion", false);

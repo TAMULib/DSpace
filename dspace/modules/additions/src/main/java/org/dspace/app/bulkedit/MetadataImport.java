@@ -126,7 +126,7 @@ public class MetadataImport
         {
 			Context.Mode originalMode = c.getCurrentMode();
 			c.setMode(Context.Mode.BATCH_EDIT);
-        	
+
             // Process each change
             for (DSpaceCSVLine line : toImport)
             {
@@ -138,7 +138,7 @@ public class MetadataImport
                 {
                     throw new MetadataImportException("'action' not allowed for new items!");
                 }
-                
+
 				WorkspaceItem wsItem = null;
 				WorkflowItem wfItem = null;
 				Item item = null;
@@ -179,7 +179,7 @@ public class MetadataImport
                             String[] fromCSV = line.get(md).toArray(new String[line.get(md).size()]);
                             // Remove authority unless the md is not authority controlled
                             if (!isAuthorityControlledField(md))
-                            { 
+                            {
                                 for (int i=0; i<fromCSV.length; i++)
                                 {
                                     int pos = fromCSV[i].indexOf(csv.getAuthoritySeparator());
@@ -216,7 +216,7 @@ public class MetadataImport
 							if (change) {
 								itemService.delete(c, item);
 							}
-                            
+
                             whatHasChanged.setDeleted();
                         }
                         else if ("withdraw".equals(action))
@@ -277,7 +277,7 @@ public class MetadataImport
 
                             // Remove authority unless the md is not authority controlled
                             if (!isAuthorityControlledField(md))
-                            { 
+                            {
                                 for (int i=0; i<fromCSV.length; i++)
                                 {
                                     int pos = fromCSV[i].indexOf(csv.getAuthoritySeparator());
@@ -403,12 +403,15 @@ public class MetadataImport
                     // Record the changes
                     changes.add(whatHasChanged);
                 }
-                
-				c.uncacheEntity(wsItem);
-				c.uncacheEntity(wfItem);
-				c.uncacheEntity(item);
+
+                if (change) {
+                    //only clear cache if changes have been made.
+                    c.uncacheEntity(wsItem);
+                    c.uncacheEntity(wfItem);
+                    c.uncacheEntity(item);
+                }
             }
-            
+
             c.setMode(originalMode);
         }
         catch (MetadataImportException mie)
@@ -869,7 +872,7 @@ public class MetadataImport
 
             // look up the value and authority in solr
             List<AuthorityValue> byValue = authorityValueService.findByValue(c, schema, element, qualifier, value);
-            
+
             AuthorityValue authorityValue = null;
             if (byValue.isEmpty()) {
                 String toGenerate = fromAuthority.generateString() + value;
@@ -933,7 +936,7 @@ public class MetadataImport
         {
             return null;
         }
-        
+
         // Remove newlines as different operating systems sometimes use different formats
         return in.replaceAll("\r\n", "").replaceAll("\n", "").trim();
     }
@@ -1197,7 +1200,7 @@ public class MetadataImport
             if (key.startsWith(AC_PREFIX)
             && ConfigurationManager.getBooleanProperty(key, false))
             {
-                authorityControlled.add(key.substring(AC_PREFIX.length())); 
+                authorityControlled.add(key.substring(AC_PREFIX.length()));
             }
         }
     }
@@ -1219,7 +1222,7 @@ public class MetadataImport
         options.addOption("s", "silent", false, "silent operation - doesn't request confirmation of changes USE WITH CAUTION");
         options.addOption("w", "workflow", false, "workflow - when adding new items, use collection workflow");
         options.addOption("n", "notify", false, "notify - when adding new items using a workflow, send notification emails");
-        options.addOption("t", "template", false, "template - when adding new items, use the collection template (if it exists)");        
+        options.addOption("t", "template", false, "template - when adding new items, use the collection template (if it exists)");
         options.addOption("h", "help", false, "help");
 
         // Parse the command line arguments
@@ -1257,7 +1260,7 @@ public class MetadataImport
 
         // Options for workflows, and workflow notifications for new items
         boolean useWorkflow = false;
-        boolean workflowNotify = false; 
+        boolean workflowNotify = false;
         if (line.hasOption('w'))
         {
             useWorkflow = true;
