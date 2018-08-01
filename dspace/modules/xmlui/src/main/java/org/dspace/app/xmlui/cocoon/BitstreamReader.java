@@ -627,6 +627,7 @@ public class BitstreamReader extends AbstractReader implements Recyclable
         {
             // Check for if-modified-since header -- ONLY if not authenticated
             if (hasNotBeenModified)
+            {
                 // Item has not been modified since requested date,
                 // hence bitstream has not been, either; return 304
                 response.setStatus(HttpServletResponse.SC_NOT_MODIFIED);
