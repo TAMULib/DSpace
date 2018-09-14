@@ -691,18 +691,18 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
         return locations;
     }
-    
+
     @Override
     public String createLocationQueryForAdministrableItems(Context context)
             throws SQLException
     {
         StringBuilder locationQuery = new StringBuilder();
-        
-        if (context.getCurrentUser() != null) 
+
+        if (context.getCurrentUser() != null)
         {
             List<Group> groupList = EPersonServiceFactory.getInstance().getGroupService()
                     .allMemberGroups(context, context.getCurrentUser());
-            
+
             List<ResourcePolicy> communitiesPolicies = AuthorizeServiceFactory.getInstance().getResourcePolicyService()
                     .find(context, context.getCurrentUser(), groupList, Constants.ADMIN, Constants.COMMUNITY);
 
@@ -710,23 +710,23 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                     .find(context, context.getCurrentUser(), groupList, Constants.ADMIN, Constants.COLLECTION);
 
             List<Collection> allCollections = new ArrayList<>();
-            
+
             for( ResourcePolicy rp: collectionsPolicies){
                 Collection collection = ContentServiceFactory.getInstance().getCollectionService()
                         .find(context, rp.getdSpaceObject().getID());
                 allCollections.add(collection);
             }
 
-            if (CollectionUtils.isNotEmpty(communitiesPolicies) || CollectionUtils.isNotEmpty(allCollections)) 
+            if (CollectionUtils.isNotEmpty(communitiesPolicies) || CollectionUtils.isNotEmpty(allCollections))
             {
                 locationQuery.append("location:( ");
 
-                for (int i = 0; i< communitiesPolicies.size(); i++) 
+                for (int i = 0; i< communitiesPolicies.size(); i++)
                 {
                     ResourcePolicy rp = communitiesPolicies.get(i);
                     Community community = ContentServiceFactory.getInstance().getCommunityService()
                             .find(context, rp.getdSpaceObject().getID());
-                
+
                     locationQuery.append("m").append(community.getID());
 
                     if (i != (communitiesPolicies.size() - 1)) {
@@ -958,6 +958,15 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 locations);
 
         log.debug("Building Item: " + handle);
+
+        //TAMU Customization - Write friendly community/collection names to index
+        if (!locations.isEmpty()) {
+            for (String location : locations) {
+                String field = location.startsWith("m") ? "location.comm":"location.coll";
+                log.debug("Adding location name: "+field+".name_stored with value: "+locationToName(context,field,location.substring(1)));
+                doc.addField(field+".name_stored",locationToName(context,field,location.substring(1)));
+            }
+        }
 
         doc.addField("archived", item.isArchived());
         doc.addField("withdrawn", item.isWithdrawn());
