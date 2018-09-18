@@ -963,8 +963,9 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         if (!locations.isEmpty()) {
             for (String location : locations) {
                 String field = location.startsWith("m") ? "location.comm":"location.coll";
-                log.debug("Adding location name: "+field+".name_stored with value: "+locationToName(context,field,location.substring(1)));
-                doc.addField(field+".name_stored",locationToName(context,field,location.substring(1)));
+                String dsoName = locationToName(context,field,location.substring(1));
+                log.debug("Adding location name: "+field+".name_stored with value: "+dsoName);
+                doc.addField(field+".name_stored", dsoName);
             }
         }
 
