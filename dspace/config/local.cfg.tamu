@@ -404,6 +404,18 @@ rdf.public.sparql.endpoint = http://localhost:3030/dspace/sparql
 # This address is used to store data in the triple store.
 rdf.storage.graphstore.endpoint = http://localhost:3030/dspace/data
 
+##############
+# THUMBNAILS #
+##############
+
+#Names of the enabled MediaFilter or FormatFilter plugins
+filter.plugins = PDF Text Extractor, HTML Text Extractor, \
+                 PowerPoint Text Extractor, \
+                 Word Text Extractor, JPEG Thumbnail, ImageMagick PDF Thumbnail
+
+thumbnail.maxwidth  = 300
+thumbnail.maxheight = 225
+
 #######################
 # TAMU CUSTOMIZATIONS #
 #######################
