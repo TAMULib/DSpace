@@ -365,9 +365,6 @@ public class OAIHarvester {
 						currentRecord++;
 
 						processRecord(record, OREPrefix, currentRecord, totalListSize);
-						ourContext.dispatchEvents();
-
-						intermediateCommit();
 					}
 				}
 
@@ -624,6 +621,10 @@ public class OAIHarvester {
 		long timeTaken = new Date().getTime() - timeStart.getTime();
 		log.info(String.format("Item %s (%s) has been ingested (item %d of %d). The whole process took: %d ms.",
 				item.getHandle(), item.getID(), currentRecord, totalListSize, timeTaken));
+
+        ourContext.dispatchEvents();
+
+        intermediateCommit();
 
 		//Clear the context cache
 		ourContext.uncacheEntity(wi);
