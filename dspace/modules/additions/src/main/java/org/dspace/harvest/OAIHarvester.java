@@ -622,9 +622,12 @@ public class OAIHarvester {
         log.info(String.format("Item %s (%s) has been ingested (item %d of %d). The whole process took: %d ms.",
                 item.getHandle(), item.getID(), currentRecord, totalListSize, timeTaken));
 
+        // TAMU CUSTOMIZATION - moved this block from just before the call to processRecord
+        // Should be accepted as a bugfix upstream
         ourContext.dispatchEvents();
 
         intermediateCommit();
+        // End TAMU CUSTOMIZATION
 
         //Clear the context cache
         ourContext.uncacheEntity(wi);
