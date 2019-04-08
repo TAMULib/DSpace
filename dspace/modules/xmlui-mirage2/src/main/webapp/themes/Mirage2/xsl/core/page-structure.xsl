@@ -22,6 +22,7 @@
     Author: James Creel
     Author: Jason Savell
     Author: Ryan Laddusaw
+    Author: Kevin Day
 -->
 
 <xsl:stylesheet xmlns:i18n="http://apache.org/cocoon/i18n/2.1"
@@ -91,6 +92,14 @@
 
                 <!-- Then proceed to the body -->
                 <body>
+                    <!-- TAMU Customization for Google Tag Manager (noscript) -->
+                    <xsl:text disable-output-escaping="yes">
+                        &lt;!-- Google Tag Manager (noscript) --&gt;
+                        &lt;noscript&gt;&lt;iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5LBRZK" height="0" width="0" style="display:none;visibility:hidden"&gt;&lt;/iframe&gt;&lt;/noscript&gt;
+                        &lt;!-- End Google Tag Manager (noscript) --&gt;
+                    </xsl:text>
+                    <!-- End TAMU Customization for Google Tag Manager (noscript) -->
+
                     <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you support IE 6.
                    chromium.org/developers/how-tos/chrome-frame-getting-started -->
                     <!--[if lt IE 7]><p class=chromeframe>Your browser is <em>ancient!</em> <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience this site.</p><![endif]-->
@@ -184,6 +193,18 @@
     references to stylesheets pulled directly from the pageMeta element. -->
     <xsl:template name="buildHead">
         <head>
+            <!-- TAMU Customization for Google Tag Manager -->
+            <xsl:text disable-output-escaping="yes">
+                &lt;!-- Google Tag Manager --&gt;
+                &lt;script&gt;(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                    new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                    j=d.createElement(s),dl=l!='dataLayer'?'&amp;l='+l:'';j.async=true;j.src=
+                    'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                    })(window,document,'script','dataLayer','GTM-5LBRZK');&lt;/script&gt;
+                &lt;!-- End Google Tag Manager --&gt;
+            </xsl:text>
+            <!-- End TAMU Customization for Google Tag Manager -->
+
             <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
 
             <!-- Use the .htaccess and remove these lines to avoid edge case issues.
