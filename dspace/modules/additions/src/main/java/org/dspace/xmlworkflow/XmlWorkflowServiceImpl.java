@@ -502,6 +502,11 @@ public class XmlWorkflowServiceImpl implements XmlWorkflowService {
             // Get the item handle to email to user
             String handle = handleService.findHandle(context, item);
 
+            // TAMU Customization - If handle is not yet saved in the database, use the handle from the item.
+            if (handle == null) {
+                handle = item.getHandle();
+            }
+
             // Get title
             List<MetadataValue> titles = itemService.getMetadata(item, MetadataSchema.DC_SCHEMA, "title", null, Item.ANY);
             String title = "";

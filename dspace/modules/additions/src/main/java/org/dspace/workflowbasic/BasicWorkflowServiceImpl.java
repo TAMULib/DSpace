@@ -813,6 +813,11 @@ public class BasicWorkflowServiceImpl implements BasicWorkflowService
             // Get the item handle to email to user
             String handle = handleService.findHandle(context, item);
 
+            // TAMU Customization - If handle is not yet saved in the database, use the handle from the item.
+            if (handle == null) {
+                handle = item.getHandle();
+            }
+
             // Get title
             String title = item.getName();
             if (StringUtils.isBlank(title))
