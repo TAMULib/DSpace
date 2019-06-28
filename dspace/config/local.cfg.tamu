@@ -422,6 +422,18 @@ filter.plugins = PDF Text Extractor, HTML Text Extractor, \
 thumbnail.maxwidth  = 300
 thumbnail.maxheight = 225
 
+#############
+# BULK EDIT #
+#############
+
+# A hard limit of the number of items allowed to be edited in one go in the UI
+# (does not apply to the command line version)
+bulkedit.gui-item-limit = 1000
+
+# Should the 'action' column allow the 'expunge' method.  By default this is set to false
+bulkedit.allowexpunge = true
+
+
 #######################
 # TAMU CUSTOMIZATIONS #
 #######################
