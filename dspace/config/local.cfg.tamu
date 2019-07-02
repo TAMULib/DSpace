@@ -366,12 +366,6 @@ xmlui.google.analytics.key =
 ############
 request.item.type =
 
-#############
-# BULK EDIT #
-#############
-bulkedit.gui-item-limit = 500
-
-
 ##############
 # STATISTICS #
 ##############
