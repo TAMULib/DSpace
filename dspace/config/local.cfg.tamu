@@ -443,6 +443,7 @@ xmlui.mdbrowser.1969.1/97043.reverse = true
 item.level.versioning = submitter
 
 xmlui.alumni.request.collections=1969.1/129207,1969.1/147588
+xmlui.alumni.request.link=https://tamu.libwizard.com/f/OARequest
 
 djatoka.url=http://djatoka.library.tamu.edu/
 dspace.oai.url=http://oaktrust.library.tamu.edu/dspace-oai

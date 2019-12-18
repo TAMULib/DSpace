@@ -20,6 +20,8 @@ import org.dspace.app.xmlui.wing.element.Body;
 import org.dspace.app.xmlui.wing.element.Division;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -34,6 +36,8 @@ public class AlumniRequestItemView extends AbstractDSpaceTransformer implements 
     
     /** Cached validity object */
     private SourceValidity validity = null;
+    
+    protected static final ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
     
         
@@ -107,7 +111,9 @@ public class AlumniRequestItemView extends AbstractDSpaceTransformer implements 
     	    	
         if (!AlumniRequest.isRequestable(context, dso))
             return;
-            
+        
+        String requestOpenAccessLinkString = configurationService.getProperty("xmlui.alumni.request.link");
+
         Division current = body.addDivision("alumni-request-item","primary");
         
         Division inner = current.addDivision("alumni-request-item-form");
@@ -115,7 +121,7 @@ public class AlumniRequestItemView extends AbstractDSpaceTransformer implements 
         inner.setHead("Request Open Access");
         inner.addPara("This item and its contents are restricted. If this is your thesis or dissertation, you can make it open-access. This will allow all visitors " +
         		"to view the contents of the thesis.");
-        inner.addPara().addXref("http://asktamulib.altarama.com/reft100.aspx?key=DSSC_OA&cllcid=DSSC", "Request Open Access");
+        inner.addPara().addXref(requestOpenAccessLinkString, "Request Open Access");
                 
         /*
         Division buttons = current.addInteractiveDivision("alumni-request-item-form", contextPath + "/handle/"+dso.getHandle()+"/alumni-request", Division.METHOD_POST);
