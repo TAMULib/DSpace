@@ -107,6 +107,8 @@ public class AlumniRequestItemView extends AbstractDSpaceTransformer implements 
     	    	
         if (!AlumniRequest.isRequestable(context, dso))
             return;
+        
+        String requestOpenAccessLinkString = configurationService.getProperty("xmlui.alumni.request.link");
             
         Division current = body.addDivision("alumni-request-item","primary");
         
@@ -115,7 +117,7 @@ public class AlumniRequestItemView extends AbstractDSpaceTransformer implements 
         inner.setHead("Request Open Access");
         inner.addPara("This item and its contents are restricted. If this is your thesis or dissertation, you can make it open-access. This will allow all visitors " +
         		"to view the contents of the thesis.");
-        inner.addPara().addXref("http://asktamulib.altarama.com/reft100.aspx?key=DSSC_OA&cllcid=DSSC", "Request Open Access");
+        inner.addPara().addXref(requestOpenAccessLinkString, "Request Open Access");
                 
         /*
         Division buttons = current.addInteractiveDivision("alumni-request-item-form", contextPath + "/handle/"+dso.getHandle()+"/alumni-request", Division.METHOD_POST);

@@ -45,6 +45,7 @@ import org.xml.sax.SAXException;
 
 /**
  * A form to request access to a restricted legacy thesis. Will ask the (anonymous) user for basic information and send an email off to feedback.recepient.
+ * The "xmlui.alumni.request.collections" parameter determines whether the widget will be displayed.
  * 
  * @author Alexey Maslov
  * @author Scott Phillips
