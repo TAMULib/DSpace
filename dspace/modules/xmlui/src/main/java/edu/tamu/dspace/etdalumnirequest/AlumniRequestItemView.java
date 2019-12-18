@@ -20,6 +20,8 @@ import org.dspace.app.xmlui.wing.element.Body;
 import org.dspace.app.xmlui.wing.element.Division;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.DSpaceObject;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -34,6 +36,8 @@ public class AlumniRequestItemView extends AbstractDSpaceTransformer implements 
     
     /** Cached validity object */
     private SourceValidity validity = null;
+    
+    protected static final ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
     
         
@@ -109,7 +113,7 @@ public class AlumniRequestItemView extends AbstractDSpaceTransformer implements 
             return;
         
         String requestOpenAccessLinkString = configurationService.getProperty("xmlui.alumni.request.link");
-            
+
         Division current = body.addDivision("alumni-request-item","primary");
         
         Division inner = current.addDivision("alumni-request-item-form");
