@@ -16,6 +16,7 @@
  <form-map>
    <name-map collection-handle="default" form-name="traditional" />
    <name-map collection-handle="1969.1/93296" form-name="facultyPub"/>
+   <name-map collection-handle="1969.1/187506" form-name="facultyPub"/>
    <name-map collection-handle="1969.1/152358" form-name="BRTC"/>
    <name-map collection-handle="1969.1/129213" form-name="oscSubmission"/>
  </form-map>
