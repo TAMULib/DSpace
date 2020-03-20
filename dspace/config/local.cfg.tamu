@@ -427,6 +427,15 @@ bulkedit.gui-item-limit = 1000
 # Should the 'action' column allow the 'expunge' method.  By default this is set to false
 bulkedit.allowexpunge = true
 
+#############################
+# CREATIVE COMMONS SETTINGS #
+#############################
+# Jurisdiction of the creative commons license -- is it ported or not?
+# Use the key from the url seen in the response from the api call,
+# http://api.creativecommons.org/rest/1.5/support/jurisdictions
+# Commented out means the license is unported.
+# (e.g. nz = New Zealand, uk = England and Wales, jp = Japan)
+cc.license.jurisdiction =
 
 #######################
 # TAMU CUSTOMIZATIONS #
