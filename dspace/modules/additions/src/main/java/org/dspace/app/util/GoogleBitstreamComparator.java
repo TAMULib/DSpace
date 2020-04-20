@@ -96,7 +96,6 @@ public class GoogleBitstreamComparator implements Comparator<Bitstream>{
             }
         }
         else {
-            log.info("first 4");
             return -1;
         }
     }
@@ -106,7 +105,6 @@ public class GoogleBitstreamComparator implements Comparator<Bitstream>{
 // TAMU Customization - This check var was never actually used, so commented it out
 //            String check = bitstream.getFormat(context).getMIMEType();
             if (priorityMap.containsKey(bitstream.getFormat(context).getMIMEType())) {
-                log.info(priorityMap.get(bitstream.getFormat(context).getMIMEType()));
                 return priorityMap.get(bitstream.getFormat(context).getMIMEType());
             } else {
                 return Integer.MAX_VALUE;
