@@ -152,7 +152,7 @@ mail.admin = helpdesk@library.tamu.edu
 # after registering with handle.net by uncommenting one of the following
 # lines, depending if you prefer to use http or https:
 # handle.canonical.prefix = http://hdl.handle.net/
-# handle.canonical.prefix = https://hdl.handle.net/
+handle.canonical.prefix = https://hdl.handle.net/
 #
 # Note that this will not alter dc.identifer.uri metadata for existing
 # items (only for subsequent submissions), but it will alter the URL
