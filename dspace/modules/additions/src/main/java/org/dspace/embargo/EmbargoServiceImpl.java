@@ -139,7 +139,7 @@ public class EmbargoServiceImpl implements EmbargoService
         }
 
 		/*
-		 * NOTE: We do not check here for past dates as it can result in errors during AIP restoration. 
+		 * NOTE: We do not check here for past dates as it can result in errors during AIP restoration.
 		 * Therefore, UIs should perform any such date validation on input. See DS-3348
 		 */
         return result;
@@ -150,8 +150,8 @@ public class EmbargoServiceImpl implements EmbargoService
     public void liftEmbargo(Context context, Item item)
         throws SQLException, AuthorizeException, IOException
     {
-        // new version of Embargo policies remain in place.
-    	// TAMU Customization: actually, maybe they won't because we need this line to be run (it was commented out)
+        // Since 3.0 the lift process for all embargoes is performed through the dates on the authorization process (see DS-2588)
+        // TAMU Customization: actually, maybe they won't because we need this line to be run (it was commented out)
         lifter.liftEmbargo(context, item);
         itemService.clearMetadata(context, item, lift_schema, lift_element, lift_qualifier, Item.ANY);
 
