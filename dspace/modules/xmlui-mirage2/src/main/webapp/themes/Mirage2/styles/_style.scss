@@ -160,9 +160,10 @@ ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li a {
 
 ul#edu_tamu_metadatatreebrowser_BrowseNode_list_child-list li a.node-thumbnail {
     background-color: #EDE8E8;
-    min-height: 100px;
+    height: 100px;
     margin-bottom: 15px;
     padding: 10px;
+    overflow-y: hidden;
 }
 
 
