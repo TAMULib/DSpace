@@ -447,19 +447,19 @@ public class ItemServiceImpl extends DSpaceObjectServiceImpl<Item> implements It
     // TAMU Customization
     public void update(Context context, Item item, boolean versioning) throws SQLException, AuthorizeException {
 
-        if(versioning) {
-            if(!authorizeService.authorizeVersioning(context, item)) {
-                throw new AuthorizeException(
-                        "Authorization denied for versioning " + item.getID() +
-                        " by user " + context.getCurrentUser().getID());
-            }
-        }
-        else {
-            // Check authorisation
-            // only do write authorization if user is not an editor
-            if (!canEdit(context, item))
-            {
-                authorizeService.authorizeAction(context, item, Constants.WRITE);
+        // Check authorisation
+        // only do write authorization if user is not an editor
+        if (!canEdit(context, item))
+        {
+            authorizeService.authorizeAction(context, item, Constants.WRITE);
+
+            // only deny versioning authorization if user is not explicitly authorized on the item and is ALSO not an editor
+            if(versioning) {
+                if(!authorizeService.authorizeVersioning(context, item)) {
+                    throw new AuthorizeException(
+                            "Authorization denied for versioning item " + item.getID() +
+                            " by user " + context.getCurrentUser().getID());
+                }
             }
         }
 
