@@ -1025,7 +1025,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         String primaryName = primaryBitstream.getName();
                         int primarySequence = primaryBitstream.getSequenceID();
                         String primaryUrl = String.format(bitstreamUrlTemplate, dspaceUrl, handle, primaryName, primarySequence);
-                        doc.addField("primaryBitstream", primaryUrl);
+                        doc.addField("primaryBitstream_stored", primaryUrl);
                     }
                     for (Bitstream bitstream : bundle.getBitstreams()) {
                         if (bitstream.getInternalId() != null && !bitstream.getInternalId().equals(primaryInternalId)) {
@@ -1042,7 +1042,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         String thumbnailName = thumbnailBitstream.getName();
                         int thumbnailSequence = thumbnailBitstream.getSequenceID();
                         String thumbnailUrl = String.format(bitstreamUrlTemplate, dspaceUrl, handle, thumbnailName, thumbnailSequence);
-                        doc.addField("thumbnailBitstream", thumbnailUrl);
+                        doc.addField("thumbnailBitstream_stored", thumbnailUrl);
                     }
                     break;
                 case "LICENSE":
@@ -1051,14 +1051,14 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         String licenseName = licenseBitstream.getName();
                         int licenseSequence = licenseBitstream.getSequenceID();
                         String licenseUrl = String.format(bitstreamUrlTemplate, dspaceUrl, handle, licenseName, licenseSequence);
-                        doc.addField("licenseBitstream", licenseUrl);
+                        doc.addField("licenseBitstream_stored", licenseUrl);
                     }
                     break;
                 default:
                     break;
             }
         }
-        doc.addField("bitstreams", bitstreamLocations);
+        doc.addField("bitstreams_stored", bitstreamLocations);
 
         doc.addField("archived", item.isArchived());
         doc.addField("withdrawn", item.isWithdrawn());
