@@ -68,6 +68,8 @@ import org.apache.solr.common.util.NamedList;
 import org.apache.solr.handler.extraction.ExtractingParams;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
+import org.dspace.content.Bitstream;
+import org.dspace.content.Bundle;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
@@ -1008,6 +1010,55 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 doc.addField(field+".name_stored", dsoName);
             }
         }
+
+        //TAMU Customization - Write bitstream URLs to index
+        List<String> bitstreamLocations = new ArrayList<>();
+        String dspaceUrl = ConfigurationManager.getProperty("dspace.url");
+        for (Bundle bundle : item.getBundles()) {
+            String bitstreamUrlTemplate = "%s/bitstream/handle/%s/%s?sequence=%d";
+            String primaryInternalId = null;
+            switch(bundle.getName()) {
+                case "ORIGINAL":
+                    if (bundle.getPrimaryBitstream() != null) {
+                        Bitstream primaryBitstream = bundle.getPrimaryBitstream();
+                        primaryInternalId = primaryBitstream.getInternalId();
+                        String primaryName = primaryBitstream.getName();
+                        int primarySequence = primaryBitstream.getSequenceID();
+                        String primaryUrl = String.format(bitstreamUrlTemplate, dspaceUrl, handle, primaryName, primarySequence);
+                        doc.addField("primaryBitstream_stored", primaryUrl);
+                    }
+                    for (Bitstream bitstream : bundle.getBitstreams()) {
+                        if (bitstream.getInternalId() != null && !bitstream.getInternalId().equals(primaryInternalId)) {
+                            String name = bitstream.getName();
+                            int sequence = bitstream.getSequenceID();
+                            String url = String.format(bitstreamUrlTemplate, dspaceUrl, handle, name, sequence);
+                            bitstreamLocations.add(url);
+                        }
+                    }
+                    break;
+                case "THUMBNAIL":
+                    Bitstream thumbnailBitstream = bundle.getBitstreams().get(0);
+                    if (thumbnailBitstream != null) {
+                        String thumbnailName = thumbnailBitstream.getName();
+                        int thumbnailSequence = thumbnailBitstream.getSequenceID();
+                        String thumbnailUrl = String.format(bitstreamUrlTemplate, dspaceUrl, handle, thumbnailName, thumbnailSequence);
+                        doc.addField("thumbnailBitstream_stored", thumbnailUrl);
+                    }
+                    break;
+                case "LICENSE":
+                    Bitstream licenseBitstream = bundle.getBitstreams().get(0);
+                    if (licenseBitstream != null) {
+                        String licenseName = licenseBitstream.getName();
+                        int licenseSequence = licenseBitstream.getSequenceID();
+                        String licenseUrl = String.format(bitstreamUrlTemplate, dspaceUrl, handle, licenseName, licenseSequence);
+                        doc.addField("licenseBitstream_stored", licenseUrl);
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        doc.addField("bitstreams_stored", bitstreamLocations);
 
         doc.addField("archived", item.isArchived());
         doc.addField("withdrawn", item.isWithdrawn());
