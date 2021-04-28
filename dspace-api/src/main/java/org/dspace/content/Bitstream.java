@@ -213,10 +213,21 @@ public class Bitstream extends DSpaceObject implements DSpaceObjectLegacySupport
 
     /**
      * Get the size of the bitstream
+     *
+     * @return the size in bytes
+     */
+    @Deprecated
+    public long getSize()
+    {
+        return getSizeBytes();
+    }
+
+    /**
+     * Get the size of the bitstream
      * 
      * @return the size in bytes
      */
-    public long getSize()
+    public long getSizeBytes()
     {
         return sizeBytes;
     }
