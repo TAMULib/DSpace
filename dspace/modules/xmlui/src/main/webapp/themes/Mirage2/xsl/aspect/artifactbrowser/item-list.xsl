@@ -212,24 +212,25 @@
                 </span>
                 <xsl:text> </xsl:text>
                 <xsl:if test="dim:field[@element='date' and @qualifier='issued'] or dim:field[@element='publisher']">
-	                <span class="publisher-date">
-	                    <xsl:text>(</xsl:text>
-	                    <xsl:if test="dim:field[@element='publisher']">
-	                        <span class="publisher">
-	                            <xsl:for-each select="dim:field[@element='publisher']">
+                    <span class="publisher-date">
+                        <xsl:text>(</xsl:text>
+                        <xsl:if test="dim:field[@element='publisher']">
+                            <span class="publisher">
+                                <!-- TAMU Customization -->
+                                <xsl:for-each select="dim:field[@element='publisher']">
                                     <xsl:copy-of select="node()"/>
                                     <xsl:if test="count(following-sibling::dim:field[@element='publisher']) != 0">
                                         <xsl:text>; </xsl:text>
                                     </xsl:if>
                                 </xsl:for-each>
-	                        </span>
-	                        <xsl:text>, </xsl:text>
-	                    </xsl:if>
-	                    <span class="date">
-	                        <xsl:value-of select="substring(dim:field[@element='date' and @qualifier='issued']/node(),1,10)"/>
-	                    </span>
-	                    <xsl:text>)</xsl:text>
-	                </span>
+                            </span>
+                            <xsl:text>, </xsl:text>
+                        </xsl:if>
+                        <span class="date">
+                            <xsl:value-of select="substring(dim:field[@element='date' and @qualifier='issued']/node(),1,10)"/>
+                        </span>
+                        <xsl:text>)</xsl:text>
+                    </span>
                 </xsl:if>
             </div>
             <xsl:if test="dim:field[@element = 'description' and @qualifier='abstract']">
