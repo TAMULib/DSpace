@@ -91,6 +91,8 @@
     <message key="xmlui.ArtifactBrowser.AdvancedSearch.type_other">Other Contributor</message>
     <message key="xmlui.ArtifactBrowser.AdvancedSearch.type_advisor">Advisor</message>
     <message key="xmlui.ArtifactBrowser.AdvancedSearch.type_department">Department</message>
+    <!-- TAMU Customization -->
+    <message key="xmlui.ArtifactBrowser.AdvancedSearch.type_type">Type</message>
 
     <message key="xmlui.ArtifactBrowser.AdvancedSearch.type_ANY">Full Text</message>
 
@@ -121,6 +123,7 @@
     <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.subject.column_heading">Subject</message>
     <!-- TAMU Customization -->
     <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.department.column_heading">Department</message>
+    <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.type.column_heading">Type</message>
 
     <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.metadata.author">Browsing {0} by Author {1}</message>
     <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.metadata.author">Browsing {0} by Author</message>
@@ -139,8 +142,10 @@
 
     <!-- TAMU Customization -->
     <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.metadata.department">Browsing {0} by Department {1}</message>
-    <!-- TAMU Customization -->
     <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.metadata.department">Browsing {0} by Department</message>
+    <!-- TAMU Customization -->
+    <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.trail.metadata.type">Browsing {0} by Type</message>
+    <message key="xmlui.ArtifactBrowser.ConfigurableBrowse.title.metadata.type">Browsing {0} by Type {1}</message>
 
     <!-- org.dspace.app.xmlui.administrative.WithdrawnItems.java -->
     <message key="xmlui.Administrative.WithdrawnItems.title.item.title">Withdrawn Items by Title</message>
@@ -254,6 +259,7 @@
     <message key="xmlui.ArtifactBrowser.Navigation.head_this_community">This Community</message>
     <!--TAMU Customization -->
     <message key="xmlui.ArtifactBrowser.Navigation.browse_department">Department</message>
+    <message key="xmlui.ArtifactBrowser.Navigation.browse_type">Type</message>
 
     <!-- org.dspace.app.xmlui.artifactbrowser.SimpleSearch.java -->
     <!-- Note: As of DSpace 6.0, org.dspace.app.xmlui.aspect.artifactbrowser.SimpleSearch has been removed. -->
@@ -265,6 +271,7 @@
     <message key="xmlui.ArtifactBrowser.SimpleSearch.full_text_search">Full Text Search</message>
     <!-- START TAMU Customization -->
     <message key="xmlui.ArtifactBrowser.SimpleSearch.filter.department">Department</message>
+    <message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Type">Type</message>
     <message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Keyword">Keyword</message>
     <message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Abstract">Abstract</message>
     <message key="xmlui.ArtifactBrowser.SimpleSearch.filter.Series">Series</message>
