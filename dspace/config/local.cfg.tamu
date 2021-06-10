@@ -292,6 +292,7 @@ webui.browse.index.2 = author:metadata:dc.contributor.*\,dc.creator:text
 webui.browse.index.3 = title:item:title
 webui.browse.index.4 = subject:metadata:dc.subject.*:text
 webui.browse.index.5 = department:metadata:thesis.degree.department\,local.department:text
+webui.browse.index.6 = type:metadata:dc.type.*:text
 
 
 search.index.1 = author:dc.contributor.*
