@@ -3046,6 +3046,7 @@
     <message key="xmlui.dwc.dataGeneralizations">Data Generalizations</message>
     <message key="xmlui.dwc.family">Family</message>
     <message key="xmlui.dwc.contributor">Contributer</message>
+    <message key="xmlui.dwc.vernacularName">Vernacular Name</message>
     <!-- END TAMU Customization - Darwin Core Fields -->
 
 </catalogue>
