@@ -87,6 +87,15 @@
     <scope_note>A person, organization, or service responsible for the content of the resource.  Catch-all for unspecified contributors.</scope_note>
   </dc-type>
 
+  <!-- TAMU Customization - additional dublin core contributor qualifier for department -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>contributor</element>
+    <qualifier>department</qualifier>
+    <scope_note>Use for academic department responsible for the document.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core contributor qualifier for department -->
+
   <dc-type>
 	<schema>dc</schema>
     <element>contributor</element>
