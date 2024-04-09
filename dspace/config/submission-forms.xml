@@ -54,8 +54,11 @@
             <row>
                 <field>
                     <dc-schema>dc</dc-schema>
-                    <dc-element>contributor</dc-element>
-                    <dc-qualifier>author</dc-qualifier>
+                    <!-- TAMU Customization - use dc.creator for author -->
+                    <!-- <dc-element>contributor</dc-element> -->
+                    <!-- <dc-qualifier>author</dc-qualifier> -->
+                    <dc-element>creator</dc-element>
+                    <!-- End TAMU Customization - use dc.creator for author -->
                     <repeatable>true</repeatable>
                     <label>Author</label>
                     <input-type>onebox</input-type>
@@ -253,8 +256,11 @@
                     <hint>Enter the author's name (Family name, Given names).</hint>
                     <linked-metadata-field>
                         <dc-schema>dc</dc-schema>
-                        <dc-element>contributor</dc-element>
-                        <dc-qualifier>author</dc-qualifier>
+                        <!-- TAMU Customization - use dc.creator for author -->
+                        <!-- <dc-element>contributor</dc-element> -->
+                        <!-- <dc-qualifier>author</dc-qualifier> -->
+                        <dc-element>creator</dc-element>
+                        <!-- End TAMU Customization - use dc.creator for author -->
                         <input-type>onebox</input-type>
                     </linked-metadata-field>
                     <externalsources>orcid</externalsources>
@@ -856,8 +862,11 @@
                     <hint>Add an author</hint>
                     <linked-metadata-field>
                         <dc-schema>dc</dc-schema>
-                        <dc-element>contributor</dc-element>
-                        <dc-qualifier>author</dc-qualifier>
+                        <!-- TAMU Customization - use dc.creator for author -->
+                        <!-- <dc-element>contributor</dc-element> -->
+                        <!-- <dc-qualifier>author</dc-qualifier> -->
+                        <dc-element>creator</dc-element>
+                        <!-- End TAMU Customization - use dc.creator for author -->
                         <input-type>name</input-type>
                     </linked-metadata-field>
                     <externalsources>orcid</externalsources>
