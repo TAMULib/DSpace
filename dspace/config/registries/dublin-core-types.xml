@@ -87,6 +87,15 @@
     <scope_note>A person, organization, or service responsible for the content of the resource.  Catch-all for unspecified contributors.</scope_note>
   </dc-type>
 
+  <!-- TAMU Customization - additional dublin core contributor qualifier for department -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>contributor</element>
+    <qualifier>department</qualifier>
+    <scope_note>Use for academic department responsible for the document.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core contributor qualifier for department -->
+
   <dc-type>
 	<schema>dc</schema>
     <element>contributor</element>
@@ -484,6 +493,15 @@
     <qualifier>uri</qualifier>
     <scope_note>References Uniform Resource Identifier for related item.</scope_note>
   </dc-type>
+
+  <!-- TAMU Customization - additional dublin core relation qualifier for profile URI -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>relation</element>
+    <qualifier>profileurl</qualifier>
+    <scope_note>Use for researcher's public profile URL.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core relation qualifier for profile URI -->
 
   <dc-type>
 	<schema>dc</schema>
