@@ -208,9 +208,9 @@
   <!-- TAMU Customization - additional dublin core date qualifier for dataset project close out -->
   <dc-type>
     <schema>dc</schema>
-    <element>data</element>
+    <element>date</element>
     <qualifier>projectEnd</qualifier>
-    <scope_note>Use to specify project close out date of a dataset item.</scope_note>
+    <scope_note>Use to specify closing date of research project that produced a dataset.</scope_note>
   </dc-type>
   <!-- End TAMU Customization - additional dublin core date qualifier for dataset project close out -->
 
