@@ -5,7 +5,7 @@
   - An empty registry for instance-specific, local metadata. Any non-standard
   - metadata fields should be added here to avoid polluting the standard
   - namespaces.
-  - 
+  -
   -->
 <dspace-dc-types>
 
@@ -31,5 +31,43 @@
     <scope_note>Description of example metadata field.</scope_note>
   </dc-type>
 -->
+
+<dc-type>
+    <schema>local</schema>
+    <element>pdac</element>
+    <qualifier>name</qualifier>
+    <scope_note>Name of the Project Data Access Contact</scope_note>
+  </dc-type>
+<dc-type>
+    <schema>local</schema>
+    <element>pdac</element>
+    <qualifier>uin</qualifier>
+    <scope_note>Texas A&M University Unique Identifiable Number of the Project Data Access Contact</scope_note>
+  </dc-type>
+<dc-type>
+    <schema>local</schema>
+    <element>pdac</element>
+    <qualifier>title</qualifier>
+    <scope_note>Positon title of the Project Data Access Contact.</scope_note>
+  </dc-type>
+  <dc-type>
+    <schema>local</schema>
+    <element>pdac</element>
+    <qualifier>affilliation</qualifier>
+    <scope_note>Affilliation of the Project Data Access Contact</scope_note>
+  </dc-type>
+  <dc-type>
+    <schema>local</schema>
+    <element>pdac</element>
+    <qualifier>telephone</qualifier>
+    <scope_note>Phone number of the Project Data Access Contact</scope_note>
+  </dc-type>
+  <dc-type>
+    <schema>local</schema>
+    <element>pdac</element>
+    <qualifier>email</qualifier>
+    <scope_note>Email of the Project Data Access Contact</scope_note>
+  </dc-type>
+
 
 </dspace-dc-types>
