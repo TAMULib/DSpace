@@ -130,4 +130,15 @@
         </rightCardinality>
         <copyToRight>true</copyToRight>
     </type>
+
+    <!-- Tamu Customization -->
+    <!-- <type>
+        <left-type>Collection</left-type>
+        <right-type>pdac</right-type>
+        <leftward-type>isManagedBy</leftward-type>
+        <rightward-type>manages</rightward-type>
+        <copyToLeft>true</copyToLeft>
+        <copyToRight>false</copyToRight>
+    </type> -->
+    <!-- End of Tamu Customization -->
 </relationships>
