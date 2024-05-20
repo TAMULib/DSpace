@@ -55,14 +55,16 @@
             - - - - - -
             PLEASE NOTICE THAT YOU WILL HAVE TO RESTART DSPACE
             - - - - - -
+            <name-map collection-entity-type="Publication" submission-name="Publication"/>
+            <name-map collection-entity-type="Person" submission-name="Person"/>
+            <name-map collection-entity-type="Project" submission-name="Project"/>
+            <name-map collection-entity-type="OrgUnit" submission-name="OrgUnit"/>
+            <name-map collection-entity-type="Journal" submission-name="Journal"/>
+            <name-map collection-entity-type="JournalVolume" submission-name="JournalVolume"/>
+            <name-map collection-entity-type="JournalIssue" submission-name="JournalIssue"/>
         -->
-        <name-map collection-entity-type="Publication" submission-name="Publication"/>
-        <name-map collection-entity-type="Person" submission-name="Person"/>
-        <name-map collection-entity-type="Project" submission-name="Project"/>
-        <name-map collection-entity-type="OrgUnit" submission-name="OrgUnit"/>
-        <name-map collection-entity-type="Journal" submission-name="Journal"/>
-        <name-map collection-entity-type="JournalVolume" submission-name="JournalVolume"/>
-        <name-map collection-entity-type="JournalIssue" submission-name="JournalIssue"/>
+        <name-map collection-entity-type="Dataset" submission-name="traditional"/>
+        <name-map collection-entity-type="PDAC" submission-name="traditional"/>
     </submission-map>
 
 
