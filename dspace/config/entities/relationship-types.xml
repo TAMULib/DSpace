@@ -5,6 +5,7 @@
 
 	<!-- Sample relationship types setup used for the entities development
 	 This file can be imported using the initialize-entities launcher -->
+     <!-- TAMU Customization - only add specific RDC entity types -->
      <!--
     <type>
         <leftType>Publication</leftType>
@@ -132,6 +133,7 @@
         <copyToRight>true</copyToRight>
     </type>
     -->
+
     <type>
         <leftType>Dataset</leftType>
         <rightType>PDAC</rightType>
@@ -146,4 +148,5 @@
         </rightCardinality>
         <copyToLeft>true</copyToLeft>
     </type>
+    <!-- End TAMU Customization - only add specific RDC entity types -->
 </relationships>
