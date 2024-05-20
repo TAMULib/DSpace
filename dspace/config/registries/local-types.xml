@@ -31,7 +31,6 @@
     <scope_note>Description of example metadata field.</scope_note>
   </dc-type>
 -->
-
 <dc-type>
     <schema>local</schema>
     <element>pdac</element>
