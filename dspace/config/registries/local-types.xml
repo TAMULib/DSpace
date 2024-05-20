@@ -31,6 +31,7 @@
     <scope_note>Description of example metadata field.</scope_note>
   </dc-type>
 -->
+<!-- Tamu Customization -->
 <dc-type>
     <schema>local</schema>
     <element>pdac</element>
@@ -67,6 +68,5 @@
     <qualifier>email</qualifier>
     <scope_note>Email of the Project Data Access Contact</scope_note>
   </dc-type>
-
-
+  <!-- Tamu Customization End -->
 </dspace-dc-types>
