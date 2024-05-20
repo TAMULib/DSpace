@@ -92,7 +92,7 @@
             <min>0</min>
         </rightCardinality>
     </type>
-    
+
     <type>
         <leftType>JournalVolume</leftType>
         <rightType>JournalIssue</rightType>
@@ -131,27 +131,4 @@
         </rightCardinality>
         <copyToRight>true</copyToRight>
     </type>
-
-    <!-- Tamu Customization -->
-    <type>
-        <left-type>Item</left-type>
-        <right-type>PDAC</right-type>
-        <leftward-type>isManagedBy</leftward-type>
-        <rightward-type>manages</rightward-type>
-        <copyToLeft>false</copyToLeft>
-        <copyToRight>true</copyToRight>
-        <leftCardinality>
-           <min>0</min>
-        </leftCardinality>
-        <leftCardinality>
-            <max>1</max>
-        </leftCardinality>
-        <rightCardinality>
-            <min>0</min>
-        </rightCardinality>
-        <rightCardinality>
-            <max>-1</max>
-        </rightCardinality>
-    </type>
-    <!-- End of Tamu Customization -->
 </relationships>
