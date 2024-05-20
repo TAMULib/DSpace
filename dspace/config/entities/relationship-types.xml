@@ -142,6 +142,7 @@
         </leftCardinality>
         <rightCardinality>
             <min>0</min>
+            <max>1</max>
         </rightCardinality>
         <copyToLeft>true</copyToLeft>
     </type>
