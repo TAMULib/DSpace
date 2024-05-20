@@ -145,17 +145,4 @@
         </rightCardinality>
         <copyToLeft>true</copyToLeft>
     </type>
-    <type>
-        <leftType>PDAC</leftType>
-        <rightType>Dataset</rightType>
-        <leftwardType>isDatasetAssignedToPDAC</leftwardType>
-        <rightwardType>isPDACForDataset</rightwardType>
-        <leftCardinality>
-            <min>0</min>
-        </leftCardinality>
-        <rightCardinality>
-            <min>0</min>
-        </rightCardinality>
-        <copyToRight>true</copyToRight>
-    </type>
 </relationships>
