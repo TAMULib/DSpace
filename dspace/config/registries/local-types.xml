@@ -31,7 +31,7 @@
     <scope_note>Description of example metadata field.</scope_note>
   </dc-type>
 -->
-<!-- TAMU Customization - Custom metadata fields  for Project Data Access Contact(PDAC) -->
+<!-- TAMU Customization - Custom metadata fields for Project Data Access Contact (PDAC)-->
 <dc-type>
     <schema>local</schema>
     <element>pdac</element>
@@ -68,5 +68,5 @@
     <qualifier>email</qualifier>
     <scope_note>Email of the Project Data Access Contact</scope_note>
   </dc-type>
-  <!-- End TAMU Customization - Custom metadata fields  for Project Data Access Contact(PDAC)-->
+  <!-- End TAMU Customization - Custom metadata fields for Project Data Access Contact (PDAC)-->
 </dspace-dc-types>
