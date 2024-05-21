@@ -93,7 +93,7 @@
                     <label>Date</label>
                     <style>col-sm-4</style>
                     <input-type>date</input-type>
-                    <hint></hint>
+                    <hint>Enter date of dataset publication.</hint>
                     <required></required>
                 </field>
                 <field>
@@ -152,7 +152,7 @@
                     <repeatable>false</repeatable>
                     <label>Project End Date</label>
                     <input-type>date</input-type>
-                    <hint></hint>
+                    <hint>Enter dataset project end date.</hint>
                     <required></required>
                 </field>
             </row>
