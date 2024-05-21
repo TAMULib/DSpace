@@ -276,7 +276,7 @@
          -->
         <submission-process name="PDAC">
             <step id="collection"/>
-            <step id="personStep"/>
+            <step id="pdacStep"/>
         </submission-process>
         <!-- End TAMU Customization - submission process for PDAC -->
 
