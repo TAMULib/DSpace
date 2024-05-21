@@ -256,6 +256,30 @@
     <!-- -->
     <submission-definitions>
 
+        <!-- TAMU Customization - submission process for Dataset -->
+        <!--
+        Submission Process for 'Dataset' Entities.
+        These are not to be confused with default Items, as Datasets may be linked with other Entities
+        (e.g. PDAC).
+        To enable: create a collection for Datasets and add it to the <submission-map> tag linking to this process
+         -->
+        <submission-process name="Dataset">
+            <step id="collection"/>
+            <step id="datasetStep"/>
+        </submission-process>
+        <!-- End TAMU Customization - submission process for Dataset -->
+
+        <!-- TAMU Customization - submission process for PDAC -->
+        <!--
+        Submission Process for 'PDAC' Entities
+        To enable: create a collection for PDACs and add it to the <submission-map> tag linking to this process
+         -->
+        <submission-process name="PDAC">
+            <step id="collection"/>
+            <step id="pdacStep"/>
+        </submission-process>
+        <!-- End TAMU Customization - submission process for PDAC -->
+
         <!--This "traditional" process defines the DEFAULT item submission process -->
         <submission-process name="traditional">
             <!--Uncommment to display the SAMPLE step as your first step -->
@@ -286,32 +310,6 @@
             <!--Step will be to Sign off on the required DSpace License agreement -->
             <step id="license"/>
         </submission-process>
-
-        <!-- TAMU Customization - submission process for Dataset -->
-        <!--
-        Submission Process for 'Dataset' Entities.
-        These are not to be confused with default Items, as Datasets may be linked with other Entities
-        (e.g. PDAC).
-        To enable: create a collection for Datasets and add it to the <submission-map> tag linking to this process
-         -->
-        <submission-process name="Dataset">
-            <step id="collection"/>
-            <!-- Datasets use a custom first step, but share page 2 with "traditional" Item form -->
-            <step id="publicationStep"/>
-            <step id="traditionalpagetwo"/>
-        </submission-process>
-        <!-- End TAMU Customization - submission process for Dataset -->
-
-        <!-- TAMU Customization - submission process for PDAC -->
-        <!--
-        Submission Process for 'PDAC' Entities
-        To enable: create a collection for PDACs and add it to the <submission-map> tag linking to this process
-         -->
-        <submission-process name="PDAC">
-            <step id="collection"/>
-            <step id="personStep"/>
-        </submission-process>
-        <!-- End TAMU Customization - submission process for PDAC -->
 
         <!--
         Submission Process for 'Publication' Entities.
