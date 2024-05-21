@@ -94,7 +94,6 @@
             <min>0</min>
         </rightCardinality>
     </type>
-
     <type>
         <leftType>JournalVolume</leftType>
         <rightType>JournalIssue</rightType>
