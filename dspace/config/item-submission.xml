@@ -287,21 +287,6 @@
             <step id="license"/>
         </submission-process>
 
-        <!--
-        Submission Process for 'Publication' Entities.
-        These are not to be confused with default Items, as Publications may be linked with other Entities
-        (e.g. Person, JournalIssue, etc).
-        To enable: create a collection for Publications and add it to the <submission-map> tag linking to this process
-         -->
-        <submission-process name="Publication">
-            <step id="collection"/>
-            <!-- Publications use a custom first step, but share page 2 with "traditional" Item form -->
-            <step id="publicationStep"/>
-            <step id="traditionalpagetwo"/>
-            <step id="upload"/>
-            <step id="license"/>
-        </submission-process>
-
         <!-- TAMU Customization - submission process for Dataset -->
         <!--
         Submission Process for 'Dataset' Entities.
@@ -317,17 +302,6 @@
         </submission-process>
         <!-- End TAMU Customization - submission process for Dataset -->
 
-        <!--
-        Submission Process for 'Person' Entities
-        To enable: create a collection for Persons and add it to the <submission-map> tag linking to this process
-         -->
-        <submission-process name="Person">
-            <step id="collection"/>
-            <step id="personStep"/>
-            <step id="upload"/>
-            <step id="license"/>
-        </submission-process>
-
         <!-- TAMU Customization - submission process for PDAC -->
         <!--
         Submission Process for 'PDAC' Entities
@@ -338,6 +312,32 @@
             <step id="personStep"/>
         </submission-process>
         <!-- End TAMU Customization - submission process for PDAC -->
+
+        <!--
+        Submission Process for 'Publication' Entities.
+        These are not to be confused with default Items, as Publications may be linked with other Entities
+        (e.g. Person, JournalIssue, etc).
+        To enable: create a collection for Publications and add it to the <submission-map> tag linking to this process
+         -->
+        <submission-process name="Publication">
+            <step id="collection"/>
+            <!-- Publications use a custom first step, but share page 2 with "traditional" Item form -->
+            <step id="publicationStep"/>
+            <step id="traditionalpagetwo"/>
+            <step id="upload"/>
+            <step id="license"/>
+        </submission-process>
+
+        <!--
+        Submission Process for 'Person' Entities
+        To enable: create a collection for Persons and add it to the <submission-map> tag linking to this process
+         -->
+        <submission-process name="Person">
+            <step id="collection"/>
+            <step id="personStep"/>
+            <step id="upload"/>
+            <step id="license"/>
+        </submission-process>
 
         <!--
         Submission Process for 'Pproject' Entities
