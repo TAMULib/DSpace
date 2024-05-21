@@ -28,7 +28,8 @@
             <row>
                 <relation-field>
                     <relationship-type>isPDACForDataset</relationship-type>
-                    <search-configuration>pdac</search-configuration>
+                    <!-- TODO: update discovery.xml -->
+                    <!-- <search-configuration>pdac</search-configuration> -->
                     <label>PDAC</label>
                     <hint>assign a PDAC</hint>
                     <externalsources/>
@@ -162,7 +163,8 @@
             <row>
                 <relation-field>
                     <relationship-type>isDatasetAssignedToPDAC</relationship-type>
-                    <search-configuration>dataset</search-configuration>
+                    <!-- TODO: update discovery.xml -->
+                    <!-- <search-configuration>dataset</search-configuration> -->
                     <label>Dataset</label>
                     <hint>assign a Dataset</hint>
                     <externalsources/>
