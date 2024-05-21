@@ -53,8 +53,8 @@
   <dc-type>
     <schema>local</schema>
     <element>pdac</element>
-    <qualifier>affilliation</qualifier>
-    <scope_note>Affilliation of the Project Data Access Contact</scope_note>
+    <qualifier>affiliation</qualifier>
+    <scope_note>Affiliation of the Project Data Access Contact</scope_note>
   </dc-type>
   <dc-type>
     <schema>local</schema>
