@@ -104,6 +104,19 @@
             <type>collection</type>
         </step-definition>
 
+        <!-- TAMU Customization - add step definition for Dataset / PDAC -->
+        <step-definition id="datasetStep" mandatory="true">
+            <heading>submit.progressbar.describe.stepone</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+            <type>submission-form</type>
+        </step-definition>
+        <step-definition id="pdacStep" mandatory="true">
+            <heading>submit.progressbar.describe.stepone</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+            <type>submission-form</type>
+        </step-definition>
+        <!-- End TAMU Customization - add step definition for Dataset / PDAC -->
+
         <!-- The following set of DescribeStep <step-definition>s all point to forms (of the same name) which are
              defined in submission-forms.xml -->
         <step-definition id="traditionalpageone" mandatory="true">
@@ -276,7 +289,7 @@
          -->
         <submission-process name="PDAC">
             <step id="collection"/>
-            <step id="personStep"/>
+            <step id="pdacStep"/>
         </submission-process>
         <!-- End TAMU Customization - submission process for PDAC -->
 

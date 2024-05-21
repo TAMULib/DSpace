@@ -41,6 +41,7 @@
                 <field>
                     <dc-schema>dc</dc-schema>
                     <dc-element>creator</dc-element>
+                    <dc-qualifier></dc-qualifier>
                     <repeatable>true</repeatable>
                     <label>Creator</label>
                     <input-type>onebox</input-type>
