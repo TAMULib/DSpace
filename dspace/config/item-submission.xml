@@ -265,7 +265,7 @@
          -->
         <submission-process name="Dataset">
             <step id="collection"/>
-            <step id="datasetStep"/>
+            <step id="publicationStep"/>
         </submission-process>
         <!-- End TAMU Customization - submission process for Dataset -->
 
@@ -276,7 +276,7 @@
          -->
         <submission-process name="PDAC">
             <step id="collection"/>
-            <step id="pdacStep"/>
+            <step id="personStep"/>
         </submission-process>
         <!-- End TAMU Customization - submission process for PDAC -->
 
