@@ -3086,7 +3086,7 @@
         <property name="sidebarFacets">
             <list>
                 <ref bean="searchFilterPDACTitle"/>
-                <ref bean="searchFilterPDACAffilication"/>
+                <ref bean="searchFilterPDACAffiliation"/>
             </list>
         </property>
         <!--The search filters which can be used on the discovery search page-->
@@ -3095,7 +3095,7 @@
                 <ref bean="searchFilterPDACName"/>
                 <ref bean="searchFilterPDACUIN"/>
                 <ref bean="searchFilterPDACTitle"/>
-                <ref bean="searchFilterPDACAffilication"/>
+                <ref bean="searchFilterPDACAffiliation"/>
                 <ref bean="searchFilterPDACTelephone"/>
                 <ref bean="searchFilterPDACEmail"/>
                 <ref bean="searchFilterIsDatasetAssignedToPDACRelation"/>
@@ -3153,7 +3153,7 @@
                 <ref bean="searchFilterPDACName"/>
                 <ref bean="searchFilterPDACUIN"/>
                 <ref bean="searchFilterPDACTitle"/>
-                <ref bean="searchFilterPDACAffilication"/>
+                <ref bean="searchFilterPDACAffiliation"/>
                 <ref bean="searchFilterPDACTelephone"/>
                 <ref bean="searchFilterPDACEmail"/>
                 <ref bean="searchFilterIsDatasetAssignedToPDACRelation"/>
