@@ -3178,7 +3178,7 @@
             <list>
                 <!--Only find items, communities and collections-->
                 <!-- NOTE: NOT filtered on latestVersion = true -->
-                <value>search.resourcetype:Item AND entityType_keyword:Person</value>
+                <value>search.resourcetype:Item AND entityType_keyword:PDAC</value>
                 <value>-withdrawn:true AND -discoverable:false</value>
             </list>
         </property>
