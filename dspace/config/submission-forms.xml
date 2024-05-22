@@ -21,6 +21,217 @@
     <!-- serves as a 'this field is required' flag.                           -->
 
     <form-definitions>
+
+        <!-- TAMU Customization - form definition for Dataset -->
+        <!-- Form which defines the metadata page/section for depositing Dataset Entities -->
+        <form name="datasetStep">
+            <row>
+                <relation-field>
+                    <relationship-type>isPDACForDataset</relationship-type>
+                    <search-configuration>pdac</search-configuration>
+                    <label>PDAC</label>
+                    <hint>assign a PDAC</hint>
+                    <externalsources/>
+                </relation-field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>creator</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Creator</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the creator's name.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>title</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Title</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the main title of the dataset.</hint>
+                    <required>You must enter a main title for this dataset.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Description</label>
+                    <input-type>textarea</input-type>
+                    <hint>Enter any other description or comments in this box.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>department</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Department</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the creator's department.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>date</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Date</label>
+                    <style>col-sm-4</style>
+                    <input-type>date</input-type>
+                    <hint>Enter date of dataset publication.</hint>
+                    <required></required>
+                </field>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>publisher</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Publisher</label>
+                    <style>col-sm-8</style>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the name of the publisher of the previously issued instance of this dataset.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier>doi</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>DOI</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the DOI for the previously issued instance of this dataset.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>relation</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Relation</label>
+                    <input-type>onebox</input-type>
+                    <hint></hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>subject</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Subject Keywords</label>
+                    <input-type>tag</input-type>
+                    <hint>Enter appropriate subject keywords or phrases.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>date</dc-element>
+                    <dc-qualifier>projectEnd</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Project End Date</label>
+                    <input-type>date</input-type>
+                    <hint>Enter dataset project end date.</hint>
+                    <required></required>
+                </field>
+            </row>
+        </form>
+        <!-- End TAMU Customization - form definition for Dataset -->
+
+        <!-- TAMU Customization - form definition for PDAC -->
+        <!-- Form which defines the metadata page/section for depositing PDAC Entities -->
+        <form name="pdacStep">
+            <row>
+                <relation-field>
+                    <relationship-type>isDatasetAssignedToPDAC</relationship-type>
+                    <search-configuration>dataset</search-configuration>
+                    <label>Dataset</label>
+                    <hint>assign a Dataset</hint>
+                    <externalsources/>
+                </relation-field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>pdac</dc-element>
+                    <dc-qualifier>name</dc-qualifier>
+                    <label>Name</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the name of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>pdac</dc-element>
+                    <dc-qualifier>uin</dc-qualifier>
+                    <label>UIN</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the UIN of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>pdac</dc-element>
+                    <dc-qualifier>title</dc-qualifier>
+                    <label>Title</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the title of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>pdac</dc-element>
+                    <dc-qualifier>affiliation</dc-qualifier>
+                    <label>Affiliation</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the affiliation of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>pdac</dc-element>
+                    <dc-qualifier>telephone</dc-qualifier>
+                    <label>Telephone</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the telephone number of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>pdac</dc-element>
+                    <dc-qualifier>email</dc-qualifier>
+                    <label>Email</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the email of the PDAC</hint>
+                </field>
+            </row>
+        </form>
+        <!-- End TAMU Customization - form definition for PDAC -->
+
         <!-- Form used for entering in Bitstream/File metadata after uploading a file -->
         <form name="bitstream-metadata">
             <row>
