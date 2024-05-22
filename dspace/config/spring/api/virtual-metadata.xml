@@ -18,10 +18,9 @@
                 <entry key="isOrgUnitOfPerson" value-ref="isOrgUnitOfPersonMap"/>
                 <entry key="isJournalVolumeOfIssue" value-ref="isJournalVolumeOfIssueMap"/>
                 <entry key="isJournalOfVolume" value-ref="isJournalOfVolumeMap"/>
-                <entry key="isVolumeOfJournal" value-ref="isVolumeOfJournalMap"/> 
+                <entry key="isVolumeOfJournal" value-ref="isVolumeOfJournalMap"/>
                 <entry key="isIssueOfJournalVolume" value-ref="isIssueOfJournalVolumeMap"/>
                 <entry key="isJournalIssueOfPublication" value-ref="isJournalIssueOfPublicationMap"/>
-
 
                 <!-- TAMU Customization - Dataset / PDAC virtual metadata mapping -->
                 <entry key="isPDACForDataset" value-ref="isPDACForDatasetMap"/>
@@ -59,6 +58,8 @@
         <property name="separator">
             <value>, </value>
         </property>
+        <property name="useForPlace" value="true"/>
+        <property name="populateWithNameVariant" value="true"/>
     </bean>
 
     <util:map id="isDatasetAssignedToPDACMap">
