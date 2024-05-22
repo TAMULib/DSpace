@@ -18,9 +18,15 @@
                 <entry key="isOrgUnitOfPerson" value-ref="isOrgUnitOfPersonMap"/>
                 <entry key="isJournalVolumeOfIssue" value-ref="isJournalVolumeOfIssueMap"/>
                 <entry key="isJournalOfVolume" value-ref="isJournalOfVolumeMap"/>
-                <entry key="isVolumeOfJournal" value-ref="isVolumeOfJournalMap"/>
+                <entry key="isVolumeOfJournal" value-ref="isVolumeOfJournalMap"/> 
                 <entry key="isIssueOfJournalVolume" value-ref="isIssueOfJournalVolumeMap"/>
                 <entry key="isJournalIssueOfPublication" value-ref="isJournalIssueOfPublicationMap"/>
+
+
+                <!-- TAMU Customization - Dataset / PDAC virtual metadata mapping -->
+                <entry key="isPDACForDataset" value-ref="isPDACForDatasetMap"/>
+                <!-- <entry key="isDatasetAssignedToPDAC" value-ref="isDatasetAssignedToPDACMap"/> -->
+                <!-- End TAMU Customization - Dataset / PDAC virtual metadata mapping -->
             </map>
         </property>
     </bean>
@@ -31,9 +37,31 @@
                 <entry key="Publication" value="f.entityType=Publication,equals"/>
                 <entry key="Person" value="f.entityType=Person,equals"/>
                 <entry key="Journal" value="f.entityType=Journal,equals"/>
+
+                <!-- TAMU Customization - Dataset / PDAC entity type to filter query entry -->
+                <entry key="Dataset" value="f.entityType=Dataset,equals"/>
+                <entry key="PDAC" value="f.entityType=PDAC,equals"/>
+                <!-- End TAMU Customization - Dataset / PDAC entity type to filter query entry -->
             </map>
         </property>
     </bean>
+
+    <!-- TAMU Customization - Dataset / PDAC virtual metadata -->
+    <util:map id="isPDACForDatasetMap">
+        <entry key="local.pdac.name" value-ref="datasetPDAC_name"/>
+    </util:map>
+
+    <bean class="org.dspace.content.virtual.Concatenate" id="datasetPDAC_name">
+        <property name="fields">
+            <util:list>
+                <value>local.pdac.name</value>
+            </util:list>
+        </property>
+        <property name="separator">
+            <value>, </value>
+        </property>
+    </bean>
+    <!-- End TAMU Customization - Dataset / PDAC virtual metadata -->
 
     <!-- Config like this will tell our VirtualMetadataPopulator to include the virtual metadata field
          'dc.contributor.author' on the appropriate item with the values defined in the value-ref.
