@@ -96,14 +96,14 @@
   </dc-type>
   <!-- End TAMU Customization - additional dublin core contributor qualifier for department -->
 
-  <!-- TAMU Customization - additional dublin core contributor qualifier for pdac -->
+  <!-- TAMU Customization - additional dublin core contributor qualifier for PDAC -->
   <dc-type>
     <schema>dc</schema>
     <element>contributor</element>
     <qualifier>pdac</qualifier>
-    <scope_note>Use for pdac responsible for the dataset.</scope_note>
+    <scope_note>Use for PDAC responsible for the dataset.</scope_note>
   </dc-type>
-  <!-- End TAMU Customization - additional dublin core contributor qualifier for pdac -->
+  <!-- End TAMU Customization - additional dublin core contributor qualifier for PDAC -->
 
   <dc-type>
 	<schema>dc</schema>
