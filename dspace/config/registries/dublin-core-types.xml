@@ -96,6 +96,15 @@
   </dc-type>
   <!-- End TAMU Customization - additional dublin core contributor qualifier for department -->
 
+  <!-- TAMU Customization - additional dublin core contributor qualifier for pdac -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>contributor</element>
+    <qualifier>pdac</qualifier>
+    <scope_note>Use for pdac responsible for the dataset.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core contributor qualifier for pdac -->
+
   <dc-type>
 	<schema>dc</schema>
     <element>contributor</element>
@@ -511,6 +520,15 @@
     <scope_note>Use for researcher's public profile URL.</scope_note>
   </dc-type>
   <!-- End TAMU Customization - additional dublin core relation qualifier for profile URI -->
+
+  <!-- TAMU Customization - additional dublin core relation qualifier for data URLs -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>relation</element>
+    <qualifier>hasDataset</qualifier>
+    <scope_note>Use for researcher's public data URLs.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core relation qualifier for data URLs -->
 
   <dc-type>
 	<schema>dc</schema>

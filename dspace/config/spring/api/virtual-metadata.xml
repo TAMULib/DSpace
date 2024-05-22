@@ -48,7 +48,7 @@
     <!-- TAMU Customization - Dataset / PDAC virtual metadata -->
     <util:map id="isPDACForDatasetMap">
         <entry key="local.pdac.name" value-ref="datasetPDAC_name"/>
-        <entry key="dc.contributor.other" value-ref="datasetPDAC_identifier"/>
+        <entry key="dc.contributor.pdac" value-ref="datasetPDAC_identifier"/>
     </util:map>
     <bean class="org.dspace.content.virtual.Concatenate" id="datasetPDAC_name">
         <property name="fields">
@@ -71,7 +71,7 @@
     </bean>
 
     <util:map id="isDatasetAssignedToPDACMap">
-        <entry key="dc.contributor.other" value-ref="pdac_identifier"/>
+        <entry key="dc.relation.hasDataset" value-ref="pdac_identifier"/>
     </util:map>
     <bean class="org.dspace.content.virtual.Collected" id="pdac_identifier">
         <property name="fields">
