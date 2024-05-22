@@ -48,6 +48,7 @@
     <!-- TAMU Customization - Dataset / PDAC virtual metadata -->
     <util:map id="isPDACForDatasetMap">
         <entry key="local.pdac.name" value-ref="datasetPDAC_name"/>
+        <entry key="dc.contributor.other" value-ref="datasetPDAC_identifier"/>
     </util:map>
     <bean class="org.dspace.content.virtual.Concatenate" id="datasetPDAC_name">
         <property name="fields">
@@ -61,11 +62,18 @@
         <property name="useForPlace" value="true"/>
         <property name="populateWithNameVariant" value="true"/>
     </bean>
+    <bean class="org.dspace.content.virtual.Collected" id="datasetPDAC_identifier">
+        <property name="fields">
+            <util:list>
+                <value>dc.identifier.uri</value>
+            </util:list>
+        </property>
+    </bean>
 
     <util:map id="isDatasetAssignedToPDACMap">
-        <entry key="dc.contributor.other" value-ref="pdac_id"/>
+        <entry key="dc.contributor.other" value-ref="pdac_identifier"/>
     </util:map>
-    <bean class="org.dspace.content.virtual.Collected" id="pdac_id">
+    <bean class="org.dspace.content.virtual.Collected" id="pdac_identifier">
         <property name="fields">
             <util:list>
                 <value>dc.identifier.uri</value>
