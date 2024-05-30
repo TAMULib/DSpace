@@ -165,7 +165,7 @@
                     <relationship-type>isDatasetAssignedToPDAC</relationship-type>
                     <search-configuration>dataset</search-configuration>
                     <label>Dataset</label>
-                    <hint>assign a Dataset</hint>
+                    <hint>Assign a Dataset</hint>
                     <externalsources/>
                 </relation-field>
             </row>
