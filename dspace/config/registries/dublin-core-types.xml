@@ -96,6 +96,15 @@
   </dc-type>
   <!-- End TAMU Customization - additional dublin core contributor qualifier for department -->
 
+  <!-- TAMU Customization - additional dublin core contributor qualifier for PDAC -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>contributor</element>
+    <qualifier>pdac</qualifier>
+    <scope_note>Use for PDAC responsible for the dataset.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core contributor qualifier for PDAC -->
+
   <dc-type>
 	<schema>dc</schema>
     <element>contributor</element>
@@ -204,6 +213,15 @@
     <qualifier>submitted</qualifier>
     <scope_note>Recommend for theses/dissertations.</scope_note>
   </dc-type>
+
+  <!-- TAMU Customization - additional dublin core date qualifier for dataset project close out -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>date</element>
+    <qualifier>projectEnd</qualifier>
+    <scope_note>Use to specify closing date of research project that produced a dataset.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core date qualifier for dataset project close out -->
 
   <dc-type>
 	<schema>dc</schema>
@@ -502,6 +520,15 @@
     <scope_note>Use for researcher's public profile URL.</scope_note>
   </dc-type>
   <!-- End TAMU Customization - additional dublin core relation qualifier for profile URI -->
+
+  <!-- TAMU Customization - additional dublin core relation qualifier for data URLs -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>relation</element>
+    <qualifier>hasDataset</qualifier>
+    <scope_note>Use for researcher's public data URLs.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core relation qualifier for data URLs -->
 
   <dc-type>
 	<schema>dc</schema>
