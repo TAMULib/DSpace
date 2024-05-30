@@ -30,7 +30,7 @@
                     <relationship-type>isPDACForDataset</relationship-type>
                     <search-configuration>pdac</search-configuration>
                     <label>PDAC</label>
-                    <hint>assign a PDAC</hint>
+                    <hint>Assign a PDAC</hint>
                     <externalsources/>
                 </relation-field>
             </row>
