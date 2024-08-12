@@ -364,6 +364,15 @@
     this item.</scope_note>
   </dc-type>
 
+  <!-- TAMU Customization - used for tracking PDAC chain of custody over time -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>description</element>
+    <qualifier>chainOfCustody</qualifier>
+    <scope_note>Used for tracking PDAC chain of custody over time.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - used for tracking PDAC chain of custody over time -->
+
   <!-- Used by system: do not remove -->
   <dc-type>
 	<schema>dc</schema>
