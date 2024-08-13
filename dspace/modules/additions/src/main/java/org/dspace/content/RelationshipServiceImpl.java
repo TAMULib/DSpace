@@ -1132,7 +1132,7 @@ public class RelationshipServiceImpl implements RelationshipService {
                .countByItemAndRelationshipTypeAndList(context, focusUUID, relationshipType, items, isLeft);
     }
 
-    //TAMU Customization - Track changes to PDAC custody via metadata
+    // TAMU Customization - Track changes to PDAC custody via metadata
     protected void updatePdacChainOfCustody(PdacActionType pdacActionType, Relationship relationship, Context context) {
         final String validLeftType = "isPDACForDataset";
         final String validRightType = "isDatasetAssignedToPDAC";
@@ -1140,40 +1140,49 @@ public class RelationshipServiceImpl implements RelationshipService {
         final String mdElement = "description";
         final String mdQualifier = "chainOfCustody";
 
-        //verify that this is a pdac relationship
+        // verify that this is a pdac relationship
         if (relationship.getRelationshipType().getLeftwardType().equals(validLeftType)
                 && relationship.getRelationshipType().getRightwardType().equals(validRightType)) {
             final String mdLanguage = "en";
-            final String timeOfAction = java.time.format.DateTimeFormatter.ISO_DATE_TIME.format(java.time.LocalDateTime.now());
-            final String userDetail = context.getCurrentUser().getFullName()+" ("+context.getCurrentUser().getID()+")";
-            final String leftItemDetail = relationship.getLeftItem().getName()+" ("+relationship.getLeftItem().getID()+")";
-            final String rightItemDetail = relationship.getRightItem().getName()+" ("+relationship.getRightItem().getID()+")";
+            final String timeOfAction = java.time.format.DateTimeFormatter.ISO_DATE_TIME
+                    .format(java.time.LocalDateTime.now());
+            final String userDetail = context.getCurrentUser().getFullName() + " (" + context.getCurrentUser().getID()
+                    + ")";
+            final String leftItemDetail = relationship.getLeftItem().getName() + " ("
+                    + relationship.getLeftItem().getID() + ")";
+            final String rightItemDetail = relationship.getRightItem().getName() + " ("
+                    + relationship.getRightItem().getID() + ")";
 
             StringBuilder currentActionEntry = new StringBuilder();
 
-            currentActionEntry.append(timeOfAction+" "+userDetail+" ");
+            currentActionEntry.append(timeOfAction + " " + userDetail + " ");
             if (pdacActionType.equals(PdacActionType.ADD)) {
-                currentActionEntry.append("added "+rightItemDetail+" to "+leftItemDetail);
+                currentActionEntry.append("added " + rightItemDetail + " to " + leftItemDetail);
             } else {
-                currentActionEntry.append("removed "+rightItemDetail+" from "+leftItemDetail);
+                currentActionEntry.append("removed " + rightItemDetail + " from " + leftItemDetail);
             }
 
             try {
-                MetadataField foundCustodyField = metadataFieldService.findByElement(context, mdSchema, mdElement, mdQualifier);
+                MetadataField foundCustodyField = metadataFieldService.findByElement(context, mdSchema, mdElement,
+                        mdQualifier);
                 if (foundCustodyField == null) {
                     logPdacError("Missing metadata field", currentActionEntry.toString());
                 } else {
-                        //we want to maintain a single metadata entry,
-                        //so we're handling both the case where we need to append the current action to an existing entry
-                        //or creating the first metadata entry
-                        String pdacMetadataValue = itemService.getMetadataFirstValue(relationship.getLeftItem(), mdSchema, mdElement, mdQualifier, mdLanguage);
-                        if (pdacMetadataValue != null) {
-                            pdacMetadataValue += "\r\n"+currentActionEntry;
-                            itemService.clearMetadata(context, relationship.getLeftItem(), mdSchema, mdElement, mdQualifier, mdLanguage);
-                        } else {
-                            pdacMetadataValue = currentActionEntry.toString();
-                        }
-                        itemService.addMetadata(context, relationship.getLeftItem(), mdSchema, mdElement, mdQualifier, mdLanguage, pdacMetadataValue);
+                    // we want to maintain a single metadata entry,
+                    // so we're handling both the case where we need to append the current action to
+                    // an existing entry
+                    // or creating the first metadata entry
+                    String pdacMetadataValue = itemService.getMetadataFirstValue(relationship.getLeftItem(), mdSchema,
+                            mdElement, mdQualifier, mdLanguage);
+                    if (pdacMetadataValue != null) {
+                        pdacMetadataValue += "\r\n" + currentActionEntry;
+                        itemService.clearMetadata(context, relationship.getLeftItem(), mdSchema, mdElement, mdQualifier,
+                                mdLanguage);
+                    } else {
+                        pdacMetadataValue = currentActionEntry.toString();
+                    }
+                    itemService.addMetadata(context, relationship.getLeftItem(), mdSchema, mdElement, mdQualifier,
+                            mdLanguage, pdacMetadataValue);
                 }
             } catch (SQLException e) {
                 logPdacError("SQL Error", currentActionEntry.toString());
@@ -1182,7 +1191,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     protected void logPdacError(String error, String actionEntry) {
-        log.error("PDAC custody tracking error: "+error + " for entry: " + actionEntry);
+        log.error("PDAC custody tracking error: " + error + " for entry: " + actionEntry);
     }
 
     protected enum PdacActionType {
