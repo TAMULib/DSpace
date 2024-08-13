@@ -69,7 +69,8 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Autowired
     private VirtualMetadataPopulator virtualMetadataPopulator;
 
-    //TAMU Customization - We need the metadataFieldService to verify the existence of the PDAC custody metadata field in the registry
+    // TAMU Customization - We need the metadataFieldService to verify the existence
+    // of the PDAC custody metadata field in the registry
     @Autowired(required = true)
     protected MetadataFieldService metadataFieldService;
 
