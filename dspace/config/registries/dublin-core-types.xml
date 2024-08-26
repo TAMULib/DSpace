@@ -86,6 +86,68 @@
     <!-- unqualified -->
     <scope_note>A person, organization, or service responsible for the content of the resource.  Catch-all for unspecified contributors.</scope_note>
   </dc-type>
+  <!-- TAMU Customization - additional dublin core contributor member -->
+  <dc-type>
+	<schema>dc</schema>
+    <element>contributor</element>
+    <qualifier>member</qualifier>
+    <scope_note>??</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization -->
+
+  <!-- TAMU Customization - additional dublin core creator UIN -->
+  <dc-type>
+	<schema>dc</schema>
+    <element>creator</element>
+    <qualifier>UIN</qualifier>
+    <scope_note>??</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization -->
+
+  <!-- TAMU Customization - additional dublin core PI-->
+  <dc-type>
+	<schema>dc</schema>
+    <element>creator</element>
+    <qualifier>pi</qualifier>
+    <scope_note>??</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization -->
+
+  <!-- TAMU Customization - additional dublin core COPI-->
+  <dc-type>
+	<schema>dc</schema>
+    <element>creator</element>
+    <qualifier>copi</qualifier>
+    <scope_note>??</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization -->
+
+  <!-- TAMU Customization - additional dublin core Role-->
+  <dc-type>
+	<schema>dc</schema>
+    <element>description</element>
+    <qualifier>role</qualifier>
+    <scope_note>??</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization -->
+
+  <!-- TAMU Customization - additional dublin core Identifier UIN-->
+  <dc-type>
+	<schema>dc</schema>
+    <element>identifier</element>
+    <qualifier>UIN</qualifier>
+    <scope_note>??</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization -->
+
+  <!-- TAMU Customization - additional dublin core Finding Aid-->
+  <dc-type>
+	<schema>dc</schema>
+    <element>description</element>
+    <qualifier>findingAid</qualifier>
+    <scope_note>??</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization -->
 
   <!-- TAMU Customization - additional dublin core contributor qualifier for department -->
   <dc-type>
