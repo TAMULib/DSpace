@@ -87,11 +87,12 @@
     <scope_note>A person, organization, or service responsible for the content of the resource.  Catch-all for unspecified contributors.</scope_note>
   </dc-type>
 
+  
   <!-- TAMU Customization - Test hidden metadata  -->
   <dc-type>
     <schema>dc</schema>
     <element>identifier</element>
-    <qualifier>uin</qualifier>
+    <qualifier>UIN</qualifier>
     <scope_note>To test hidden Metadata field</scope_note>
   </dc-type>
   <!-- END TAMU Customization -->
