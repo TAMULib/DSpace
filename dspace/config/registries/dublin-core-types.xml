@@ -91,7 +91,7 @@
   <dc-type>
     <schema>dc</schema>
     <element>identifier</element>
-    <qualifier>UIN</qualifier>
+    <qualifier>uin</qualifier>
     <scope_note>To test hidden Metadata field</scope_note>
   </dc-type>
   <!-- END TAMU Customization -->
