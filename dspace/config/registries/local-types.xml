@@ -80,29 +80,29 @@
   <!-- END TAMU Customization - additional local field Award Number-->
 
   <!-- TAMU Customization - additional local field Project Status-->
-    <dc-type>
-      <schema>local</schema>
-      <element>projectStatus</element>
-      <!-- unqualified -->
-      <scope_note>Status of research project in Maestro</scope_note>
-    </dc-type>
+  <dc-type>
+    <schema>local</schema>
+    <element>projectStatus</element>
+    <!-- unqualified -->
+    <scope_note>Status of research project in Maestro</scope_note>
+  </dc-type>
   <!-- END TAMU Customization - additional local field Project Status-->
 
   <!-- TAMU Customization - additional local field Contact Email-->
-    <dc-type>
-      <schema>local</schema>
-      <element>contact</element>
-      <qualifier>email</qualifier>
-      <scope_note>Email address of a PDAC</scope_note>
-    </dc-type>
+  <dc-type>
+    <schema>local</schema>
+    <element>contact</element>
+    <qualifier>email</qualifier>
+    <scope_note>Email address of a PDAC</scope_note>
+  </dc-type>
   <!-- END TAMU Customization - additional local field Contact Email-->
 
   <!-- TAMU Customization - additional local field Contact Phone-->
-    <dc-type>
-      <schema>local</schema>
-      <element>contact</element>
-      <qualifier>phone</qualifier>
-      <scope_note>Telephone number of a PDAC</scope_note>
-    </dc-type>
+  <dc-type>
+    <schema>local</schema>
+    <element>contact</element>
+    <qualifier>phone</qualifier>
+    <scope_note>Telephone number of a PDAC</scope_note>
+  </dc-type>
   <!-- END TAMU Customization - additional local field Contact Phone-->
 </dspace-dc-types>
