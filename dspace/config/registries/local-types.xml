@@ -72,7 +72,7 @@
 
   <!-- TAMU Customization - additional local field Award Number-->
   <dc-type>
-	<schema>local</schema>
+	  <schema>local</schema>
     <element>awardNumber</element>
     <!-- unqualified -->
     <scope_note>Number identifying the individual grant that the sponsor awarded for the research project</scope_note>
