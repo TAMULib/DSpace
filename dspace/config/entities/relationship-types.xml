@@ -148,5 +148,49 @@
         </rightCardinality>
         <copyToLeft>true</copyToLeft>
     </type>
+    <type>
+        <leftType>Dataset</leftType>
+        <rightType>ResearchProject</rightType>
+        <leftwardType>isProjectThatProducedDataset</leftwardType>
+        <rightwardType>isDatasetProducedByProject</rightwardType>
+        <leftCardinality>
+            <min>0</min>
+            <max>1</max>
+        </leftCardinality>
+        <rightCardinality>
+            <min>0</min>
+        </rightCardinality>
+        <copyToLeft>true</copyToLeft>
+    </type>
+    <type>
+        <leftType>ResearchProject</leftType>
+        <rightType>PDAC</rightType>
+        <leftwardType>isPDACForProject</leftwardType>
+        <rightwardType>isProjectAssignedtoPDAC</rightwardType>
+        <leftCardinality>
+            <min>0</min>
+            <max>1</max>
+        </leftCardinality>
+        <rightCardinality>
+            <min>0</min>
+        </rightCardinality>
+        <copyToLeft>true</copyToLeft>
+    </type>
+    <!--  -->
+    <type>
+        <leftType>ResearchProject</leftType>
+        <rightType>PDAC</rightType>
+        <leftwardType>isPDACForReasearchProject</leftwardType>
+        <rightwardType>isReasearchProjectAssignedToPDAC</rightwardType>
+        <leftCardinality>
+            <min>0</min>
+            <max>1</max>
+        </leftCardinality>
+        <rightCardinality>
+            <min>0</min>
+        </rightCardinality>
+        <copyToLeft>true</copyToLeft>
+    </type>
+    <!--  -->
     <!-- End TAMU Customization - only add specific RDC entity types -->
 </relationships>
