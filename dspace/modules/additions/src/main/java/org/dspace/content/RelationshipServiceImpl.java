@@ -9,6 +9,7 @@ package org.dspace.content;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -129,7 +130,6 @@ public class RelationshipServiceImpl implements RelationshipService {
                 Relationship relationshipToReturn = relationshipDAO.create(context, relationship);
                 updatePlaceInRelationship(context, relationshipToReturn, null, null, true, true);
                 update(context, relationshipToReturn);
-
                 //TAMU Customization - Track PDAC chain of custody for RDS
                 updatePdacChainOfCustody(PdacActionType.ADD, relationship, context);
                 //End TAMU Customization - Track PDAC chain of custody for RDS
@@ -1135,15 +1135,16 @@ public class RelationshipServiceImpl implements RelationshipService {
 
     // TAMU Customization - Track changes to PDAC custody via metadata
     protected void updatePdacChainOfCustody(PdacActionType pdacActionType, Relationship relationship, Context context) {
-        final String validLeftType = "isPDACForDataset";
-        final String validRightType = "isDatasetAssignedToPDAC";
+        final List<String> validLeftTypes = Arrays.asList("isPDACForDataset", "isPDACForProject");
+        final List<String> validRightTypes = Arrays.asList("isDatasetAssignedToPDAC","isProjectAssignedtoPDAC");
         final String mdSchema = MetadataSchemaEnum.DC.getName();
         final String mdElement = "description";
         final String mdQualifier = "chainOfCustody";
 
         // verify that this is a pdac relationship
-        if (relationship.getRelationshipType().getLeftwardType().equals(validLeftType)
-                && relationship.getRelationshipType().getRightwardType().equals(validRightType)) {
+        if (validLeftTypes.contains(relationship.getRelationshipType().getLeftwardType())
+                && validRightTypes.contains(relationship.getRelationshipType().getRightwardType())) {
+
             final String mdLanguage = "en";
             final String timeOfAction = java.time.format.DateTimeFormatter.ISO_DATE_TIME
                     .format(java.time.LocalDateTime.now());
