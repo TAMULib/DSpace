@@ -25,6 +25,8 @@
                 <!-- TAMU Customization - Dataset / PDAC virtual metadata mapping -->
                 <entry key="isPDACForDataset" value-ref="isPDACForDatasetMap"/>
                 <entry key="isDatasetAssignedToPDAC" value-ref="isDatasetAssignedToPDACMap"/>
+                <entry key="isPDACForProject" value-ref="isPDACForProjectMap"/>
+                <entry key="isProjectAssignedtoPDAC" value-ref="isProjectAssignedToPDACMap"/>
                 <!-- End TAMU Customization - Dataset / PDAC virtual metadata mapping -->
             </map>
         </property>
@@ -40,6 +42,7 @@
                 <!-- TAMU Customization - Dataset / PDAC entity type to filter query entry -->
                 <entry key="Dataset" value="f.entityType=Dataset,equals"/>
                 <entry key="PDAC" value="f.entityType=PDAC,equals"/>
+                <entry key="ResearchProject" value="f.entityType=ResearchProject,equals"/>
                 <!-- End TAMU Customization - Dataset / PDAC entity type to filter query entry -->
             </map>
         </property>
@@ -81,6 +84,33 @@
         </property>
     </bean>
     <!-- End TAMU Customization - Dataset / PDAC virtual metadata -->
+
+    <util:map id="isPDACForProjectMap">
+        <entry key="local.pdac.name" value-ref="projectPDAC_name"/>
+        <entry key="dc.contributor.pdac" value-ref="projectPDAC_identifier"/>
+    </util:map>
+    <bean class="org.dspace.content.virtual.Concatenate" id="projectPDAC_name">
+        <property name="fields">
+            <util:list>
+                <value>local.pdac.name</value>
+            </util:list>
+        </property>
+        <property name="separator">
+            <value>, </value>
+        </property>
+        <property name="useForPlace" value="true"/>
+        <property name="populateWithNameVariant" value="true"/>
+    </bean>
+    <bean class="org.dspace.content.virtual.Collected" id="projectPDAC_identifier">
+        <property name="fields">
+            <util:list>
+                <value>dc.identifier.uri</value>
+            </util:list>
+        </property>
+    </bean>
+    <util:map id="isProjectAssignedToPDACMap">
+        <entry key="dc.relation.hasResearchProject" value-ref="pdac_identifier"/>
+    </util:map>
 
     <!-- Config like this will tell our VirtualMetadataPopulator to include the virtual metadata field
          'dc.contributor.author' on the appropriate item with the values defined in the value-ref.
