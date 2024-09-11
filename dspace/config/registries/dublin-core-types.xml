@@ -145,8 +145,7 @@
     <schema>dc</schema>
     <element>description</element>
     <qualifier>findingAid</qualifier>
-    <scope_note>A single-level description of extent, scope, and content of the research data associated with a research project. For more details on archival practices, refer to the following resources: [extent](https://saa-ts-dacs.github.io/dacs/06_part_I/03_chapter_02/05_extent.html "Extent"), [Scope-and-Content](https://saa-ts-dacs.github.io/dacs/06_part_I/04_chapter_03/01_scope_and_content.html "Scope and Content")
-    </scope_note>
+    <scope_note>A single-level description of extent, scope, and content of the research data associated with a research project. For more details on archival practices, refer to the following resources: Extent https://saa-ts-dacs.github.io/dacs/06_part_I/03_chapter_02/05_extent.html, and Scope-and-Content https://saa-ts-dacs.github.io/dacs/06_part_I/04_chapter_03/01_scope_and_content.html</scope_note>
   </dc-type>
   <!-- END TAMU Customization - additional dublin core Finding Aid -->
 
