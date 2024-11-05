@@ -86,6 +86,68 @@
     <!-- unqualified -->
     <scope_note>A person, organization, or service responsible for the content of the resource.  Catch-all for unspecified contributors.</scope_note>
   </dc-type>
+  <!-- TAMU Customization - additional dublin core contributor member-->
+  <dc-type>
+    <schema>dc</schema>
+    <element>contributor</element>
+    <qualifier>member</qualifier>
+    <scope_note>Use for name of TAMU department or institute that is home to the research project</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization - additional dublin core contributor member-->
+
+  <!-- TAMU Customization - additional dublin core creator UIN -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>creator</element>
+    <qualifier>UIN</qualifier>
+    <scope_note>TAMU identifier of PI of a research project</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization -->
+
+  <!-- TAMU Customization - additional dublin core PI-->
+  <dc-type>
+    <schema>dc</schema>
+    <element>creator</element>
+    <qualifier>pi</qualifier>
+    <scope_note>Name of Principal Investigator on research project</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization - additional dublin core PI-->
+
+  <!-- TAMU Customization - additional dublin core COPI-->
+  <dc-type>
+    <schema>dc</schema>
+    <element>creator</element>
+    <qualifier>copi</qualifier>
+    <scope_note>Name of Co-Principal Investigator on research project</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization - additional dublin core COPI-->
+
+  <!-- TAMU Customization - additional dublin core Role-->
+  <dc-type>
+    <schema>dc</schema>
+    <element>description</element>
+    <qualifier>role</qualifier>
+    <scope_note>Describes the role of the PI on the research project</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization - additional dublin core Role-->
+
+  <!-- TAMU Customization - additional dublin core Identifier UIN-->
+  <dc-type>
+    <schema>dc</schema>
+    <element>identifier</element>
+    <qualifier>UIN</qualifier>
+    <scope_note>TAMU identifier of a PDAC</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization - additional dublin core Identifier UIN -->
+
+  <!-- TAMU Customization - additional dublin core Finding Aid-->
+  <dc-type>
+    <schema>dc</schema>
+    <element>description</element>
+    <qualifier>findingAid</qualifier>
+    <scope_note>A single-level description of extent, scope, and content of the research data associated with a research project. For more details on archival practices, refer to the following resources: Extent https://saa-ts-dacs.github.io/dacs/06_part_I/03_chapter_02/05_extent.html, and Scope-and-Content https://saa-ts-dacs.github.io/dacs/06_part_I/04_chapter_03/01_scope_and_content.html</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization - additional dublin core Finding Aid -->
 
   <!-- TAMU Customization - additional dublin core contributor qualifier for department -->
   <dc-type>
