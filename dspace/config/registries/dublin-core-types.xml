@@ -167,6 +167,15 @@
   </dc-type>
   <!-- End TAMU Customization - additional dublin core contributor qualifier for PDAC -->
 
+  <!-- TAMU Customization - additional dublin core contributor qualifier for sponsor -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>contributor</element>
+    <qualifier>sponsor</qualifier>
+    <scope_note>Name of funding agency sponsoring a research project</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core contributor qualifier for sponsor -->
+
   <!-- TAMU Customization - additional dublin core title for dimension title -->
   <dc-type>
     <schema>dc</schema>
