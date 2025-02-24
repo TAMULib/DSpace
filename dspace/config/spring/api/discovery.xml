@@ -2337,6 +2337,9 @@
         <property name="indexFieldName" value="subject"/>
         <property name="metadataFields">
             <list>
+                <!-- TAMU Customizations - Add contributor department to subject filter -->
+                <value>dc.contributor.department</value>
+                <!-- End TAMU Customizations - Add contributor department to subject filter -->
                 <value>dc.subject.*</value>
             </list>
         </property>
