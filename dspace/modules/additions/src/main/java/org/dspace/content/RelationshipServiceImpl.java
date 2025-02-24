@@ -1150,8 +1150,15 @@ public class RelationshipServiceImpl implements RelationshipService {
                     .format(java.time.LocalDateTime.now());
             final String userDetail = context.getCurrentUser().getFullName() + " (" + context.getCurrentUser().getID()
                     + ")";
-            final String leftItemDetail = relationship.getLeftItem().getName() + " ("
-                    + relationship.getLeftItem().getID() + ")";
+
+            final Item researchProject = relationship.getLeftItem();
+
+            final String researchProjectTitle = researchProject.getItemService()
+                .getMetadataFirstValue(researchProject, MetadataSchemaEnum.DC.getName(), "title", "project", Item.ANY);
+
+            final String leftItemDetail = researchProjectTitle + " ("
+                    + researchProject.getID() + ")";
+
             final String rightItemDetail = relationship.getRightItem().getName() + " ("
                     + relationship.getRightItem().getID() + ")";
 
