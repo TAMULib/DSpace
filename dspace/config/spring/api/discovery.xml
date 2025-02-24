@@ -2240,7 +2240,10 @@
         <property name="indexFieldName" value="title"/>
         <property name="metadataFields">
             <list>
-                <value>dc.title</value>
+                <!-- TAMU Customization - Include dc.title.* wildcard qualifiers -->
+                <!-- <value>dc.title</value> -->
+                <value>dc.title.*</value>
+                <!-- End TAMU Customization - Include dc.title.* wildcard qualifiers -->
             </list>
         </property>
         <property name="isOpenByDefault" value="true"/>
