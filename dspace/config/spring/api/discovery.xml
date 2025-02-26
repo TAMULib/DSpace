@@ -114,7 +114,12 @@
                 <entry key="openAIREFundingAgency" value-ref="openAIREFundingAgency"/>
                 <entry key="eperson_claims" value-ref="eperson_claims"/>
 
-                <!-- TAMU Customizations - add map entry for dataset and pdac -->
+                <!-- TAMU Customizations - add map entry for research project, dataset and pdac -->
+                <entry key="research-project" value-ref="researchProject"/>
+                <!-- Same as the "project" configuration, but does NOT filter out older versions of items -->
+                <!-- Used to display related items on single-item pages, because a relationship does not always point to the latest version of the related item -->
+                <entry key="research-project-relationships" value-ref="researchProjectRelationships"/>
+
                 <entry key="dataset" value-ref="dataset"/>
                 <!-- Same as the "dataset" configuration, but does NOT filter out older versions of items -->
                 <!-- Used to display related items on single-item pages, because a relationship does not always point to the latest version of the related item -->
@@ -124,7 +129,7 @@
                 <!-- Same as the "pdac" configuration, but does NOT filter out older versions of items -->
                 <!-- Used to display related items on single-item pages, because a relationship does not always point to the latest version of the related item -->
                 <entry key="pdac-relationships" value-ref="pdacRelationships"/>
-                <!-- End TAMU Customizations - add map entry for dataset and pdac -->
+                <!-- End TAMU Customizations - add map entry for research project, dataset and pdac -->
 
             </map>
         </property>
@@ -2953,7 +2958,134 @@
     </bean>
 
 
-    <!-- TAMU Customization - Dataset / PDAC discovery beans -->
+    <!-- TAMU Customization - Research Project, Dataset and PDAC discovery beans -->
+    <bean id="researchProject" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
+        <property name="id" value="researchProject"/>
+        <property name="indexAlways" value="true"/>
+        <!--Which sidebar facets are to be displayed-->
+        <property name="sidebarFacets">
+            <list>
+                <ref bean="searchFilterAuthor" />
+                <ref bean="searchFilterSubject" />
+                <ref bean="searchFilterIssued" />
+                <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterFundingAgency" />
+            </list>
+        </property>
+        <!-- Set TagCloud configuration per discovery configuration -->
+        <property name="tagCloudFacetConfiguration" ref="defaultTagCloudFacetConfiguration"/>
+        <!--The search filters which can be used on the discovery search page-->
+        <property name="searchFilters">
+            <list>
+                <ref bean="searchFilterTitle" />
+                <ref bean="searchFilterAuthor" />
+                <ref bean="searchFilterSubject" />
+                <ref bean="searchFilterIssued" />
+                <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterFundingAgency" />
+                <ref bean="searchFilterIsPDACForResearchProjectRelation"/>
+            </list>
+        </property>
+        <!--The sort filters for the discovery search-->
+        <property name="searchSortConfiguration">
+            <bean class="org.dspace.discovery.configuration.DiscoverySortConfiguration">
+                <property name="sortFields">
+                    <list>
+                        <ref bean="sortScore" />
+                        <ref bean="sortTitle" />
+                        <ref bean="sortDateIssued" />
+                        <ref bean="sortDateAccessioned"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <!--Any default filter queries, these filter queries will be used for all
+            queries done by discovery for this configuration -->
+        <property name="defaultFilterQueries">
+            <list>
+                <!--Only find items, communities and collections-->
+                <value>search.resourcetype:Item AND latestVersion:true AND entityType_keyword:ResearchProject</value>
+                <value>-withdrawn:true AND -discoverable:false</value>
+            </list>
+        </property>
+        <!--The configuration for the recent submissions-->
+        <property name="recentSubmissionConfiguration">
+            <bean class="org.dspace.discovery.configuration.DiscoveryRecentSubmissionsConfiguration">
+                <property name="metadataSortField" value="dc.date.accessioned" />
+                <property name="type" value="date"/>
+                <property name="max" value="20"/>
+                <!-- If enabled the collection home page will not display metadata but show a pageable list of recent submissions -->
+                <property name="useAsHomePage" value="false"/>
+            </bean>
+        </property>
+
+        <!-- When true a "did you mean" example will be displayed, value can be true or false -->
+        <property name="spellCheckEnabled" value="true"/>
+    </bean>
+
+    <bean id="researchProjectRelationships" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
+        <property name="id" value="researchProjectRelationships"/>
+        <property name="indexAlways" value="true"/>
+        <!--Which sidebar facets are to be displayed-->
+        <property name="sidebarFacets">
+            <list>
+                <ref bean="searchFilterAuthor" />
+                <ref bean="searchFilterSubject" />
+                <ref bean="searchFilterIssued" />
+                <ref bean="searchFilterEntityType"/>
+            </list>
+        </property>
+        <!-- Set TagCloud configuration per discovery configuration -->
+        <property name="tagCloudFacetConfiguration" ref="defaultTagCloudFacetConfiguration"/>
+        <!--The search filters which can be used on the discovery search page-->
+        <property name="searchFilters">
+            <list>
+                <ref bean="searchFilterTitle" />
+                <ref bean="searchFilterAuthor" />
+                <ref bean="searchFilterSubject" />
+                <ref bean="searchFilterIssued" />
+                <ref bean="searchFilterEntityType"/>
+                <ref bean="searchFilterIsPDACForResearchProjectRelation"/>
+            </list>
+        </property>
+        <!--The sort filters for the discovery search-->
+        <property name="searchSortConfiguration">
+            <bean class="org.dspace.discovery.configuration.DiscoverySortConfiguration">
+                <property name="sortFields">
+                    <list>
+                        <ref bean="sortScore" />
+                        <ref bean="sortTitle" />
+                        <ref bean="sortDateIssued" />
+                        <ref bean="sortDateAccessioned"/>
+                    </list>
+                </property>
+            </bean>
+        </property>
+        <!--Any default filter queries, these filter queries will be used for all
+            queries done by discovery for this configuration -->
+        <property name="defaultFilterQueries">
+            <list>
+                <!--Only find items, communities and collections-->
+                <!-- NOTE: NOT filtered on latestVersion = true -->
+                <value>search.resourcetype:Item AND entityType_keyword:ResearchProject</value>
+                <value>-withdrawn:true AND -discoverable:false</value>
+            </list>
+        </property>
+        <!--The configuration for the recent submissions-->
+        <property name="recentSubmissionConfiguration">
+            <bean class="org.dspace.discovery.configuration.DiscoveryRecentSubmissionsConfiguration">
+                <property name="metadataSortField" value="dc.date.accessioned" />
+                <property name="type" value="date"/>
+                <property name="max" value="20"/>
+                <!-- If enabled the collection home page will not display metadata but show a pageable list of recent submissions -->
+                <property name="useAsHomePage" value="false"/>
+            </bean>
+        </property>
+
+        <!-- When true a "did you mean" example will be displayed, value can be true or false -->
+        <property name="spellCheckEnabled" value="true"/>
+    </bean>
+
     <bean id="dataset" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
         <property name="id" value="dataset"/>
         <property name="indexAlways" value="true"/>
@@ -3099,6 +3231,7 @@
                 <ref bean="searchFilterPDACTelephone"/>
                 <ref bean="searchFilterPDACEmail"/>
                 <ref bean="searchFilterIsDatasetAssignedToPDACRelation"/>
+                <ref bean="searchFilterIsResearchProjectAssignedToPDACRelation"/>
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -3157,6 +3290,7 @@
                 <ref bean="searchFilterPDACTelephone"/>
                 <ref bean="searchFilterPDACEmail"/>
                 <ref bean="searchFilterIsDatasetAssignedToPDACRelation"/>
+                <ref bean="searchFilterIsResearchProjectAssignedToPDACRelation"/>
             </list>
         </property>
         <!--The sort filters for the discovery search-->
@@ -3303,6 +3437,39 @@
         <property name="pageSize" value="10"/>
     </bean>
 
+    <bean id="searchFilterIsPDACForResearchProjectRelation" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="isPDACForResearchProject"/>
+        <property name="metadataFields">
+            <list>
+                <value>relation.isPDACForResearchProject.latestForDiscovery</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+    </bean>
+    <bean id="searchFilterIsResearchProjectAssignedToPDACRelation" class="org.dspace.discovery.configuration.DiscoverySearchFilter">
+        <property name="indexFieldName" value="isResearchProjectAssignedToPDAC"/>
+        <property name="metadataFields">
+            <list>
+                <value>relation.isResearchProjectAssignedToPDAC.latestForDiscovery</value>
+            </list>
+        </property>
+        <property name="isOpenByDefault" value="false"/>
+        <property name="pageSize" value="10"/>
+    </bean>
+
+    <bean id="searchFilterFundingAgency" class="org.dspace.discovery.configuration.DiscoverySearchFilterFacet">
+        <property name="indexFieldName" value="sponsor"/>
+        <property name="metadataFields">
+            <list>
+                <value>dc.contributor.sponsor</value>
+            </list>
+        </property>
+        <property name="facetLimit" value="5"/>
+        <property name="sortOrderSidebar" value="COUNT"/>
+        <property name="sortOrderFilterPage" value="COUNT"/>
+    </bean>
+
     <bean id="sortPDACName" class="org.dspace.discovery.configuration.DiscoverySortFieldConfiguration">
         <property name="metadataField" value="local.pdac.name"/>
         <property name="defaultSortOrder" value="asc"/>
@@ -3328,6 +3495,6 @@
         <property name="defaultSortOrder" value="asc"/>
     </bean>
 
-    <!-- End TAMU Customization - Dataset / PDAC discovery beans -->
+    <!-- End TAMU Customization - Research Project, Dataset and PDAC discovery beans -->
 
 </beans>
