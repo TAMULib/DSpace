@@ -22,6 +22,169 @@
 
     <form-definitions>
 
+        <!-- TAMU Customization - form definition for Research Project -->
+        <!-- Form which defines the metadata page/section for depositing Research Project Entities -->
+        <form name="researchProjectStep">
+            <row>
+                <relation-field>
+                    <relationship-type>isPDACForResearchProject</relationship-type>
+                    <search-configuration>pdac</search-configuration>
+                    <label>PDAC</label>
+                    <hint>Assign a PDAC</hint>
+                    <externalsources/>
+                </relation-field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>title</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Project Title</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the main title of the research project.</hint>
+                    <required>You must enter a main title for this research project.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier>other</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Maestro ID - Awards Project DIM</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the Maestro ID - Awards Project DIM.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>creator</dc-element>
+                    <dc-qualifier>pi</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Researcher Name</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the researcher name.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>creator</dc-element>
+                    <dc-qualifier>UIN</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Researcher UIN</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the researcher UIN.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>creator</dc-element>
+                    <dc-qualifier>copi</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Co-Principal Investigators</label>
+                    <input-type>onebox</input-type>
+                    <hint></hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>date</dc-element>
+                    <dc-qualifier>projectEnd</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Project End Date</label>
+                    <input-type>date</input-type>
+                    <hint>Enter research project end date.</hint>
+                    <required></required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>member</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Member Abbreviation</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the member abbreviation.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>department</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Department</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the department.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>sponsor</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Sponsor Name</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the sponsor name.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>awardNumber</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Sponsor Award Number</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the sponser award number.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Instrument Type Description</label>
+                    <input-type>textarea</input-type>
+                    <hint>Enter the instrument type description.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier>abstract</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Abstract or Project Description</label>
+                    <input-type>textarea</input-type>
+                    <hint>Enter the abstract or project description.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>projectStatus</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Project Status</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the project status.</hint>
+                </field>
+            </row>
+        </form>
+        <!-- End TAMU Customization - form definition for Research Project -->
+
         <!-- TAMU Customization - form definition for Dataset -->
         <!-- Form which defines the metadata page/section for depositing Dataset Entities -->
         <form name="datasetStep">
