@@ -416,7 +416,7 @@
                     <dc-schema>local</dc-schema>
                     <dc-element>contact</dc-element>
                     <dc-qualifier>phone</dc-qualifier>
-                    <label>Phone number</label>
+                    <label>Phone Number</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the phone number of the PDAC</hint>
                 </field>
