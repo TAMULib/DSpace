@@ -2313,10 +2313,10 @@
         <property name="metadataFields">
             <list>
                 <value>dc.contributor.author</value>
-                <!-- TAMU Customization - Include research project creator in author filter -->
-                <!-- <value>dc.creator</value> -->
-                <value>dc.creator.*</value>
-                <!-- End TAMU Customization - Include research project creator in author filter -->
+                <value>dc.creator</value>
+                <!-- TAMU Customization - Include research project creator principal investigator in author filter -->
+                <value>dc.creator.pi</value>
+                <!-- End TAMU Customization - Include research project creator principal investigator in author filter -->
             </list>
         </property>
         <property name="facetLimit" value="5"/>
