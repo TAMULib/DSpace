@@ -97,7 +97,7 @@
                 <field>
                     <dc-schema>dc</dc-schema>
                     <dc-element>date</dc-element>
-                    <dc-qualifier></dc-qualifier>
+                    <dc-qualifier>projectEnd</dc-qualifier>
                     <repeatable>false</repeatable>
                     <label>Project End Date</label>
                     <input-type>date</input-type>
