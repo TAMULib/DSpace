@@ -404,21 +404,21 @@
             <row>
                 <field>
                     <dc-schema>local</dc-schema>
-                    <dc-element>pdac</dc-element>
-                    <dc-qualifier>telephone</dc-qualifier>
-                    <label>Telephone</label>
+                    <dc-element>contact</dc-element>
+                    <dc-qualifier>email</dc-qualifier>
+                    <label>Email</label>
                     <input-type>onebox</input-type>
-                    <hint>Enter the telephone number of the PDAC</hint>
+                    <hint>Enter the email of the PDAC</hint>
                 </field>
             </row>
             <row>
                 <field>
                     <dc-schema>local</dc-schema>
-                    <dc-element>pdac</dc-element>
-                    <dc-qualifier>email</dc-qualifier>
-                    <label>Email</label>
+                    <dc-element>contact</dc-element>
+                    <dc-qualifier>phone</dc-qualifier>
+                    <label>Phone number</label>
                     <input-type>onebox</input-type>
-                    <hint>Enter the email of the PDAC</hint>
+                    <hint>Enter the phone number of the PDAC</hint>
                 </field>
             </row>
         </form>
