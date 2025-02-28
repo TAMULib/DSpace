@@ -333,6 +333,15 @@
                 </relation-field>
             </row>
             <row>
+                <relation-field>
+                    <relationship-type>isResearchProjectAssignedToPDAC</relationship-type>
+                    <search-configuration>project</search-configuration>
+                    <label>Research Project</label>
+                    <hint>Assign a Research Project</hint>
+                    <externalsources/>
+                </relation-field>
+            </row>
+            <row>
                 <field>
                     <dc-schema>local</dc-schema>
                     <dc-element>pdac</dc-element>
@@ -344,12 +353,32 @@
             </row>
             <row>
                 <field>
-                    <dc-schema>local</dc-schema>
-                    <dc-element>pdac</dc-element>
-                    <dc-qualifier>uin</dc-qualifier>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier>role</dc-qualifier>
+                    <label>Role</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the role of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier>UIN</dc-qualifier>
                     <label>UIN</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the UIN of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>department</dc-qualifier>
+                    <label>Department</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the department of the PDAC</hint>
                 </field>
             </row>
             <row>
