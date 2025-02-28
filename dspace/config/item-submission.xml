@@ -57,7 +57,7 @@
             - - - - - -
         -->
 
-        <!-- TAMU Customization - add submission map for Dataset / PDAC -->
+        <!-- TAMU Customization - add submission map for Research Project, Dataset and PDAC -->
         <!--
         <name-map collection-entity-type="Publication" submission-name="Publication"/>
         <name-map collection-entity-type="Person" submission-name="Person"/>
@@ -67,9 +67,10 @@
         <name-map collection-entity-type="JournalVolume" submission-name="JournalVolume"/>
         <name-map collection-entity-type="JournalIssue" submission-name="JournalIssue"/>
         -->
+        <name-map collection-entity-type="ResearchProject" submission-name="ResearchProject"/>
         <name-map collection-entity-type="Dataset" submission-name="Dataset"/>
         <name-map collection-entity-type="PDAC" submission-name="PDAC"/>
-        <!-- End TAMU Customization - add submission map for Dataset / PDAC -->
+        <!-- End TAMU Customization - add submission map for Research Project, Dataset and PDAC -->
     </submission-map>
 
 
@@ -104,7 +105,12 @@
             <type>collection</type>
         </step-definition>
 
-        <!-- TAMU Customization - add step definition for Dataset / PDAC -->
+        <!-- TAMU Customization - add step definition for Research Project, Dataset and PDAC -->
+        <step-definition id="researchProjectStep" mandatory="true">
+            <heading>submit.progressbar.describe.stepone</heading>
+            <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
+            <type>submission-form</type>
+        </step-definition>
         <step-definition id="datasetStep" mandatory="true">
             <heading>submit.progressbar.describe.stepone</heading>
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
@@ -115,7 +121,7 @@
             <processing-class>org.dspace.app.rest.submit.step.DescribeStep</processing-class>
             <type>submission-form</type>
         </step-definition>
-        <!-- End TAMU Customization - add step definition for Dataset / PDAC -->
+        <!-- End TAMU Customization - add step definition for Research Project, Dataset and PDAC -->
 
         <!-- The following set of DescribeStep <step-definition>s all point to forms (of the same name) which are
              defined in submission-forms.xml -->
@@ -268,6 +274,19 @@
     <!-- -->
     <!-- -->
     <submission-definitions>
+
+        <!-- TAMU Customization - submission process for Research Project -->
+        <!--
+        Submission Process for 'ResearchProject' Entities.
+        These are not to be confused with default Items, as Research Projects may be linked with other Entities
+        (e.g. PDAC).
+        To enable: create a collection for Research Projects and add it to the <submission-map> tag linking to this process
+         -->
+        <submission-process name="ResearchProject">
+            <step id="collection"/>
+            <step id="researchProjectStep"/>
+        </submission-process>
+        <!-- End TAMU Customization - submission process for Research Project -->
 
         <!-- TAMU Customization - submission process for Dataset -->
         <!--
