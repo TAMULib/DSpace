@@ -115,10 +115,10 @@
                 <entry key="eperson_claims" value-ref="eperson_claims"/>
 
                 <!-- TAMU Customizations - add map entry for research project, dataset and pdac -->
-                <entry key="research-project" value-ref="researchProject"/>
+                <entry key="researchproject" value-ref="researchproject"/>
                 <!-- Same as the "project" configuration, but does NOT filter out older versions of items -->
                 <!-- Used to display related items on single-item pages, because a relationship does not always point to the latest version of the related item -->
-                <entry key="research-project-relationships" value-ref="researchProjectRelationships"/>
+                <entry key="researchproject-relationships" value-ref="researchprojectRelationships"/>
 
                 <entry key="dataset" value-ref="dataset"/>
                 <!-- Same as the "dataset" configuration, but does NOT filter out older versions of items -->
@@ -2965,8 +2965,8 @@
 
 
     <!-- TAMU Customization - Research Project, Dataset and PDAC discovery beans -->
-    <bean id="researchProject" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
-        <property name="id" value="researchProject"/>
+    <bean id="researchproject" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
+        <property name="id" value="researchproject"/>
         <property name="indexAlways" value="true"/>
         <!--Which sidebar facets are to be displayed-->
         <property name="sidebarFacets">
@@ -3029,8 +3029,8 @@
         <property name="spellCheckEnabled" value="true"/>
     </bean>
 
-    <bean id="researchProjectRelationships" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
-        <property name="id" value="researchProjectRelationships"/>
+    <bean id="researchprojectRelationships" class="org.dspace.discovery.configuration.DiscoveryConfiguration" scope="prototype">
+        <property name="id" value="researchprojectRelationships"/>
         <property name="indexAlways" value="true"/>
         <!--Which sidebar facets are to be displayed-->
         <property name="sidebarFacets">
