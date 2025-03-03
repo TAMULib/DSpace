@@ -610,6 +610,15 @@
   </dc-type>
   <!-- End TAMU Customization - additional dublin core relation qualifier for data URLs -->
 
+  <!-- TAMU Customization - additional dublin core relation qualifier for project URLs -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>relation</element>
+    <qualifier>sourceResearchProject</qualifier>
+    <scope_note>Use for projects's public data URLs.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core relation qualifier for project URLs -->
+
   <dc-type>
 	<schema>dc</schema>
     <element>rights</element>
@@ -705,6 +714,24 @@
     <scope_note>Varying (or substitute) form of title proper appearing in item,
     e.g. abbreviation or translation</scope_note>
   </dc-type>
+
+  <!-- TAMU Customization - additional dublin core title for dimension title -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>title</element>
+    <qualifier>dataset</qualifier>
+    <scope_note>Use for the title of the dataset from Dimension data.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin dublin core title for dimension title -->
+
+  <!-- TAMU Customization - additional dublin dublin core title for Maestro long title-->
+  <dc-type>
+    <schema>dc</schema>
+    <element>title</element>
+    <qualifier>project</qualifier>
+    <scope_note>Use for Project Long Title from Maestro data.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core title for Maestro long title -->
 
   <!-- Used by system: do not remove -->
   <dc-type>
