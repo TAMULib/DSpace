@@ -724,23 +724,23 @@
     e.g. abbreviation or translation</scope_note>
   </dc-type>
 
-  <!-- TAMU Customization - additional dublin core title for dimension title -->
+  <!-- TAMU Customization - additional dublin core title for virtualized datasets on a research project -->
   <dc-type>
     <schema>dc</schema>
     <element>title</element>
     <qualifier>dataset</qualifier>
     <scope_note>Use for the title of the dataset produced by a project.</scope_note>
   </dc-type>
-  <!-- End TAMU Customization - additional dublin dublin core title for dimension title -->
+  <!-- END TAMU Customization - additional dublin core title for virtualized datasets on a research project -->
 
-  <!-- TAMU Customization - additional dublin dublin core title for Maestro long title-->
+  <!-- TAMU Customization - additional dublin core title for virtualized research project on a dataset -->
   <dc-type>
     <schema>dc</schema>
     <element>title</element>
     <qualifier>project</qualifier>
     <scope_note>Use for project title of a dataset.</scope_note>
   </dc-type>
-  <!-- End TAMU Customization - additional dublin core title for Maestro long title -->
+  <!-- END TAMU Customization - additional dublin core title for virtualized research project on a dataset -->
 
   <!-- Used by system: do not remove -->
   <dc-type>
