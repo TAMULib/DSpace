@@ -55,7 +55,6 @@
                     <label>Maestro ID - Awards Project DIM</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the Maestro ID - Awards Project DIM.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -67,7 +66,6 @@
                     <label>Researcher Name</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the researcher name.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -79,7 +77,6 @@
                     <label>Researcher UIN</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the researcher UIN.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -90,7 +87,6 @@
                     <repeatable>true</repeatable>
                     <label>Co-Principal Investigators</label>
                     <input-type>onebox</input-type>
-                    <hint></hint>
                 </field>
             </row>
             <row>
@@ -102,7 +98,6 @@
                     <label>Project End Date</label>
                     <input-type>date</input-type>
                     <hint>Enter research project end date.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -206,7 +201,6 @@
                     <label>Creator</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the creator's name.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -230,7 +224,6 @@
                     <label>Description</label>
                     <input-type>textarea</input-type>
                     <hint>Enter any other description or comments in this box.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -242,7 +235,6 @@
                     <label>Department</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the creator's department.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -255,7 +247,6 @@
                     <style>col-sm-4</style>
                     <input-type>date</input-type>
                     <hint>Enter date of dataset publication.</hint>
-                    <required></required>
                 </field>
                 <field>
                     <dc-schema>dc</dc-schema>
@@ -266,7 +257,6 @@
                     <style>col-sm-8</style>
                     <input-type>onebox</input-type>
                     <hint>Enter the name of the publisher of the previously issued instance of this dataset.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -278,7 +268,6 @@
                     <label>DOI</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the DOI for the previously issued instance of this dataset.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -290,7 +279,6 @@
                     <label>Relation</label>
                     <input-type>onebox</input-type>
                     <hint></hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -302,7 +290,6 @@
                     <label>Subject Keywords</label>
                     <input-type>tag</input-type>
                     <hint>Enter appropriate subject keywords or phrases.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -314,7 +301,6 @@
                     <label>Project End Date</label>
                     <input-type>date</input-type>
                     <hint>Enter dataset project end date.</hint>
-                    <required></required>
                 </field>
             </row>
         </form>
@@ -349,6 +335,7 @@
                     <label>Name</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the name of the PDAC</hint>
+                    <required>You must enter a name for this PDAC.</required>
                 </field>
             </row>
             <row>
