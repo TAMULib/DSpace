@@ -720,7 +720,7 @@
     <schema>dc</schema>
     <element>title</element>
     <qualifier>dataset</qualifier>
-    <scope_note>Use for the title of the dataset from Dimension data.</scope_note>
+    <scope_note>Use for the title of the dataset produced by a project.</scope_note>
   </dc-type>
   <!-- End TAMU Customization - additional dublin dublin core title for dimension title -->
 
@@ -729,7 +729,7 @@
     <schema>dc</schema>
     <element>title</element>
     <qualifier>project</qualifier>
-    <scope_note>Use for Project Long Title from Maestro data.</scope_note>
+    <scope_note>Use for project title of a dataset.</scope_note>
   </dc-type>
   <!-- End TAMU Customization - additional dublin core title for Maestro long title -->
 
