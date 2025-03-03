@@ -614,6 +614,15 @@
   <dc-type>
     <schema>dc</schema>
     <element>relation</element>
+    <qualifier>hasResearchProject</qualifier>
+    <scope_note>Use for researcher's public project URLs.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core relation qualifier for project URLs -->
+
+  <!-- TAMU Customization - additional dublin core relation qualifier for project URLs -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>relation</element>
     <qualifier>sourceResearchProject</qualifier>
     <scope_note>Use for projects's public data URLs.</scope_note>
   </dc-type>
