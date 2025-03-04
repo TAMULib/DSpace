@@ -619,6 +619,24 @@
   </dc-type>
   <!-- End TAMU Customization - additional dublin core relation qualifier for associated publication URIs -->
 
+  <!-- TAMU Customization - additional dublin core relation qualifier for project URLs -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>relation</element>
+    <qualifier>hasResearchProject</qualifier>
+    <scope_note>Use for researcher's public project URLs.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core relation qualifier for project URLs -->
+
+  <!-- TAMU Customization - additional dublin core relation qualifier for project URLs -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>relation</element>
+    <qualifier>sourceResearchProject</qualifier>
+    <scope_note>Use for projects's public data URLs.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core relation qualifier for project URLs -->
+
   <dc-type>
 	<schema>dc</schema>
     <element>rights</element>
@@ -714,6 +732,24 @@
     <scope_note>Varying (or substitute) form of title proper appearing in item,
     e.g. abbreviation or translation</scope_note>
   </dc-type>
+
+  <!-- TAMU Customization - additional dublin core title for virtualized datasets on a research project -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>title</element>
+    <qualifier>dataset</qualifier>
+    <scope_note>Use for the title of the dataset produced by a project.</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization - additional dublin core title for virtualized datasets on a research project -->
+
+  <!-- TAMU Customization - additional dublin core title for virtualized research project on a dataset -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>title</element>
+    <qualifier>project</qualifier>
+    <scope_note>Use for project title of a dataset.</scope_note>
+  </dc-type>
+  <!-- END TAMU Customization - additional dublin core title for virtualized research project on a dataset -->
 
   <!-- Used by system: do not remove -->
   <dc-type>
