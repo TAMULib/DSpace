@@ -610,6 +610,15 @@
   </dc-type>
   <!-- End TAMU Customization - additional dublin core relation qualifier for data URLs -->
 
+  <!-- TAMU Customization - additional dublin core relation qualifier for associated publication URIs -->
+  <dc-type>
+    <schema>dc</schema>
+    <element>relation</element>
+    <qualifier>associatedPublicationURI</qualifier>
+    <scope_note>Use for researcher's public associated publication URIs.</scope_note>
+  </dc-type>
+  <!-- End TAMU Customization - additional dublin core relation qualifier for associated publication URIs -->
+
   <!-- TAMU Customization - additional dublin core relation qualifier for project URLs -->
   <dc-type>
     <schema>dc</schema>
