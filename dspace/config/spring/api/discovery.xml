@@ -185,6 +185,9 @@
                 <ref bean="searchFilterIssued" />
                 <ref bean="searchFilterContentInOriginalBundle"/>
                 <ref bean="searchFilterEntityType"/>
+                <!-- TAMU Customization - default search funding agency filter -->
+                <ref bean="searchFilterFundingAgency" />
+                <!-- END TAMU Customization - default search funding agency filter -->
             </list>
         </property>
         <!-- Set TagCloud configuration per discovery configuration -->
@@ -205,6 +208,9 @@
                 <ref bean="searchFilterIsOrgUnitOfPublicationRelation"/>
                 <ref bean="searchFilterIsPublicationOfJournalIssueRelation"/>
                 <ref bean="searchFilterIsJournalOfPublicationRelation"/>
+                <!-- TAMU Customization - default search funding agency filter -->
+                <ref bean="searchFilterFundingAgency" />
+                <!-- END TAMU Customization - default search funding agency filter -->
             </list>
         </property>
         <!--The sort filters for the discovery search-->
