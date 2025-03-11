@@ -48,7 +48,7 @@
     <schema>local</schema>
     <element>pdac</element>
     <qualifier>title</qualifier>
-    <scope_note>Positon title of the Primary Data Access Contact</scope_note>
+    <scope_note>Position title of the Primary Data Access Contact</scope_note>
   </dc-type>
   <dc-type>
     <schema>local</schema>

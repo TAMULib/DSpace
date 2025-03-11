@@ -141,7 +141,7 @@
                     <repeatable>false</repeatable>
                     <label>Sponsor Award Number</label>
                     <input-type>onebox</input-type>
-                    <hint>Enter the sponser award number.</hint>
+                    <hint>Enter the sponsor award number.</hint>
                 </field>
             </row>
             <row>
