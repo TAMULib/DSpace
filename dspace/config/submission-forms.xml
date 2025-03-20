@@ -22,6 +22,164 @@
 
     <form-definitions>
 
+        <!-- TAMU Customization - form definition for Research Project -->
+        <!-- Form which defines the metadata page/section for depositing Research Project Entities -->
+        <form name="researchProjectStep">
+            <row>
+                <relation-field>
+                    <relationship-type>isPDACForResearchProject</relationship-type>
+                    <search-configuration>pdac</search-configuration>
+                    <label>PDAC</label>
+                    <hint>Assign a PDAC</hint>
+                    <externalsources/>
+                </relation-field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>title</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Project Title</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the main title of the research project.</hint>
+                    <required>You must enter a main title for this research project.</required>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier>other</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Maestro ID - Awards Project DIM</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the Maestro ID - Awards Project DIM.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>creator</dc-element>
+                    <dc-qualifier>pi</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Researcher Name</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the researcher name.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>creator</dc-element>
+                    <dc-qualifier>UIN</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Researcher UIN</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the researcher UIN.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>creator</dc-element>
+                    <dc-qualifier>copi</dc-qualifier>
+                    <repeatable>true</repeatable>
+                    <label>Co-Principal Investigators</label>
+                    <input-type>onebox</input-type>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>date</dc-element>
+                    <dc-qualifier>projectEnd</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Project End Date</label>
+                    <input-type>date</input-type>
+                    <hint>Enter research project end date.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>member</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Member Abbreviation</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the member abbreviation.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>department</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Department</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the department.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>sponsor</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Sponsor Name</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the sponsor name.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>awardNumber</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Sponsor Award Number</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the sponsor award number.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Instrument Type Description</label>
+                    <input-type>textarea</input-type>
+                    <hint>Enter the instrument type description.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier>abstract</dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Abstract or Project Description</label>
+                    <input-type>textarea</input-type>
+                    <hint>Enter the abstract or project description.</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>local</dc-schema>
+                    <dc-element>projectStatus</dc-element>
+                    <dc-qualifier></dc-qualifier>
+                    <repeatable>false</repeatable>
+                    <label>Project Status</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the project status.</hint>
+                </field>
+            </row>
+        </form>
+        <!-- End TAMU Customization - form definition for Research Project -->
+
         <!-- TAMU Customization - form definition for Dataset -->
         <!-- Form which defines the metadata page/section for depositing Dataset Entities -->
         <form name="datasetStep">
@@ -43,7 +201,6 @@
                     <label>Creator</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the creator's name.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -67,7 +224,6 @@
                     <label>Description</label>
                     <input-type>textarea</input-type>
                     <hint>Enter any other description or comments in this box.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -79,7 +235,6 @@
                     <label>Department</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the creator's department.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -92,7 +247,6 @@
                     <style>col-sm-4</style>
                     <input-type>date</input-type>
                     <hint>Enter date of dataset publication.</hint>
-                    <required></required>
                 </field>
                 <field>
                     <dc-schema>dc</dc-schema>
@@ -103,7 +257,6 @@
                     <style>col-sm-8</style>
                     <input-type>onebox</input-type>
                     <hint>Enter the name of the publisher of the previously issued instance of this dataset.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -115,7 +268,6 @@
                     <label>DOI</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the DOI for the previously issued instance of this dataset.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -127,7 +279,6 @@
                     <label>Relation</label>
                     <input-type>onebox</input-type>
                     <hint></hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -139,7 +290,6 @@
                     <label>Subject Keywords</label>
                     <input-type>tag</input-type>
                     <hint>Enter appropriate subject keywords or phrases.</hint>
-                    <required></required>
                 </field>
             </row>
             <row>
@@ -151,7 +301,6 @@
                     <label>Project End Date</label>
                     <input-type>date</input-type>
                     <hint>Enter dataset project end date.</hint>
-                    <required></required>
                 </field>
             </row>
         </form>
@@ -170,6 +319,15 @@
                 </relation-field>
             </row>
             <row>
+                <relation-field>
+                    <relationship-type>isResearchProjectAssignedToPDAC</relationship-type>
+                    <search-configuration>project</search-configuration>
+                    <label>Research Project</label>
+                    <hint>Assign a Research Project</hint>
+                    <externalsources/>
+                </relation-field>
+            </row>
+            <row>
                 <field>
                     <dc-schema>local</dc-schema>
                     <dc-element>pdac</dc-element>
@@ -177,16 +335,37 @@
                     <label>Name</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the name of the PDAC</hint>
+                    <required>You must enter a name for this PDAC.</required>
                 </field>
             </row>
             <row>
                 <field>
-                    <dc-schema>local</dc-schema>
-                    <dc-element>pdac</dc-element>
-                    <dc-qualifier>uin</dc-qualifier>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>description</dc-element>
+                    <dc-qualifier>role</dc-qualifier>
+                    <label>Role</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the role of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>identifier</dc-element>
+                    <dc-qualifier>UIN</dc-qualifier>
                     <label>UIN</label>
                     <input-type>onebox</input-type>
                     <hint>Enter the UIN of the PDAC</hint>
+                </field>
+            </row>
+            <row>
+                <field>
+                    <dc-schema>dc</dc-schema>
+                    <dc-element>contributor</dc-element>
+                    <dc-qualifier>department</dc-qualifier>
+                    <label>Department</label>
+                    <input-type>onebox</input-type>
+                    <hint>Enter the department of the PDAC</hint>
                 </field>
             </row>
             <row>
@@ -212,21 +391,21 @@
             <row>
                 <field>
                     <dc-schema>local</dc-schema>
-                    <dc-element>pdac</dc-element>
-                    <dc-qualifier>telephone</dc-qualifier>
-                    <label>Telephone</label>
+                    <dc-element>contact</dc-element>
+                    <dc-qualifier>email</dc-qualifier>
+                    <label>Email</label>
                     <input-type>onebox</input-type>
-                    <hint>Enter the telephone number of the PDAC</hint>
+                    <hint>Enter the email of the PDAC</hint>
                 </field>
             </row>
             <row>
                 <field>
                     <dc-schema>local</dc-schema>
-                    <dc-element>pdac</dc-element>
-                    <dc-qualifier>email</dc-qualifier>
-                    <label>Email</label>
+                    <dc-element>contact</dc-element>
+                    <dc-qualifier>phone</dc-qualifier>
+                    <label>Phone Number</label>
                     <input-type>onebox</input-type>
-                    <hint>Enter the email of the PDAC</hint>
+                    <hint>Enter the phone number of the PDAC</hint>
                 </field>
             </row>
         </form>
@@ -733,7 +912,7 @@
 <!--            </row>-->
             <row>
                 <relation-field>
-                    <relationship-type>isProjectOfPerson</relationship-type>
+                    <relationship-type>isPersonOfProject</relationship-type>
                     <search-configuration>person</search-configuration>
                     <repeatable>true</repeatable>
                     <label>Investigator</label>
@@ -1769,27 +1948,27 @@
             </pair>
             <pair>
                 <displayed-value>Attribution (CC-BY)</displayed-value>
-                <stored-value>http://creativecommons.org/licenses/by/4.0/</stored-value>
+                <stored-value>https://creativecommons.org/licenses/by/4.0/</stored-value>
             </pair>
             <pair>
                 <displayed-value>Attribution, No Derivative Works (CC-BY-ND)</displayed-value>
-                <stored-value>http://creativecommons.org/licenses/by-nd/4.0/</stored-value>
+                <stored-value>https://creativecommons.org/licenses/by-nd/4.0/</stored-value>
             </pair>
             <pair>
                 <displayed-value>Attribution, Share-alike (CC-BY-SA)</displayed-value>
-                <stored-value>http://creativecommons.org/licenses/by-sa/4.0/</stored-value>
+                <stored-value>https://creativecommons.org/licenses/by-sa/4.0/</stored-value>
             </pair>
             <pair>
                 <displayed-value>Attribution, Non-commercial (CC-BY-NC)</displayed-value>
-                <stored-value>http://creativecommons.org/licenses/by-nc/4.0/</stored-value>
+                <stored-value>https://creativecommons.org/licenses/by-nc/4.0/</stored-value>
             </pair>
             <pair>
                 <displayed-value>Attribution, Non-commercial, No Derivative Works (CC-BY-NC-ND)</displayed-value>
-                <stored-value>http://creativecommons.org/licenses/by-nc-nd/4.0/</stored-value>
+                <stored-value>https://creativecommons.org/licenses/by-nc-nd/4.0/</stored-value>
             </pair>
             <pair>
                 <displayed-value>Attribution, Non-commercial, Share-alike (CC-BY-NC-SA)</displayed-value>
-                <stored-value>http://creativecommons.org/licenses/by-nc-sa/4.0/</stored-value>
+                <stored-value>https://creativecommons.org/licenses/by-nc-sa/4.0/</stored-value>
             </pair>
             <!-- Add here other licenses -->
             <pair>

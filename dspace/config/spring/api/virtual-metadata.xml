@@ -22,12 +22,14 @@
                 <entry key="isIssueOfJournalVolume" value-ref="isIssueOfJournalVolumeMap"/>
                 <entry key="isJournalIssueOfPublication" value-ref="isJournalIssueOfPublicationMap"/>
 
-                <!-- TAMU Customization - Dataset / PDAC virtual metadata mapping -->
+                <!-- TAMU Customization - Research Project, Dataset and PDAC virtual metadata mapping -->
                 <entry key="isPDACForDataset" value-ref="isPDACForDatasetMap"/>
                 <entry key="isDatasetAssignedToPDAC" value-ref="isDatasetAssignedToPDACMap"/>
                 <entry key="isPDACForProject" value-ref="isPDACForProjectMap"/>
                 <entry key="isProjectAssignedtoPDAC" value-ref="isProjectAssignedToPDACMap"/>
-                <!-- End TAMU Customization - Dataset / PDAC virtual metadata mapping -->
+                <entry key="isProjectThatProducedDataset" value-ref="isProjectThatProducedDatasetMap"/>
+                <entry key="isDatasetProducedByProject" value-ref="isDatasetProducedByProjectMap"/>
+                <!-- END TAMU Customization - Research Project, Dataset and PDAC virtual metadata mapping -->
             </map>
         </property>
     </bean>
@@ -53,6 +55,9 @@
         <entry key="local.pdac.name" value-ref="datasetPDAC_name"/>
         <entry key="dc.contributor.pdac" value-ref="datasetPDAC_identifier"/>
     </util:map>
+    <util:map id="isDatasetAssignedToPDACMap">
+        <entry key="dc.relation.hasDataset" value-ref="pdac_identifier"/>
+    </util:map>
     <bean class="org.dspace.content.virtual.Concatenate" id="datasetPDAC_name">
         <property name="fields">
             <util:list>
@@ -72,10 +77,6 @@
             </util:list>
         </property>
     </bean>
-
-    <util:map id="isDatasetAssignedToPDACMap">
-        <entry key="dc.relation.hasDataset" value-ref="pdac_identifier"/>
-    </util:map>
     <bean class="org.dspace.content.virtual.Collected" id="pdac_identifier">
         <property name="fields">
             <util:list>
@@ -85,9 +86,13 @@
     </bean>
     <!-- End TAMU Customization - Dataset / PDAC virtual metadata -->
 
+    <!-- TAMU Customization - Research Project / PDAC virtual metadata -->
     <util:map id="isPDACForProjectMap">
         <entry key="local.pdac.name" value-ref="projectPDAC_name"/>
         <entry key="dc.contributor.pdac" value-ref="projectPDAC_identifier"/>
+    </util:map>
+    <util:map id="isProjectAssignedToPDACMap">
+        <entry key="dc.relation.hasResearchProject" value-ref="pdac_identifier"/>
     </util:map>
     <bean class="org.dspace.content.virtual.Concatenate" id="projectPDAC_name">
         <property name="fields">
@@ -108,9 +113,56 @@
             </util:list>
         </property>
     </bean>
-    <util:map id="isProjectAssignedToPDACMap">
-        <entry key="dc.relation.hasResearchProject" value-ref="pdac_identifier"/>
+    <!-- END TAMU Customization - Research Project / PDAC virtual metadata -->
+
+    <!-- TAMU Customization - Dataset / Research Project virtual metadata -->
+    <util:map id="isProjectThatProducedDatasetMap">
+        <entry key="dc.title.project" value-ref="datasetProject_title"/>
+        <entry key="dc.relation.sourceResearchProject" value-ref="datasetProject_identifier"/>
     </util:map>
+    <util:map id="isDatasetProducedByProjectMap">
+        <entry key="dc.title.dataset" value-ref="projectDataset_titles"/>
+        <entry key="dc.relation.hasDataset" value-ref="projectDataset_identifiers"/>
+    </util:map>
+    <bean class="org.dspace.content.virtual.Concatenate" id="datasetProject_title">
+        <property name="fields">
+            <util:list>
+                <value>dc.title</value>
+            </util:list>
+        </property>
+        <property name="separator">
+            <value>, </value>
+        </property>
+        <property name="useForPlace" value="true"/>
+        <property name="populateWithNameVariant" value="true"/>
+    </bean>
+    <bean class="org.dspace.content.virtual.Concatenate" id="datasetProject_identifier">
+        <property name="fields">
+            <util:list>
+                <value>dc.identifier.uri</value>
+            </util:list>
+        </property>
+        <property name="separator">
+            <value>, </value>
+        </property>
+        <property name="useForPlace" value="true"/>
+        <property name="populateWithNameVariant" value="true"/>
+    </bean>
+    <bean class="org.dspace.content.virtual.Collected" id="projectDataset_titles">
+        <property name="fields">
+            <util:list>
+                <value>dc.title</value>
+            </util:list>
+        </property>
+    </bean>
+    <bean class="org.dspace.content.virtual.Collected" id="projectDataset_identifiers">
+        <property name="fields">
+            <util:list>
+                <value>dc.identifier.uri</value>
+            </util:list>
+        </property>
+    </bean>
+    <!-- END TAMU Customization - Dataset / Research Project virtual metadata -->
 
     <!-- Config like this will tell our VirtualMetadataPopulator to include the virtual metadata field
          'dc.contributor.author' on the appropriate item with the values defined in the value-ref.
@@ -154,7 +206,7 @@
     </bean>
 
     <util:map id="isPersonOfProjectMap">
-        <entry key="dc.contributor.author" value-ref="projectPerson_author"/>
+        <entry key="project.investigator" value-ref="projectPerson_author"/>
     </util:map>
     <!--
      If the related item has:
