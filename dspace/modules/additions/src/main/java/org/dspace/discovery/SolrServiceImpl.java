@@ -257,7 +257,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         doc.addField("primaryBitstream_stored", primaryUrl);
                     }
                     for (Bitstream bitstream : bundle.getBitstreams()) {
-                        if (bitstream.getInternalId() != null && !bitstream.getInternalId().equals(primaryInternalId)) {
+                        if (bitstream != null && bitstream.getInternalId() != null && !bitstream.getInternalId().equals(primaryInternalId)) {
                             String name = bitstream.getName();
                             int sequence = bitstream.getSequenceID();
                             String url = String.format(bitstreamUrlTemplate, dspaceUrl, handle, name, sequence);
