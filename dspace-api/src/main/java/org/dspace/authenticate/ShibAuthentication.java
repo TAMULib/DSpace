@@ -332,8 +332,11 @@ public class ShibAuthentication implements AuthenticationMethod {
             Set<Group> groups = new HashSet<>();
             if (affiliations != null) {
                 for (String affiliation : affiliations) {
+                    log.info("*** Checking affiliation: "+affiliation);
                     // If we ignore the affiliation's scope then strip the scope if it exists.
                     if (ignoreScope) {
+                        log.info("*** Ignoring scope");
+
                         int index = affiliation.indexOf('@');
                         if (index != -1) {
                             affiliation = affiliation.substring(0, index);
@@ -341,15 +344,23 @@ public class ShibAuthentication implements AuthenticationMethod {
                     }
                     // If we ignore the value, then strip it out so only the scope remains.
                     if (ignoreValue) {
+                        log.info("*** Ignoring value");
+
                         int index = affiliation.indexOf('@');
                         if (index != -1) {
                             affiliation = affiliation.substring(index + 1, affiliation.length());
                         }
                     }
+                    log.info("*** Affiliation value is now: "+affiliation);
 
                     // Get the group names
                     String[] groupNames = configurationService
                         .getArrayProperty("authentication-shibboleth.role." + affiliation);
+                    log.info("*** Group names are: "+groupNames);
+                    for (String gr : groupNames) {
+                        log.info("*** Group name entry: "+gr);
+                    }
+
                     if (groupNames == null || groupNames.length == 0) {
                         groupNames = configurationService
                             .getArrayProperty("authentication-shibboleth.role." + affiliation.toLowerCase());
@@ -369,8 +380,11 @@ public class ShibAuthentication implements AuthenticationMethod {
                     // Add each group to the list.
                     for (int i = 0; i < groupNames.length; i++) {
                         try {
+                            log.info("*** Looking up group: "+groupNames[i]);
+
                             Group group = groupService.findByName(context, groupNames[i].trim());
                             if (group != null) {
+                                log.info("*** Adding group: "+groupNames[i]);
                                 groups.add(group);
                             } else {
                                 log.debug("Unable to find group: '" + groupNames[i].trim() + "'");
