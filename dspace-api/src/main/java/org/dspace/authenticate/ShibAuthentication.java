@@ -356,7 +356,7 @@ public class ShibAuthentication implements AuthenticationMethod {
                     // Get the group names
                     String[] groupNames = configurationService
                         .getArrayProperty("authentication-shibboleth.role." + affiliation);
-                    log.info("*** Group names are: "+groupNames);
+
                     for (String gr : groupNames) {
                         log.info("*** Group name entry: "+gr);
                     }
