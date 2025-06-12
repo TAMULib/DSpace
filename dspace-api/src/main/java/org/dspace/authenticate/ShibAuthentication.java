@@ -1098,7 +1098,7 @@ public class ShibAuthentication implements AuthenticationMethod {
         }
         List<String> a = Collections.list(request.getAttributeNames());
         a.forEach(attributeName -> {
-            log.info("*** attribute "+name+" has value: "+request.getAttribute(name));
+            log.info("*** attribute "+attributeName+" has value: "+request.getAttribute(attributeName));
         });
 
         // First try to get the value from the attribute
@@ -1112,7 +1112,7 @@ public class ShibAuthentication implements AuthenticationMethod {
 
         List<String> h = Collections.list(request.getHeaderNames());
         h.forEach(attributeName -> {
-            log.info("*** header "+name+" has value: "+request.getHeader(name));
+            log.info("*** header "+attributeName+" has value: "+request.getHeader(attributeName));
         });
 
         // Second try to get the value from the header
