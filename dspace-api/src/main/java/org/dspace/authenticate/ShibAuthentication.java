@@ -1096,6 +1096,11 @@ public class ShibAuthentication implements AuthenticationMethod {
         if (name == null) {
             return null;
         }
+        List<String> a = Collections.list(request.getAttributeNames());
+        a.forEach(attributeName -> {
+            log.info("*** attribute "+name+" has value: "+request.getAttribute(name));
+        });
+
         // First try to get the value from the attribute
         String value = (String) request.getAttribute(name);
         if (StringUtils.isEmpty(value)) {
@@ -1104,6 +1109,11 @@ public class ShibAuthentication implements AuthenticationMethod {
         if (StringUtils.isEmpty(value)) {
             value = (String) request.getAttribute(name.toUpperCase());
         }
+
+        List<String> h = Collections.list(request.getHeaderNames());
+        h.forEach(attributeName -> {
+            log.info("*** header "+name+" has value: "+request.getHeader(name));
+        });
 
         // Second try to get the value from the header
         if (StringUtils.isEmpty(value)) {
