@@ -1306,11 +1306,4 @@ public class ShibAuthentication implements AuthenticationMethod {
         return false;
     }
 
-    /** Temp override of default method to see why we aren't getting shib special group processing */
-    public boolean areSpecialGroupsApplicable(Context context, HttpServletRequest request) {
-        log.info("*** CONTEXT AUTH METHOD: "+context.getAuthenticationMethod());
-        log.info("*** SHIB AUTH NAME "+getName());
-        return true;
-    }
 }
-
