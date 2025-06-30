@@ -80,6 +80,14 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+// TAMU Customization
+import java.util.Vector;
+import org.dspace.content.Bitstream;
+import org.dspace.content.Bundle;
+import org.dspace.content.service.ItemService;
+import org.dspace.handle.service.HandleService;
+// END TAMU Customization
+
 /**
  * SolrIndexer contains the methods that index Items and their metadata,
  * collections, communities, etc. It is meant to either be invoked from the
@@ -119,6 +127,12 @@ public class SolrServiceImpl implements SearchService, IndexingService {
     protected SolrSearchCore solrSearchCore;
     @Autowired
     protected ConfigurationService configurationService;
+    // TAMU Customization
+    @Autowired(required = true)
+    protected ItemService itemService;
+    @Autowired(required = true)
+    protected HandleService handleService;
+    // END TAMU Customization
 
     protected SolrServiceImpl() {
 
@@ -167,6 +181,8 @@ public class SolrServiceImpl implements SearchService, IndexingService {
     protected void update(Context context, IndexFactory indexableObjectService,
                           IndexableObject indexableObject) throws IOException, SQLException, SolrServerException {
         final SolrInputDocument solrInputDocument = indexableObjectService.buildDocument(context, indexableObject);
+        // TAMU Customization
+        addCommunityCollectionItem(context, indexableObject, solrInputDocument);
         indexableObjectService.writeDocument(context, indexableObject, solrInputDocument);
     }
 
@@ -182,6 +198,8 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         if (preDB) {
             final SolrInputDocument solrInputDocument =
                     indexableObjectService.buildNewDocument(context, indexableObject);
+            // TAMU Customization
+            addCommunityCollectionItem(context, indexableObject, solrInputDocument);
             indexableObjectService.writeDocument(context, indexableObject, solrInputDocument);
         } else {
             update(context, indexableObjectService, indexableObject);
@@ -1244,7 +1262,10 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             filterQuery.append(":");
             if ("equals".equals(operator) || "notequals".equals(operator)) {
                 //DO NOT ESCAPE RANGE QUERIES !
-                if (!value.matches("\\[.*TO.*\\]")) {
+                // TAMU Customization - calling the modified regex expression
+                // if (!value.matches("\\[.*TO.*\\]")) {
+                if ( isNotRangeQuery(value) ) {
+                // END TAMU Customization - calling the modified regex expression
                     value = ClientUtils.escapeQueryChars(value);
                     filterQuery.append(value);
                 } else {
@@ -1257,7 +1278,10 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 }
             } else {
                 //DO NOT ESCAPE RANGE QUERIES !
-                if (!value.matches("\\[.*TO.*\\]")) {
+                // TAMU Customization - calling the modified regex expression
+                // if (!value.matches("\\[.*TO.*\\]")) {
+                if ( isNotRangeQuery(value) ) {
+                // END TAMU Customization - calling the modified regex expression
                     value = ClientUtils.escapeQueryChars(value);
                     filterQuery.append("\"").append(value).append("\"");
                 } else {
@@ -1570,6 +1594,148 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             }
         }
         return null;
+    }
+
+    /**
+     * TAMU Customization
+     * 
+     * @param context DSpace context
+     * @param indexableObject object to index
+     * @param doc Solr document being indexed
+     * @return a list containing the identifiers of the communities and collections
+     * @throws SQLException sql exception
+     */
+    private void addCommunityCollectionItem(
+        Context context, IndexableObject indexableObject, SolrInputDocument doc
+    ) throws IOException, SolrServerException, SQLException {
+
+        // IndexableObject.getType();
+        if (!(indexableObject instanceof IndexableItem)) {
+            return;
+        }
+
+        IndexableItem indexableItem = (IndexableItem)indexableObject;
+
+        Item item = indexableItem.getIndexedObject();
+
+
+        // get the location string (for searching by collection & community)
+        List<String> locations = getItemLocations(context, item);
+
+        String handle = item.getHandle();
+
+        if (handle == null) {
+            handle = handleService.findHandle(context, item);
+        }
+
+        // TAMU Customization - Write friendly community/collection names to index
+        if ( !locations.isEmpty() ) {
+            for (String location : locations) {
+                String field = location.startsWith("m") ? "location.comm" : "location.coll";
+                String dsoName = locationToName(context,field,location.substring(1));
+                log.debug("Adding location name:" + field + ".name_stored with value:" + dsoName);
+                doc.addField(field + ".name_stored", dsoName );
+            }
+        }
+
+        // TAMU Customization - Write bitstream URLs to index
+        List<String> bitstreamLocations = new ArrayList<>();
+        String dspaceUrl = configurationService.getProperty("dspace.server.url");
+        for (Bundle bundle : item.getBundles()) {
+            String bitstreamUrlTemplate = "%s/bitstream/handle/%s/%s?sequence=%d";
+            String primaryInternalId = null;
+            switch (bundle.getName()) {
+                case "ORIGINAL":
+                    if (bundle.getPrimaryBitstream() != null) {
+                        Bitstream primaryBitstream = bundle.getPrimaryBitstream();
+                        primaryInternalId = primaryBitstream.getInternalId();
+                        String primaryName = primaryBitstream.getName();
+                        int primarySequence = primaryBitstream.getSequenceID();
+                        String primaryUrl = String.format(
+                                            bitstreamUrlTemplate, dspaceUrl, handle, primaryName, primarySequence);
+                        doc.addField("primaryBitstream_stored", primaryUrl);
+                    }
+                    for (Bitstream bitstream : bundle.getBitstreams()) {
+                        if (bitstream != null && bitstream.getInternalId() != null && !bitstream.getInternalId().equals(primaryInternalId)) {
+                            String name = bitstream.getName();
+                            int sequence = bitstream.getSequenceID();
+                            String url = String.format(bitstreamUrlTemplate, dspaceUrl, handle, name, sequence);
+                            bitstreamLocations.add(url);
+                        }
+                    }
+                    break;
+                case "THUMBNAIL":
+                    if (!bundle.getBitstreams().isEmpty()) {
+                        Bitstream thumbnailBitstream = bundle.getBitstreams().get(0);
+                        if (thumbnailBitstream != null) {
+                            String thumbnailName = thumbnailBitstream.getName();
+                            int thumbnailSequence = thumbnailBitstream.getSequenceID();
+                            String thumbnailUrl = String.format(
+                                                bitstreamUrlTemplate,
+                                                dspaceUrl,
+                                                handle,
+                                                thumbnailName,
+                                                thumbnailSequence
+                                                );
+                            doc.addField("thumbnailBitstream_stored", thumbnailUrl);
+                        }
+                    }
+                    break;
+                case "LICENSE":
+                    if (!bundle.getBitstreams().isEmpty()) {
+                        Bitstream licenseBitstream = bundle.getBitstreams().get(0);
+                        if (licenseBitstream != null) {
+                            String licenseName = licenseBitstream.getName();
+                            int licenseSequence = licenseBitstream.getSequenceID();
+                            String licenseUrl = String.format(
+                                                bitstreamUrlTemplate, dspaceUrl, handle, licenseName, licenseSequence);
+                            doc.addField("licenseBitstream_stored", licenseUrl);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * TAMU Customization - checking the conditions
+     */
+    private boolean isNotRangeQuery(String value) {
+        return (!(value.startsWith("[") || value.contains("TO") || value.endsWith("]")));
+    }
+
+    /**
+     * TAMU Customization
+     * 
+     * @param context DSpace context
+     * @param myitem the item for which our locations are to be retrieved
+     * @return a list containing the identifiers of the communities and collections
+     * @throws SQLException sql exception
+     */
+    private List<String> getItemLocations(Context context, Item myitem)
+            throws SQLException {
+        List<String> locations = new Vector<>();
+
+        // build list of community ids
+        List<Community> communities = itemService.getCommunities(context, myitem);
+
+        // build list of collection ids
+        List<Collection> collections = myitem.getCollections();
+
+        // now put those into strings
+        int i = 0;
+
+        for (i = 0; i < communities.size(); i++) {
+            locations.add("m" + communities.get(i).getID());
+        }
+
+        for (i = 0; i < collections.size(); i++) {
+            locations.add("l" + collections.get(i).getID());
+        }
+
+        return locations;
     }
 
 }
