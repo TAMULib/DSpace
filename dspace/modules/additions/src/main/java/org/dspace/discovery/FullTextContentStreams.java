@@ -17,30 +17,24 @@ import java.io.SequenceInputStream;
 import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
-// TAMU Customization - Only index text bitstreams that are not restricted
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import javax.annotation.Nullable;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import jakarta.annotation.Nullable;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-// TAMU Customization - Only index text bitstreams that are not restricted
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.logging.log4j.Logger;
 import org.apache.solr.common.util.ContentStreamBase;
 import org.dspace.authorize.AuthorizeException;
-import org.dspace.authorize.ResourcePolicy;
 import org.dspace.content.Bitstream;
 import org.dspace.content.BitstreamFormat;
 import org.dspace.content.Bundle;
 import org.dspace.content.Item;
 import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.BitstreamService;
-import org.dspace.content.service.BundleService;
 import org.dspace.core.Context;
 
 /**
@@ -55,15 +49,12 @@ public class FullTextContentStreams extends ContentStreamBase {
     protected List<FullTextBitstream> fullTextStreams;
     protected BitstreamService bitstreamService;
 
-    //TAMU Customization - We need a BundleService to check for bitstream restrictions before indexing them
-    protected final BundleService bundleService = ContentServiceFactory.getInstance().getBundleService();
-
     public FullTextContentStreams(Context context, Item parentItem) throws SQLException {
         this.context = context;
         init(parentItem);
     }
 
-    protected void init(Item parentItem) throws SQLException {
+    protected void init(Item parentItem) {
         fullTextStreams = new ArrayList<>();
 
         if (parentItem != null) {
@@ -76,7 +67,7 @@ public class FullTextContentStreams extends ContentStreamBase {
         }
     }
 
-    private void buildFullTextList(Item parentItem) throws SQLException {
+    private void buildFullTextList(Item parentItem) {
         // now get full text of any bitstreams in the TEXT bundle
         // trundle through the bundles
         List<Bundle> myBundles = parentItem.getBundles();
@@ -85,49 +76,18 @@ public class FullTextContentStreams extends ContentStreamBase {
             if (StringUtils.equals(FULLTEXT_BUNDLE, myBundle.getName())) {
                 // a-ha! grab the text out of the bitstreams
                 List<Bitstream> bitstreams = myBundle.getBitstreams();
-
-                // TAMU Customization - Only index text bitstreams that are not restricted
-                List<ResourcePolicy> bundlePolicies = bundleService.getBitstreamPolicies(context, myBundle);
-                boolean isIndexable = false;
-
                 log.debug("Processing full-text bitstreams. Item handle: " + sourceInfo);
 
                 for (Bitstream fulltextBitstream : emptyIfNull(bitstreams)) {
-                    // TAMU Customization - Only index text bitstreams that are not restricted
-                    isIndexable = false;
+                    fullTextStreams.add(new FullTextBitstream(sourceInfo, fulltextBitstream));
 
-                    for (ResourcePolicy rp:bundlePolicies) {
-                        if (rp.getdSpaceObject().getID() == fulltextBitstream.getID()) {
-                            Date start = rp.getStartDate();
-                            Date end = rp.getEndDate();
-                            Date now = new Date();
-                            if (rp.getGroup().getName().equalsIgnoreCase("anonymous")
-                                && (start == null || ((start.before(now) || DateUtils.isSameDay(start, now))
-                                && (end == null || (end.after(now) || DateUtils.isSameDay(now, end)))))
-                            ) {
-                                isIndexable = true;
-                            }
-                            break;
-                        }
-                    }
-                    // TAMU Customization - Only index text bitstreams that are not restricted
-                    if (isIndexable) {
-                        fullTextStreams.add(new FullTextBitstream(sourceInfo, fulltextBitstream));
-
-                        if (fulltextBitstream != null) {
-                            log.debug("Added BitStream: "
-                                    + fulltextBitstream.getStoreNumber() + " "
-                                    + fulltextBitstream.getSequenceID() + " "
-                                    + fulltextBitstream.getName());
-                        } else {
-                            log.error("Found a NULL bitstream when processing full-text files: item handle:"
-                                      + sourceInfo);
-                        }
-                    } else {
-                        log.debug("Bitstream was restricted: "
+                    if (fulltextBitstream != null) {
+                        log.debug("Added BitStream: "
                                 + fulltextBitstream.getStoreNumber() + " "
                                 + fulltextBitstream.getSequenceID() + " "
                                 + fulltextBitstream.getName());
+                    } else {
+                        log.error("Found a NULL bitstream when processing full-text files: item handle:" + sourceInfo);
                     }
                 }
             }
