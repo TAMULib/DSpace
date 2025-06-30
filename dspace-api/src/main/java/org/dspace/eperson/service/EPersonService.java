@@ -10,11 +10,11 @@ package org.dspace.eperson.service;
 import static org.dspace.content.MetadataSchemaEnum.EPERSON;
 
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 import java.util.Set;
-import javax.validation.constraints.NotNull;
 
+import jakarta.validation.constraints.NotNull;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataFieldName;
@@ -263,7 +263,7 @@ public interface EPersonService extends DSpaceObjectService<EPerson>, DSpaceObje
      * @return a list of epeople
      * @throws SQLException An exception that provides information on a database access error or other errors.
      */
-    public List<EPerson> findNotActiveSince(Context context, Date date) throws SQLException;
+    public List<EPerson> findNotActiveSince(Context context, Instant date) throws SQLException;
 
     /**
      * Check for presence of EPerson in tables that have constraints on

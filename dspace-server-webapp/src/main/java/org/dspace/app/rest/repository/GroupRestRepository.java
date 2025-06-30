@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.HttpServletRequest;
 import org.dspace.app.rest.Parameter;
 import org.dspace.app.rest.SearchRestMethod;
 import org.dspace.app.rest.converter.MetadataConverter;
@@ -42,10 +42,13 @@ import org.springframework.stereotype.Component;
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
 
-@Component(GroupRest.CATEGORY + "." + GroupRest.NAME)
+@Component(GroupRest.CATEGORY + "." + GroupRest.PLURAL_NAME)
 public class GroupRestRepository extends DSpaceObjectRestRepository<Group, GroupRest> {
     @Autowired
     GroupService gs;
+
+    @Autowired
+    private ObjectMapper mapper;
 
     @Autowired
     GroupRestRepository(GroupService dsoService) {
@@ -62,7 +65,6 @@ public class GroupRestRepository extends DSpaceObjectRestRepository<Group, Group
             throws AuthorizeException, RepositoryMethodNotImplementedException {
 
         HttpServletRequest req = getRequestService().getCurrentRequest().getHttpServletRequest();
-        ObjectMapper mapper = new ObjectMapper();
         GroupRest groupRest;
 
         try {
