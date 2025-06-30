@@ -37,6 +37,14 @@ import org.dspace.content.factory.ContentServiceFactory;
 import org.dspace.content.service.BitstreamService;
 import org.dspace.core.Context;
 
+// TAMU Customization
+import java.time.LocalDate;
+import java.time.chrono.ChronoLocalDate;
+
+import org.dspace.content.service.BundleService;
+import org.dspace.authorize.ResourcePolicy;
+// END TAMU Customization
+
 /**
  * Construct a <code>ContentStream</code> from a <code>File</code>
  */
@@ -49,12 +57,19 @@ public class FullTextContentStreams extends ContentStreamBase {
     protected List<FullTextBitstream> fullTextStreams;
     protected BitstreamService bitstreamService;
 
+    // TAMU Customization - We need a BundleService to check for bitstream restrictions before indexing them
+    protected final BundleService bundleService = ContentServiceFactory.getInstance().getBundleService();
+    // END TAMU Customization - We need a BundleService to check for bitstream restrictions before indexing them
+
     public FullTextContentStreams(Context context, Item parentItem) throws SQLException {
         this.context = context;
         init(parentItem);
     }
 
-    protected void init(Item parentItem) {
+    // TAMU Customization
+    // protected void init(Item parentItem) {
+    protected void init(Item parentItem) throws SQLException {
+    // END TAMU Customization
         fullTextStreams = new ArrayList<>();
 
         if (parentItem != null) {
@@ -67,7 +82,10 @@ public class FullTextContentStreams extends ContentStreamBase {
         }
     }
 
-    private void buildFullTextList(Item parentItem) {
+    // TAMU Customization
+    // private void buildFullTextList(Item parentItem) {
+    private void buildFullTextList(Item parentItem) throws SQLException {
+    // END TAMU Customization
         // now get full text of any bitstreams in the TEXT bundle
         // trundle through the bundles
         List<Bundle> myBundles = parentItem.getBundles();
@@ -76,9 +94,52 @@ public class FullTextContentStreams extends ContentStreamBase {
             if (StringUtils.equals(FULLTEXT_BUNDLE, myBundle.getName())) {
                 // a-ha! grab the text out of the bitstreams
                 List<Bitstream> bitstreams = myBundle.getBitstreams();
+
+                // TAMU Customization - Only index text bitstreams that are not restricted
+                List<ResourcePolicy> bundlePolicies = bundleService.getBitstreamPolicies(context, myBundle);
+                boolean isIndexable = false;
+                // END TAMU Customization
+
                 log.debug("Processing full-text bitstreams. Item handle: " + sourceInfo);
 
                 for (Bitstream fulltextBitstream : emptyIfNull(bitstreams)) {
+                    // TAMU Customization - Only index text bitstreams that are not restricted
+                    isIndexable = false;
+
+                    for (ResourcePolicy rp:bundlePolicies) {
+                        if (rp.getdSpaceObject().getID() == fulltextBitstream.getID()) {
+                            ChronoLocalDate start = rp.getStartDate();
+                            ChronoLocalDate end = rp.getEndDate();
+                            ChronoLocalDate now = LocalDate.now();
+                            if (rp.getGroup().getName().equalsIgnoreCase("anonymous")
+                                && (start == null || ((start.isBefore(now) || start.isEqual(now))
+                                && (end == null || (end.isAfter(now) || now.isEqual(end)))))
+                            ) {
+                                isIndexable = true;
+                            }
+                            break;
+                        }
+                    }
+
+                    if (isIndexable) {
+                        fullTextStreams.add(new FullTextBitstream(sourceInfo, fulltextBitstream));
+
+                        if (fulltextBitstream != null) {
+                            log.debug("Added BitStream: "
+                                    + fulltextBitstream.getStoreNumber() + " "
+                                    + fulltextBitstream.getSequenceID() + " "
+                                    + fulltextBitstream.getName());
+                        } else {
+                            log.error("Found a NULL bitstream when processing full-text files: item handle:"
+                                      + sourceInfo);
+                        }
+                    } else {
+                        log.debug("Bitstream was restricted: "
+                                + fulltextBitstream.getStoreNumber() + " "
+                                + fulltextBitstream.getSequenceID() + " "
+                                + fulltextBitstream.getName());
+                    }
+                    /*
                     fullTextStreams.add(new FullTextBitstream(sourceInfo, fulltextBitstream));
 
                     if (fulltextBitstream != null) {
@@ -89,6 +150,8 @@ public class FullTextContentStreams extends ContentStreamBase {
                     } else {
                         log.error("Found a NULL bitstream when processing full-text files: item handle:" + sourceInfo);
                     }
+                    */
+                    // END TAMU Customization - Only index text bitstreams that are not restricted
                 }
             }
         }
