@@ -14,6 +14,10 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.annotation.Autowired;
 
+// TAMU Customization - proxy license step
+import org.dspace.app.rest.utils.ProxyLicenseUtils;
+// END TAMU Customization - proxy license step
+
 /**
  * Submission License "remove" patch operation.
  *
@@ -35,7 +39,11 @@ public class LicenseRemovePatchOperation extends RemovePatchOperation<String> {
     void remove(Context context, HttpServletRequest currentRequest, InProgressSubmission source, String path,
             Object value) throws Exception {
         Item item = source.getItem();
-        itemService.removeDSpaceLicense(context, item);
+        // TAMU Customization - proxy license step
+        // itemService.removeDSpaceLicense(context, item);
+        ProxyLicenseUtils.revokeLicense(context, item);
+        // END TAMU Customization - proxy license step
+
     }
 
     @Override
