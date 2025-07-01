@@ -7,6 +7,8 @@
  */
 package org.dspace.app.rest.submit.factory.impl;
 
+// TAMU Customization - proxy license step
+/*
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.BooleanUtils;
 import org.dspace.content.InProgressSubmission;
@@ -16,6 +18,8 @@ import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
+*/
+// END TAMU Customization - proxy license step
 
 /**
  * Submission "replace" patch operation
@@ -24,6 +28,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author Luigi Andrea Pascarelli (luigiandrea.pascarelli at 4science.it)
  */
+// TAMU Customization - proxy license step
+public class LicenseReplacePatchOperation extends LicenseAddPatchOperation {
+}
+/*
 public class LicenseReplacePatchOperation extends ReplacePatchOperation<String> {
 
     @Autowired
@@ -72,3 +80,5 @@ public class LicenseReplacePatchOperation extends ReplacePatchOperation<String> 
     }
 
 }
+*/
+// END TAMU Customization - proxy license step
