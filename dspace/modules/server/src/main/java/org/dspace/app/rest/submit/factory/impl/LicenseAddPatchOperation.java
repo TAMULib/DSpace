@@ -17,6 +17,10 @@ import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
 
+// TAMU Customization - proxy license step
+import org.dspace.app.rest.utils.ProxyLicenseUtils;
+// END TAMU Customization - proxy license step
+
 /**
  * Submission "add" PATCH operation
  *
@@ -66,6 +70,13 @@ public class LicenseAddPatchOperation extends AddPatchOperation<String> {
         }
 
         Item item = source.getItem();
+        // TAMU Customization - proxy license step
+        if (grant) {
+            ProxyLicenseUtils.grantLicense(context, item);
+        } else {
+            ProxyLicenseUtils.revokeLicense(context, item);
+        }
+        /*
         EPerson submitter = context.getCurrentUser();
 
         // remove any existing DSpace license (just in case the user
@@ -78,6 +89,8 @@ public class LicenseAddPatchOperation extends AddPatchOperation<String> {
 
             LicenseUtils.grantLicense(context, item, license, null);
         }
+        */
+        // END TAMU Customization - proxy license step
     }
 
 }
