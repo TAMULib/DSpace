@@ -26,6 +26,10 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.services.model.Request;
 import org.dspace.web.ContextUtil;
 
+// TAMU Customization - proxy license step
+import java.io.FilenameFilter;
+// END TAMU Customization - proxy license step
+
 /**
  * Encapsulate the deposit license.
  *
@@ -114,6 +118,27 @@ public class LicenseServiceImpl implements LicenseService {
         init();
         return license;
     }
+
+    // TAMU Customization - proxy license step - get available license filenames
+    @Override
+    public String[] getLicenseFilenames() {
+        String homeDir = DSpaceServicesFactory.getInstance()
+            .getConfigurationService()
+            .getProperty("dspace.dir");
+        String configDir = new StringBuilder(homeDir)
+            .append(File.separator)
+            .append("config")
+            .toString();
+
+        // to support localized license files see I18nUtil.getFilename
+
+        return new File(configDir).list(new FilenameFilter() {
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(".license");
+            }
+        });
+    }
+    // END TAMU Customization - proxy license step - get available license filenames
 
     /**
      * Load in the default license.
