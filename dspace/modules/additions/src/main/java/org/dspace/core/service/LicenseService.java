@@ -38,12 +38,4 @@ public interface LicenseService {
      * @return the default license
      */
     public String getDefaultSubmissionLicense();
-
-    // TAMU Customization - proxy license step get available license filenames
-    /**
-     * Get all license filenames with suffix `.license` from config directory
-     *
-     * @return license filenames
-     */
-    public String[] getLicenseFilenames();
 }
