@@ -23,6 +23,16 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface UploadableStep extends RestProcessingStep {
 
+    // TAMU Customization - proxy license step
+    /**
+     * Method to specify step only invokes upload exclusively
+     * when matching step id from multipart form
+     */
+    public default boolean isExclusiveMatchingStepId() {
+        return false;
+    }
+    // END TAMU Customization - proxy license step
+
     /**
      * The method to implement to support upload of a file in the submission section (aka panel / step)
      * 
