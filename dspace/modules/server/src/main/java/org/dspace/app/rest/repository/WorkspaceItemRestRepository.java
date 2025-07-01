@@ -296,7 +296,11 @@ public class WorkspaceItemRestRepository extends DSpaceRestRepository<WorkspaceI
                         try {
                             stepClass = loader.loadClass(stepConfig.getProcessingClassName());
                             Object stepInstance = stepClass.newInstance();
-                            if (UploadableStep.class.isAssignableFrom(stepClass)) {
+                            // TAMU Customization - proxy license step - respect exclusivity of uploadable step
+                            if (UploadableStep.class.isAssignableFrom(stepClass)
+                                && !((UploadableStep) stepInstance).isExclusiveMatchingStepId()) {
+                            // if (UploadableStep.class.isAssignableFrom(stepClass)) {
+                            // END TAMU Customization - proxy license step - respect exclusivity of uploadable step
                                 UploadableStep uploadableStep = (UploadableStep) stepInstance;
                                 for (MultipartFile mpFile : uploadfiles) {
                                     ErrorRest err = uploadableStep.upload(context,
