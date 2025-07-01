@@ -7,14 +7,11 @@
  */
 package org.dspace.app.rest.repository;
 
-import java.io.File;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.model.CollectionRest;
 import org.dspace.app.rest.model.LicenseRest;
@@ -23,39 +20,51 @@ import org.dspace.content.Collection;
 import org.dspace.content.service.CollectionService;
 import org.dspace.core.Context;
 import org.dspace.core.service.LicenseService;
-import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+// TAMU Customization - proxy license step
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.dspace.services.ConfigurationService;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+// END TAMU Customization - proxy license step
+
 /**
- * TAMU Customization - Customized License Link repository for "license" subresource of an individual collection.
+ * Link repository for "license" subresource of an individual collection.
  *
  * @author Luigi Andrea Pascarelli (luigiandrea.pascarelli at 4science.it)
  */
-@Component(CollectionRest.CATEGORY + "." + CollectionRest.NAME + "." + CollectionRest.LICENSES)
+@Component(CollectionRest.CATEGORY + "." + CollectionRest.PLURAL_NAME + "." + CollectionRest.LICENSE)
+// TAMU Customization - proxy license step
+// public class CollectionLicenseLinkRepository extends AbstractDSpaceRestRepository
 public class CollectionLicensesLinkRepository extends AbstractDSpaceRestRepository
+// END TAMU Customization - proxy license step
     implements LinkRestRepository {
 
     @Autowired
-    private CollectionService collectionService;
+    CollectionService collectionService;
 
     @Autowired
-    private LicenseService licenseService;
+    LicenseService licenseService;
 
+    // TAMU Customization - proxy license step
     @Autowired
-    private ConfigurationService configurationService;
+    ConfigurationService configurationService;
+    // END TAMU Customization - proxy license step
 
-    // TAMU Customization - get available licenses
+    // TAMU Customization - proxy license step - get available licenses slight refactor of getLicense
     @PreAuthorize("hasPermission(#collectionId, 'COLLECTION', 'READ')")
     public Page<LicenseRest> getLicenses(@Nullable HttpServletRequest request,
-                                         UUID collectionId,
-                                         @Nullable Pageable optionalPageable,
-                                         Projection projection) {
+                                  UUID collectionId,
+                                  @Nullable Pageable optionalPageable,
+                                  Projection projection) {
         try {
             Context context = obtainContext();
             Collection collection = collectionService.find(context, collectionId);
@@ -99,5 +108,5 @@ public class CollectionLicensesLinkRepository extends AbstractDSpaceRestReposito
             throw new RuntimeException(e);
         }
     }
-
+    // END TAMU Customization - proxy license step - get available licenses slight refactor of getLicense
 }
