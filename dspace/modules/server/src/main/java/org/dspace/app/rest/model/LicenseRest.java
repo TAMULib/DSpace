@@ -19,6 +19,21 @@ public class LicenseRest implements RestModel {
     private boolean custom = false;
     private String text;
 
+    // TAMU Customization - proxy license step
+    private final String name;
+    private final String label;
+    // END TAMU Customization - proxy license step
+
+    // TAMU Customization - proxy license step
+    private LicenseRest(String name, String label, String text, boolean custom) {
+        super();
+        this.name = name;
+        this.label = label;
+        this.text = text;
+        this.custom = custom;
+    }
+    // END TAMU Customization - proxy license step
+
     public boolean isCustom() {
         return custom;
     }
@@ -35,6 +50,16 @@ public class LicenseRest implements RestModel {
         this.text = text;
     }
 
+    // TAMU Customization - proxy license step
+    public String getName() {
+        return name;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+    // END TAMU Customization - proxy license step
+
     @Override
     public String getType() {
         return NAME;
@@ -44,4 +69,11 @@ public class LicenseRest implements RestModel {
     public String getTypePlural() {
         return PLURAL_NAME;
     }
+
+    // TAMU Customization - proxy license step
+    public static LicenseRest of(String name, String label, String text, boolean custom) {
+        return new LicenseRest(name, label, text, custom);
+    }
+    // END TAMU Customization - proxy license step
+
 }
