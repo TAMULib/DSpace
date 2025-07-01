@@ -26,6 +26,10 @@ import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
+// TAMU Customization - proxy license step
+import org.dspace.services.ConfigurationService;
+// END TAMU Customization - proxy license step
+
 /**
  * Link repository for "license" subresource of an individual collection.
  *
@@ -41,6 +45,11 @@ public class CollectionLicenseLinkRepository extends AbstractDSpaceRestRepositor
     @Autowired
     LicenseService licenseService;
 
+    // TAMU Customization - proxy license step
+    @Autowired
+    ConfigurationService configurationService;
+    // END TAMU Customization - proxy license step
+
     @PreAuthorize("hasPermission(#collectionId, 'COLLECTION', 'READ')")
     public LicenseRest getLicense(@Nullable HttpServletRequest request,
                                   UUID collectionId,
@@ -52,6 +61,24 @@ public class CollectionLicenseLinkRepository extends AbstractDSpaceRestRepositor
             if (collection == null) {
                 throw new ResourceNotFoundException("No such collection: " + collectionId);
             }
+            // TAMU Customization - proxy license step - use customized LicenseRest DTO
+            String license = "default";
+
+            boolean custom = false;
+
+            String label = configurationService.getProperty(String.join(".",
+                "license", license, "label"));
+
+            String text = collection.getLicenseCollection();
+
+            if (StringUtils.isNotBlank(text)) {
+                custom = true;
+            } else {
+                text = licenseService.getDefaultSubmissionLicense();
+            }
+
+            return LicenseRest.of(license, label, text, custom);
+            /*
             LicenseRest licenseRest = new LicenseRest();
             String text = collection.getLicenseCollection();
             if (StringUtils.isNotBlank(text)) {
@@ -61,6 +88,8 @@ public class CollectionLicenseLinkRepository extends AbstractDSpaceRestRepositor
                 licenseRest.setText(licenseService.getDefaultSubmissionLicense());
             }
             return licenseRest;
+            */
+           // TAMU Customization - proxy license step - use customized LicenseRest DTO
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
