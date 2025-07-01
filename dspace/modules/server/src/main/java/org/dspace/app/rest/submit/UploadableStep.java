@@ -16,20 +16,12 @@ import org.dspace.core.Context;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
- * TAMU Customized interface for submission Steps that need to deal with file upload
+ * The interface for submission Steps that need to deal with file upload
  * 
  * @author Luigi Andrea Pascarelli (luigiandrea.pascarelli at 4science.it)
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
 public interface UploadableStep extends RestProcessingStep {
-
-    /**
-     * TAMU Customization - Method to specify step only invokes upload exclusively
-     * when matching step id from multipart form
-     */
-    default public boolean isExclusiveMatchingStepId() {
-        return false;
-    }
 
     /**
      * The method to implement to support upload of a file in the submission section (aka panel / step)

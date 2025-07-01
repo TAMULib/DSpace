@@ -9,9 +9,9 @@ package org.dspace.app.rest.repository;
 
 import java.sql.SQLException;
 import java.util.UUID;
-import javax.annotation.Nullable;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.annotation.Nullable;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.model.CollectionRest;
 import org.dspace.app.rest.model.LicenseRest;
@@ -20,7 +20,6 @@ import org.dspace.content.Collection;
 import org.dspace.content.service.CollectionService;
 import org.dspace.core.Context;
 import org.dspace.core.service.LicenseService;
-import org.dspace.services.ConfigurationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.rest.webmvc.ResourceNotFoundException;
@@ -28,22 +27,19 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 /**
- * TAMU Customization - Customized License Link repository for "license" subresource of an individual collection.
+ * Link repository for "license" subresource of an individual collection.
  *
  * @author Luigi Andrea Pascarelli (luigiandrea.pascarelli at 4science.it)
  */
-@Component(CollectionRest.CATEGORY + "." + CollectionRest.NAME + "." + CollectionRest.LICENSE)
+@Component(CollectionRest.CATEGORY + "." + CollectionRest.PLURAL_NAME + "." + CollectionRest.LICENSE)
 public class CollectionLicenseLinkRepository extends AbstractDSpaceRestRepository
     implements LinkRestRepository {
 
     @Autowired
-    private CollectionService collectionService;
+    CollectionService collectionService;
 
     @Autowired
-    private LicenseService licenseService;
-
-    @Autowired
-    private ConfigurationService configurationService;
+    LicenseService licenseService;
 
     @PreAuthorize("hasPermission(#collectionId, 'COLLECTION', 'READ')")
     public LicenseRest getLicense(@Nullable HttpServletRequest request,
@@ -56,36 +52,17 @@ public class CollectionLicenseLinkRepository extends AbstractDSpaceRestRepositor
             if (collection == null) {
                 throw new ResourceNotFoundException("No such collection: " + collectionId);
             }
-
-            // TAMU Customization - use customized LicenseRest DTO
-            String license = "default";
-
-            boolean custom = false;
-
-            String label = configurationService.getProperty(String.join(".",
-                "license", license, "label"));
-
+            LicenseRest licenseRest = new LicenseRest();
             String text = collection.getLicenseCollection();
-
             if (StringUtils.isNotBlank(text)) {
-                custom = true;
+                licenseRest.setCustom(true);
+                licenseRest.setText(text);
             } else {
-                text = licenseService.getDefaultSubmissionLicense();
+                licenseRest.setText(licenseService.getDefaultSubmissionLicense());
             }
-
-            return LicenseRest.of(license, label, text, custom);
-            // LicenseRest licenseRest = new LicenseRest();
-            // String text = collection.getLicenseCollection();
-            // if (StringUtils.isNotBlank(text)) {
-            //     licenseRest.setCustom(true);
-            //     licenseRest.setText(text);
-            // } else {
-            //     licenseRest.setText(licenseService.getDefaultSubmissionLicense());
-            // }
-            // return licenseRest;
+            return licenseRest;
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
-
 }

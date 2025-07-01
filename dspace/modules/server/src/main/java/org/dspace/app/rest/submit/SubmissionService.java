@@ -8,20 +8,15 @@
 package org.dspace.app.rest.submit;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.Part;
 
-import org.apache.commons.io.IOUtils;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
-import org.atteo.evo.inflector.English;
 import org.dspace.app.rest.converter.ConverterService;
 import org.dspace.app.rest.exception.DSpaceBadRequestException;
 import org.dspace.app.rest.exception.RESTAuthorizationException;
@@ -32,9 +27,11 @@ import org.dspace.app.rest.model.BitstreamRest;
 import org.dspace.app.rest.model.CheckSumRest;
 import org.dspace.app.rest.model.ErrorRest;
 import org.dspace.app.rest.model.MetadataValueRest;
+import org.dspace.app.rest.model.PotentialDuplicateRest;
 import org.dspace.app.rest.model.WorkspaceItemRest;
 import org.dspace.app.rest.model.patch.Operation;
 import org.dspace.app.rest.model.step.DataCCLicense;
+import org.dspace.app.rest.model.step.DataDuplicateDetection;
 import org.dspace.app.rest.model.step.DataUpload;
 import org.dspace.app.rest.model.step.UploadBitstreamRest;
 import org.dspace.app.rest.projection.Projection;
@@ -53,11 +50,14 @@ import org.dspace.content.Item;
 import org.dspace.content.MetadataValue;
 import org.dspace.content.WorkspaceItem;
 import org.dspace.content.service.CollectionService;
+import org.dspace.content.service.DuplicateDetectionService;
 import org.dspace.content.service.ItemService;
 import org.dspace.content.service.WorkspaceItemService;
+import org.dspace.content.virtual.PotentialDuplicate;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.Utils;
+import org.dspace.discovery.SearchServiceException;
 import org.dspace.license.service.CreativeCommonsService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.RequestService;
@@ -70,6 +70,7 @@ import org.dspace.workflow.WorkflowService;
 import org.dspace.xmlworkflow.storedcomponents.XmlWorkflowItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.rest.webmvc.ResourceNotFoundException;
 import org.springframework.data.rest.webmvc.json.patch.PatchException;
 import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Component;
@@ -84,9 +85,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class SubmissionService {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(SubmissionService.class);
-
-    // TAMU Customization - proxy license step
-    private static final String FORM_DATA_SECTION_ID = "sectionId";
 
     @Autowired
     protected ConfigurationService configurationService;
@@ -110,6 +108,8 @@ public class SubmissionService {
     @Autowired
     private org.dspace.app.rest.utils.Utils utils;
     private SubmissionConfigService submissionConfigService;
+    @Autowired
+    private DuplicateDetectionService duplicateDetectionService;
 
     public SubmissionService() throws SubmissionConfigReaderException {
         submissionConfigService = SubmissionServiceFactory.getInstance().getSubmissionConfigService();
@@ -227,7 +227,7 @@ public class SubmissionService {
         data.setCheckSum(checksum);
         data.setSizeBytes(source.getSizeBytes());
         data.setUrl(configurationService.getProperty("dspace.server.url") + "/api/" + BitstreamRest.CATEGORY + "/" +
-                        English.plural(BitstreamRest.NAME) + "/" + source.getID() + "/content");
+                        BitstreamRest.PLURAL_NAME + "/" + source.getID() + "/content");
         return data;
     }
 
@@ -249,7 +249,7 @@ public class SubmissionService {
         if (StringUtils.isBlank(requestUriListString)) {
             throw new UnprocessableEntityException("Malformed body..." + requestUriListString);
         }
-        String regex = "\\/api\\/" + WorkspaceItemRest.CATEGORY + "\\/" + English.plural(WorkspaceItemRest.NAME)
+        String regex = "\\/api\\/" + WorkspaceItemRest.CATEGORY + "\\/" + WorkspaceItemRest.PLURAL_NAME
                 + "\\/";
         String[] split = requestUriListString.split(regex, 2);
         if (split.length != 2) {
@@ -323,6 +323,51 @@ public class SubmissionService {
     }
 
     /**
+     * Prepare section data containing a list of potential duplicates, for use in submission steps.
+     * This method belongs in SubmissionService and not DuplicateDetectionService because it depends on
+     * the DataDuplicateDetection class which only appears in the REST project.
+     *
+     * @param context DSpace context
+     * @param obj     The in-progress submission object
+     * @return        A DataDuplicateDetection object which implements SectionData for direct use in
+     *                a submission step (see DuplicateDetectionStep)
+     * @throws SearchServiceException if an error is encountered during Discovery search
+     */
+    public DataDuplicateDetection getDataDuplicateDetection(Context context, InProgressSubmission obj)
+            throws SearchServiceException {
+        // Test for a valid object or throw a not found exception
+        if (obj == null) {
+            throw new ResourceNotFoundException("Duplicate data step could not find valid in-progress submission obj");
+        }
+        // Initialise an empty section data object
+        DataDuplicateDetection data = new DataDuplicateDetection();
+
+        // Get the item for this submission object, throw a not found exception if null
+        Item item = obj.getItem();
+        if (item == null) {
+            throw new ResourceNotFoundException("Duplicate data step could not find valid item for the" +
+                    " current in-progress submission obj id=" + obj.getID());
+        }
+        // Initialise empty list of PotentialDuplicateRest objects for use in the section data object
+        List<PotentialDuplicateRest> potentialDuplicateRestList = new LinkedList<>();
+
+        // Get discovery search result for a duplicate detection search based on this item and populate
+        // the list of REST objects
+        List<PotentialDuplicate> potentialDuplicates = duplicateDetectionService.getPotentialDuplicates(context, item);
+        for (PotentialDuplicate potentialDuplicate : potentialDuplicates) {
+            // Convert and add the potential duplicate to the list
+            potentialDuplicateRestList.add(converter.toRest(
+                    potentialDuplicate, utils.obtainProjection()));
+        }
+
+        // Set the final duplicates list of the section data object
+        data.setPotentialDuplicates(potentialDuplicateRestList);
+
+        // Return section data
+        return data;
+    }
+
+    /**
      * Utility method used by the {@link WorkspaceItemRestRepository} and
      * {@link WorkflowItemRestRepository} to deal with the upload in an inprogress
      * submission
@@ -336,10 +381,6 @@ public class SubmissionService {
      */
     public List<ErrorRest> uploadFileToInprogressSubmission(Context context, HttpServletRequest request,
             AInprogressSubmissionRest wsi, InProgressSubmission source, MultipartFile file) {
-
-        // TAMU Customization - proxy license step
-        Optional<String> sectionId = getSectionId(request);
-
         List<ErrorRest> errors = new ArrayList<ErrorRest>();
         SubmissionConfig submissionConfig =
             submissionConfigService.getSubmissionConfigByName(wsi.getSubmissionDefinition().getName());
@@ -360,18 +401,7 @@ public class SubmissionService {
                 stepClass = loader.loadClass(stepConfig.getProcessingClassName());
                 if (UploadableStep.class.isAssignableFrom(stepClass)) {
                     Object stepInstance = stepClass.newInstance();
-
-                    // TAMU Customization - proxy license step - exclusive and only when matching step id
-                    boolean isExclusiveMatchingStepId = ((UploadableStep) stepInstance).isExclusiveMatchingStepId();
-                    if (isExclusiveMatchingStepId) {
-                        if (sectionId.isPresent() && stepConfig.getId().equals(sectionId.get())) {
-                            stepInstancesAndConfigs.clear();
-                            stepInstancesAndConfigs.add(new Object[] {stepInstance, stepConfig});
-                            break;
-                        }
-                    } else {
-                        stepInstancesAndConfigs.add(new Object[] {stepInstance, stepConfig});
-                    }
+                    stepInstancesAndConfigs.add(new Object[] {stepInstance, stepConfig});
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -485,28 +515,6 @@ public class SubmissionService {
                 step.doPostProcessing(context, source);
             }
         }
-    }
-
-    /**
-     * TAMU Customization - Get `sectionId` from multipart form data.
-     * 
-     * @param request  The request object
-     * @return optional section id
-     */
-    private Optional<String> getSectionId(HttpServletRequest request) {
-        String sectionId = null;
-        try {
-            Part part = request.getPart(FORM_DATA_SECTION_ID);
-            if (Objects.nonNull(part)) {
-                sectionId = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8).trim();
-            }
-            if (StringUtils.isBlank(sectionId)) {
-                sectionId = null;
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-        }
-        return Optional.ofNullable(sectionId);
     }
 
 }

@@ -10,48 +10,19 @@ package org.dspace.app.rest.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * TAMU Customization - Customized Collection REST Resource
+ * The Collection REST Resource
  *
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  */
 @LinksRest(links = {
-        // TAMU Customization - proxy license step
-        @LinkRest(
-                name = CollectionRest.LICENSES,
-                method = "getLicenses"
-        ),
-        @LinkRest(
-                name = CollectionRest.LICENSE,
-                method = "getLicense"
-        ),
-        @LinkRest(
-                name = CollectionRest.LOGO,
-                method = "getLogo"
-        ),
-        @LinkRest(
-                name = CollectionRest.MAPPED_ITEMS,
-                method = "getMappedItems"
-        ),
-        @LinkRest(
-                name = CollectionRest.PARENT_COMMUNITY,
-                method = "getParentCommunity"
-        ),
-        @LinkRest(
-                name = CollectionRest.ADMIN_GROUP,
-                method = "getAdminGroup"
-        ),
-        @LinkRest(
-                name = CollectionRest.SUBMITTERS_GROUP,
-                method = "getSubmittersGroup"
-        ),
-        @LinkRest(
-                name = CollectionRest.ITEM_READ_GROUP,
-                method = "getItemReadGroup"
-        ),
-        @LinkRest(
-                name = CollectionRest.BITSTREAM_READ_GROUP,
-                method = "getBitstreamReadGroup"
-        ),
+    @LinkRest(name = CollectionRest.LICENSE, method = "getLicense"),
+    @LinkRest(name = CollectionRest.LOGO, method = "getLogo"),
+    @LinkRest(name = CollectionRest.MAPPED_ITEMS, method = "getMappedItems"),
+    @LinkRest(name = CollectionRest.PARENT_COMMUNITY, method = "getParentCommunity"),
+    @LinkRest(name = CollectionRest.ADMIN_GROUP, method = "getAdminGroup"),
+    @LinkRest(name = CollectionRest.SUBMITTERS_GROUP, method = "getSubmittersGroup"),
+    @LinkRest(name = CollectionRest.ITEM_READ_GROUP, method = "getItemReadGroup"),
+    @LinkRest(name = CollectionRest.BITSTREAM_READ_GROUP, method = "getBitstreamReadGroup"),
 })
 public class CollectionRest extends DSpaceObjectRest {
     public static final String NAME = "collection";
@@ -60,8 +31,6 @@ public class CollectionRest extends DSpaceObjectRest {
 
     public static final String HARVEST = "harvester";
     public static final String LICENSE = "license";
-    // TAMU Customization - proxy license step
-    public static final String LICENSES = "licenses";
     public static final String LOGO = "logo";
     public static final String MAPPED_ITEMS = "mappedItems";
     public static final String PARENT_COMMUNITY = "parentCommunity";
@@ -80,6 +49,11 @@ public class CollectionRest extends DSpaceObjectRest {
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     public String getType() {
         return NAME;
+    }
+
+    @Override
+    public String getTypePlural() {
+        return PLURAL_NAME;
     }
 
     private int archivedItemsCount;
