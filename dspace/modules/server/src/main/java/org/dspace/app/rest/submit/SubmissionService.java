@@ -76,6 +76,16 @@ import org.springframework.jdbc.datasource.init.UncategorizedScriptException;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+// TAMU Customization - proxy license step
+import java.nio.charset.StandardCharsets;
+import java.util.Objects;
+import java.util.Optional;
+
+import jakarta.servlet.http.Part;
+
+import org.apache.commons.io.IOUtils;
+// END TAMU Customization - proxy license step
+
 /**
  * Service to manipulate in-progress submissions.
  *
@@ -85,6 +95,10 @@ import org.springframework.web.multipart.MultipartFile;
 public class SubmissionService {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(SubmissionService.class);
+
+    // TAMU Customization - proxy license step
+    private static final String FORM_DATA_SECTION_ID = "sectionId";
+    // END TAMU Customization - proxy license step
 
     @Autowired
     protected ConfigurationService configurationService;
@@ -381,6 +395,9 @@ public class SubmissionService {
      */
     public List<ErrorRest> uploadFileToInprogressSubmission(Context context, HttpServletRequest request,
             AInprogressSubmissionRest wsi, InProgressSubmission source, MultipartFile file) {
+        // TAMU Customization - proxy license step
+        Optional<String> sectionId = getSectionId(request);
+        // END TAMU Customization - proxy license step
         List<ErrorRest> errors = new ArrayList<ErrorRest>();
         SubmissionConfig submissionConfig =
             submissionConfigService.getSubmissionConfigByName(wsi.getSubmissionDefinition().getName());
@@ -401,7 +418,19 @@ public class SubmissionService {
                 stepClass = loader.loadClass(stepConfig.getProcessingClassName());
                 if (UploadableStep.class.isAssignableFrom(stepClass)) {
                     Object stepInstance = stepClass.newInstance();
-                    stepInstancesAndConfigs.add(new Object[] {stepInstance, stepConfig});
+                    // TAMU Customization - proxy license step - exclusive and only when matching step id
+                    boolean isExclusiveMatchingStepId = ((UploadableStep) stepInstance).isExclusiveMatchingStepId();
+                    if (isExclusiveMatchingStepId) {
+                        if (sectionId.isPresent() && stepConfig.getId().equals(sectionId.get())) {
+                            stepInstancesAndConfigs.clear();
+                            stepInstancesAndConfigs.add(new Object[] {stepInstance, stepConfig});
+                            break;
+                        }
+                    } else {
+                        stepInstancesAndConfigs.add(new Object[] {stepInstance, stepConfig});
+                    }
+                    // stepInstancesAndConfigs.add(new Object[] {stepInstance, stepConfig});
+                    // END TAMU Customization - proxy license step - exclusive and only when matching step id
                 }
             } catch (Exception e) {
                 log.error(e.getMessage(), e);
@@ -515,6 +544,28 @@ public class SubmissionService {
                 step.doPostProcessing(context, source);
             }
         }
+    }
+
+    /**
+     * TAMU Customization - Get `sectionId` from multipart form data.
+     * 
+     * @param request  The request object
+     * @return optional section id
+     */
+    private Optional<String> getSectionId(HttpServletRequest request) {
+        String sectionId = null;
+        try {
+            Part part = request.getPart(FORM_DATA_SECTION_ID);
+            if (Objects.nonNull(part)) {
+                sectionId = IOUtils.toString(part.getInputStream(), StandardCharsets.UTF_8).trim();
+            }
+            if (StringUtils.isBlank(sectionId)) {
+                sectionId = null;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+        }
+        return Optional.ofNullable(sectionId);
     }
 
 }
