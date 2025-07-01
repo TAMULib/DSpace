@@ -16,6 +16,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  */
 @LinksRest(links = {
     @LinkRest(name = CollectionRest.LICENSE, method = "getLicense"),
+    // TAMU Customization - proxy license step
+    @LinkRest(name = CollectionRest.LICENSES, method = "getLicenses"),
+    // END TAMU Customization - proxy license step
     @LinkRest(name = CollectionRest.LOGO, method = "getLogo"),
     @LinkRest(name = CollectionRest.MAPPED_ITEMS, method = "getMappedItems"),
     @LinkRest(name = CollectionRest.PARENT_COMMUNITY, method = "getParentCommunity"),
@@ -31,6 +34,9 @@ public class CollectionRest extends DSpaceObjectRest {
 
     public static final String HARVEST = "harvester";
     public static final String LICENSE = "license";
+    // TAMU Customization - proxy license step
+    public static final String LICENSES = "licenses";
+    // END TAMU Customization - proxy license step
     public static final String LOGO = "logo";
     public static final String MAPPED_ITEMS = "mappedItems";
     public static final String PARENT_COMMUNITY = "parentCommunity";
