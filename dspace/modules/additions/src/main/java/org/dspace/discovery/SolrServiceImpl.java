@@ -1173,6 +1173,10 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         // Add information about our search fields
                         for (String field : searchFields) {
                             List<String> valuesAsString = new ArrayList<>();
+                            // TAMU Customization - null check
+                            // for (Object o : doc.getFieldValues(field)) {
+                            //    valuesAsString.add(String.valueOf(o));
+                            //}
                             var fieldValues = doc.getFieldValues(field);
                             if (fieldValues != null)
                             {
@@ -1180,6 +1184,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                                     valuesAsString.add(String.valueOf(o));
                                 }
                             }
+                            // END TAMU Customization - null check
                             resultDoc.addSearchField(field, valuesAsString.toArray(new String[valuesAsString.size()]));
                         }
                         result.addSearchDocument(indexableObject, resultDoc);
