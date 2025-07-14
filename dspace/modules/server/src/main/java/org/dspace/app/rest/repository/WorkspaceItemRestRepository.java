@@ -14,8 +14,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.Parameter;
@@ -73,7 +73,7 @@ import org.springframework.web.multipart.MultipartFile;
  * @author Andrea Bollini (andrea.bollini at 4science.it)
  * @author Pasquale Cavallo (pasquale.cavallo at 4science.it)
  */
-@Component(WorkspaceItemRest.CATEGORY + "." + WorkspaceItemRest.NAME)
+@Component(WorkspaceItemRest.CATEGORY + "." + WorkspaceItemRest.PLURAL_NAME)
 public class WorkspaceItemRestRepository extends DSpaceRestRepository<WorkspaceItemRest, Integer>
     implements ReloadableEntityObjectRepository<WorkspaceItem, Integer> {
 
@@ -251,7 +251,7 @@ public class WorkspaceItemRestRepository extends DSpaceRestRepository<WorkspaceI
         }
 
         SubmissionConfig submissionConfig =
-            submissionConfigService.getSubmissionConfigByCollection(collection.getHandle());
+            submissionConfigService.getSubmissionConfigByCollection(collection);
         List<WorkspaceItem> result = null;
         List<ImportRecord> records = new ArrayList<>();
         try {
@@ -300,6 +300,7 @@ public class WorkspaceItemRestRepository extends DSpaceRestRepository<WorkspaceI
                             if (UploadableStep.class.isAssignableFrom(stepClass)
                                 && !((UploadableStep) stepInstance).isExclusiveMatchingStepId()) {
                             // if (UploadableStep.class.isAssignableFrom(stepClass)) {
+                            // END TAMU Customization - proxy license step - respect exclusivity of uploadable step
                                 UploadableStep uploadableStep = (UploadableStep) stepInstance;
                                 for (MultipartFile mpFile : uploadfiles) {
                                     ErrorRest err = uploadableStep.upload(context,

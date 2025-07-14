@@ -2,7 +2,7 @@ package org.dspace.app.rest.submit.step;
 
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
@@ -27,6 +27,11 @@ import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * TAMU Customization
+ * 
+ * Proxy License step for DSpace Spring Rest.
+ */
 public class ProxyLicenseStep extends LicenseStep implements UploadableStep {
 
     private static final Logger log = org.apache.logging.log4j.LogManager.getLogger(ProxyLicenseStep.class);

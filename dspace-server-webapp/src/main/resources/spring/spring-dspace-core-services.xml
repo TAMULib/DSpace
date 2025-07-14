@@ -48,8 +48,7 @@
                         </entry>
                         <!-- TAMU Customization - proxy license step selected add patch operation -->
                         <entry key="selected">
-                            <bean
-                                    class="org.dspace.app.rest.submit.factory.impl.LicenseSelectedAddPatchOperation"/>
+                            <bean class="org.dspace.app.rest.submit.factory.impl.LicenseSelectedAddPatchOperation"/>
                         </entry>
                         <!-- End TAMU Customization - proxy license step selected add patch operation -->
                         <entry key="upload.accessConditions">
