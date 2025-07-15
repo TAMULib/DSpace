@@ -42,7 +42,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Broker for ChoiceAuthority plugins, and for other information configured
  * about the choice aspect of authority control for a metadata field.
  *
- * Configuration keys, per metadata field (e.g. "dc.contributer.author")
+ * Configuration keys, per metadata field (e.g. "dc.contributor.author")
  *
  * {@code
  * # names the ChoiceAuthority plugin called for this field
@@ -242,7 +242,7 @@ public final class ChoiceAuthorityServiceImpl implements ChoiceAuthorityService 
             // check if it is the requested collection
             Map<String, ChoiceAuthority> controllerFormDef = controllerFormDefinitions.get(fieldKey);
             SubmissionConfig submissionConfig = submissionConfigService
-                    .getSubmissionConfigByCollection(collection.getHandle());
+                    .getSubmissionConfigByCollection(collection);
             String submissionName = submissionConfig.getSubmissionName();
             // check if the requested collection has a submission definition that use an authority for the metadata
             if (controllerFormDef.containsKey(submissionName)) {
@@ -495,7 +495,7 @@ public final class ChoiceAuthorityServiceImpl implements ChoiceAuthorityService 
             try {
                 configReaderService = SubmissionServiceFactory.getInstance().getSubmissionConfigService();
                 SubmissionConfig submissionName = configReaderService
-                        .getSubmissionConfigByCollection(collection.getHandle());
+                        .getSubmissionConfigByCollection(collection);
                 ma = controllerFormDefinitions.get(fieldKey).get(submissionName.getSubmissionName());
             } catch (SubmissionConfigReaderException e) {
                 // the system is in an illegal state as the submission definition is not valid
@@ -571,13 +571,17 @@ public final class ChoiceAuthorityServiceImpl implements ChoiceAuthorityService 
 
                 Set<String> metadataFields = new HashSet<>();
                 Map<String, List<String>> formsToFields = this.authoritiesFormDefinitions.get(nameVocab);
+                // Vocabulary is not associated with any form definition, meaning it won't be a browse index
+                if (formsToFields == null) {
+                    return null;
+                }
                 for (Map.Entry<String, List<String>> formToField : formsToFields.entrySet()) {
                     metadataFields.addAll(formToField.getValue().stream().map(value ->
                                     StringUtils.replace(value, "_", "."))
                             .collect(Collectors.toList()));
                 }
                 DiscoverySearchFilterFacet matchingFacet = null;
-                for (DiscoverySearchFilterFacet facetConfig : searchConfigurationService.getAllFacetsConfig()) {
+                for (DiscoverySearchFilterFacet facetConfig : searchConfigurationService.getAllUniqueFacetsConfig()) {
                     boolean coversAllFieldsFromVocab = true;
                     for (String fieldFromVocab: metadataFields) {
                         boolean coversFieldFromVocab = false;

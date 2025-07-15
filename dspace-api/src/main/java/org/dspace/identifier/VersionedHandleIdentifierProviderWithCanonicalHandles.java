@@ -9,17 +9,20 @@ package org.dspace.identifier;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.Date;
+import java.time.Instant;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authorize.AuthorizeException;
+import org.dspace.content.Collection;
+import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.MetadataSchemaEnum;
 import org.dspace.content.MetadataValue;
-import org.dspace.content.service.ItemService;
+import org.dspace.content.factory.ContentServiceFactory;
+import org.dspace.content.service.DSpaceObjectService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.LogHelper;
@@ -32,14 +35,12 @@ import org.dspace.versioning.service.VersionHistoryService;
 import org.dspace.versioning.service.VersioningService;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * @author Fabio Bolognesi (fabio at atmire dot com)
  * @author Mark Diggory (markd at atmire dot com)
  * @author Ben Bosman (ben at atmire dot com)
  */
-@Component
 public class VersionedHandleIdentifierProviderWithCanonicalHandles extends IdentifierProvider
     implements InitializingBean {
     /**
@@ -63,9 +64,6 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
 
     @Autowired(required = true)
     private HandleService handleService;
-
-    @Autowired(required = true)
-    private ItemService itemService;
 
     /**
      * After all the properties are set check that the versioning is enabled
@@ -101,7 +99,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
             try {
                 history = versionHistoryService.findByItem(context, item);
             } catch (SQLException ex) {
-                throw new RuntimeException("A problem with the database connection occured.", ex);
+                throw new RuntimeException("A problem with the database connection occurred.", ex);
             }
             if (history != null) {
                 String canonical = getCanonical(context, item);
@@ -110,7 +108,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
                 try {
                     handleService.modifyHandleDSpaceObject(context, canonical, item);
                 } catch (SQLException ex) {
-                    throw new RuntimeException("A problem with the database connection occured.", ex);
+                    throw new RuntimeException("A problem with the database connection occurred.", ex);
                 }
 
                 Version version;
@@ -125,7 +123,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
                         previousItemHandle = handleService.findHandle(context, previous.getItem());
                     }
                 } catch (SQLException ex) {
-                    throw new RuntimeException("A problem with the database connection occured.", ex);
+                    throw new RuntimeException("A problem with the database connection occurred.", ex);
                 }
 
                 // we have to ensure the previous item still has a handle
@@ -133,8 +131,8 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
                 if (previous != null) {
                     try {
                         // If we have a reviewer they might not have the
-                        // rights to edit the metadata of thes previous item.
-                        // Temporarly grant them:
+                        // rights to edit the metadata of the previous item.
+                        // Temporarily grant them:
                         context.turnOffAuthorisationSystem();
 
                         // Check if our previous item hasn't got a handle anymore.
@@ -153,9 +151,9 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
                         // remove the canonical handle from the previous item's metadata
                         modifyHandleMetadata(context, previous.getItem(), previousItemHandle);
                     } catch (SQLException ex) {
-                        throw new RuntimeException("A problem with the database connection occured.", ex);
+                        throw new RuntimeException("A problem with the database connection occurred.", ex);
                     } catch (AuthorizeException ex) {
-                        // cannot occure, as the authorization system is turned of
+                        // cannot occur, as the authorization system is turned of
                         throw new IllegalStateException("Caught an "
                                                             + "AuthorizeException while the "
                                                             + "authorization system was turned off!", ex);
@@ -167,6 +165,16 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
             try {
                 // remove all handles from metadata and add the canonical one.
                 modifyHandleMetadata(context, item, getCanonical(id));
+            } catch (SQLException ex) {
+                throw new RuntimeException("A problem with the database connection occurred.", ex);
+            } catch (AuthorizeException ex) {
+                throw new RuntimeException("The current user is not authorized to change this item.", ex);
+            }
+        }
+        if (dso instanceof Collection || dso instanceof Community) {
+            try {
+                // Update the metadata with the handle for collections and communities.
+                modifyHandleMetadata(context, dso, getCanonical(id));
             } catch (SQLException ex) {
                 throw new RuntimeException("A problem with the database connection occured.", ex);
             } catch (AuthorizeException ex) {
@@ -246,11 +254,11 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
 
         int versionNumber = Integer.parseInt(identifier.substring(identifier.lastIndexOf(".") + 1));
         versionService
-            .createNewVersion(context, history, item, "Restoring from AIP Service", new Date(), versionNumber);
+            .createNewVersion(context, history, item, "Restoring from AIP Service", Instant.now(), versionNumber);
         Version latest = versionHistoryService.getLatestVersion(context, history);
 
 
-        // if restoring the lastest version: needed to move the canonical
+        // if restoring the latest version: needed to move the canonical
         if (latest.getVersionNumber() < versionNumber) {
             handleService.modifyHandleDSpaceObject(context, canonical, dso);
         }
@@ -264,7 +272,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
         int versionNumber = Integer.parseInt(identifier.substring(identifier.lastIndexOf(".") + 1));
         VersionHistory history = versionHistoryService.create(context);
         versionService
-            .createNewVersion(context, history, item, "Restoring from AIP Service", new Date(), versionNumber);
+            .createNewVersion(context, history, item, "Restoring from AIP Service", Instant.now(), versionNumber);
 
         handleService.modifyHandleDSpaceObject(context, canonical, dso);
 
@@ -364,7 +372,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
                             .getPrevious(context, history, versionHistoryService.getLatestVersion(context, history))
                             .getItem();
                     } catch (SQLException ex) {
-                        throw new RuntimeException("A problem with our database connection occured.", ex);
+                        throw new RuntimeException("A problem with our database connection occurred.", ex);
                     }
 
                     // Modify Canonical: 12345/100 will point to the new item
@@ -430,7 +438,7 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
         try {
             previous = versionHistoryService.getPrevious(context, history, version);
         } catch (SQLException ex) {
-            throw new RuntimeException("A problem with our database connection occured.");
+            throw new RuntimeException("A problem with our database connection occurred.");
         }
         String canonical = getCanonical(context, previous.getItem());
 
@@ -491,27 +499,29 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
      * Remove all handles from an item's metadata and add the supplied handle instead.
      *
      * @param context The relevant DSpace Context.
-     * @param item    which item to modify
+     * @param dso    which dso to modify
      * @param handle  which handle to add
      * @throws SQLException       if database error
      * @throws AuthorizeException if authorization error
      */
-    protected void modifyHandleMetadata(Context context, Item item, String handle)
+    protected void modifyHandleMetadata(Context context, DSpaceObject dso, String handle)
         throws SQLException, AuthorizeException {
         // we want to exchange the old handle against the new one. To do so, we
         // load all identifiers, clear the metadata field, re add all
         // identifiers which are not from type handle and add the new handle.
         String handleref = handleService.getCanonicalForm(handle);
-        List<MetadataValue> identifiers = itemService
-            .getMetadata(item, MetadataSchemaEnum.DC.getName(), "identifier", "uri", Item.ANY);
-        itemService.clearMetadata(context, item, MetadataSchemaEnum.DC.getName(), "identifier", "uri", Item.ANY);
+        DSpaceObjectService<DSpaceObject> dSpaceObjectService =
+            ContentServiceFactory.getInstance().getDSpaceObjectService(dso);
+        List<MetadataValue> identifiers = dSpaceObjectService
+            .getMetadata(dso, MetadataSchemaEnum.DC.getName(), "identifier", "uri", Item.ANY);
+        dSpaceObjectService.clearMetadata(context, dso, MetadataSchemaEnum.DC.getName(), "identifier", "uri", Item.ANY);
         for (MetadataValue identifier : identifiers) {
             if (this.supports(identifier.getValue())) {
                 // ignore handles
                 continue;
             }
-            itemService.addMetadata(context,
-                                    item,
+            dSpaceObjectService.addMetadata(context,
+                                    dso,
                                     identifier.getMetadataField(),
                                     identifier.getLanguage(),
                                     identifier.getValue(),
@@ -519,9 +529,9 @@ public class VersionedHandleIdentifierProviderWithCanonicalHandles extends Ident
                                     identifier.getConfidence());
         }
         if (!StringUtils.isEmpty(handleref)) {
-            itemService.addMetadata(context, item, MetadataSchemaEnum.DC.getName(),
+            dSpaceObjectService.addMetadata(context, dso, MetadataSchemaEnum.DC.getName(),
                                     "identifier", "uri", null, handleref);
         }
-        itemService.update(context, item);
+        dSpaceObjectService.update(context, dso);
     }
 }
