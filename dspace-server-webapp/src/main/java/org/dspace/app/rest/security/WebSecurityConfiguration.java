@@ -7,7 +7,23 @@
  */
 package org.dspace.app.rest.security;
 
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.exception.DSpaceAccessDeniedHandler;
+import org.dspace.app.rest.security.details.OidcWebAuthenticationDetails;
+import org.dspace.app.rest.security.details.OrcidWebAuthenticationDetails;
+import org.dspace.app.rest.security.details.SamlWebAuthenticationDetails;
+import org.dspace.app.rest.security.details.ShibbolethWebAuthenticationDetails;
+import org.dspace.app.rest.security.details.StatelessWebAuthenticationDetails;
+import org.dspace.authenticate.AuthenticationMethod;
+import org.dspace.authenticate.OidcAuthentication;
+import org.dspace.authenticate.OrcidAuthentication;
+import org.dspace.authenticate.SamlAuthentication;
+import org.dspace.authenticate.ShibAuthentication;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +35,23 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import jakarta.servlet.Filter;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Spring Security configuration for DSpace Server Webapp
@@ -42,6 +63,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableConfigurationProperties(SecurityProperties.class)
 public class WebSecurityConfiguration {
+
+    private static final Logger log = LogManager.getLogger();
 
     public static final String ADMIN_GRANT = "ADMIN";
     public static final String AUTHENTICATED_GRANT = "AUTHENTICATED";
@@ -75,8 +98,8 @@ public class WebSecurityConfiguration {
     @Bean
     public AuthenticationManager authenticationManager() {
         ProviderManager manager = new ProviderManager(ePersonRestAuthenticationProvider);
-        return manager;
 
+        return manager;
     }
 
     /**
@@ -133,46 +156,69 @@ public class WebSecurityConfiguration {
                 .logoutRequestMatcher(new AntPathRequestMatcher("/api/authn/logout", HttpMethod.POST.name()))
                 // When logout is successful, return OK (204) status
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
-            )
-            // Add a filter before any request to handle DSpace IP-based authorization/authentication
-            // (e.g. anonymous users may be added to special DSpace groups if they are in a given IP range)
-            .addFilterBefore(new AnonymousAdditionalAuthorizationFilter(authenticationManager, authenticationService),
-                             StatelessAuthenticationFilter.class)
-            // Add a filter before our login endpoints to do the authentication based on the data in the HTTP request.
-            // This login endpoint only responds to POST as it is used for PasswordAuthentication
-            .addFilterBefore(new StatelessLoginFilter("/api/authn/login", HttpMethod.POST.name(),
-                                                      authenticationManager, restAuthenticationService),
-                             LogoutFilter.class)
-            // Add a filter before our shibboleth endpoints to do the authentication based on the data in the HTTP
-            // request. This endpoint only responds to GET as the actual authentication is performed by Shibboleth,
-            // which then redirects to this endpoint to forward the authentication data to DSpace.
-            .addFilterBefore(new ShibbolethLoginFilter("/api/authn/shibboleth", HttpMethod.GET.name(),
-                                                       authenticationManager, restAuthenticationService),
-                             LogoutFilter.class)
-            // Add a filter before our ORCID endpoints to do the authentication based on the data in the HTTP request.
-            // This endpoint only responds to GET as the actual authentication is performed by ORCID, which then
-            // redirects to this endpoint to forward the authentication data to DSpace.
-            .addFilterBefore(new OrcidLoginFilter("/api/authn/orcid", HttpMethod.GET.name(),
-                                                  authenticationManager, restAuthenticationService),
-                             LogoutFilter.class)
-            // Add a filter before our OIDC endpoints to do the authentication based on the data in the HTTP request.
-            // This endpoint only responds to GET as the actual authentication is performed by OIDC, which then
-            // redirects to this endpoint to forward the authentication data to DSpace.
-            .addFilterBefore(new OidcLoginFilter("/api/authn/oidc", HttpMethod.GET.name(),
-                                                 authenticationManager, restAuthenticationService),
-                             LogoutFilter.class)
-            // Add a filter before our SAML endpoints to do the authentication based on the data in the HTTP request.
-            // This endpoint only responds to GET as the actual authentication is performed by SAML, which then
-            // forwards to this endpoint to pass the authentication data to DSpace.
-            .addFilterBefore(new SamlLoginFilter("/api/authn/saml", HttpMethod.GET.name(),
-                                                 authenticationManager, restAuthenticationService),
-                             LogoutFilter.class)
-            // Add a custom Token based authentication filter based on the token previously given to the client
-            // before each URL
-            .addFilterBefore(new StatelessAuthenticationFilter(authenticationManager, restAuthenticationService,
-                                                               ePersonRestAuthenticationProvider, requestService),
-                             StatelessLoginFilter.class);
-        return http.build();
+            );
+
+        // Add a filter before any request to handle DSpace IP-based authorization/authentication
+        // (e.g. anonymous users may be added to special DSpace groups if they are in a given IP range)
+        http.addFilterBefore(new AnonymousAdditionalAuthorizationFilter(authenticationManager, authenticationService),
+                            StatelessAuthenticationFilter.class);
+
+        // Add a filter before our login endpoints to do the authentication based on the data in the HTTP request.
+        // This login endpoint only responds to POST as it is used for PasswordAuthentication
+        http.addFilterBefore(statelessLoginFilter(authenticationManager, "/api/authn/login"), LogoutFilter.class);
+
+        Iterator<AuthenticationMethod> authenticationMethodIterator = authenticationService.authenticationMethodIterator();
+
+        log.info("Authentication stack");
+        while (authenticationMethodIterator.hasNext()) {
+            AuthenticationMethod method = authenticationMethodIterator.next();
+            log.info("Authentication method: {}", method.getName());
+
+            if (method.getName().equals(ShibAuthentication.SHIBBOLETH_AUTH_METHOD_NAME)) {
+                log.info("Shibboleth authentication is enabled. Adding Shibboleth login filter to security filter chain.");
+                // Add a filter before our shibboleth endpoints to do the authentication based on the data in the HTTP
+                // request. This endpoint only responds to GET as the actual authentication is performed by Shibboleth,
+                // which then redirects to this endpoint to forward the authentication data to DSpace.
+                http.addFilterBefore(shibbolethLoginFilter(authenticationManager, "/api/authn/shibboleth"), LogoutFilter.class);
+            }
+            if (method.getName().equals(OrcidAuthentication.ORCID_AUTH_METHOD_NAME)) {
+                log.info("Orcid authentication is enabled. Adding Orcid login filter to security filter chain.");
+                // Add a filter before our ORCID endpoints to do the authentication based on the data in the HTTP request.
+                // This endpoint only responds to GET as the actual authentication is performed by ORCID, which then
+                // redirects to this endpoint to forward the authentication data to DSpace.
+                http.addFilterBefore(orcidLoginFilter(authenticationManager, "/api/authn/orcid"), LogoutFilter.class);
+            }
+            if (method.getName().equals(OidcAuthentication.OIDC_AUTH_METHOD_NAME)) {
+                log.info("OIDC authentication is enabled. Adding OIDC login filter to security filter chain.");
+                // Add a filter before our OIDC endpoints to do the authentication based on the data in the HTTP request.
+                // This endpoint only responds to GET as the actual authentication is performed by OIDC, which then
+                // redirects to this endpoint to forward the authentication data to DSpace.
+                http.addFilterBefore(oidcLoginFilter(authenticationManager, "/api/authn/oidc"), LogoutFilter.class);
+            }
+            if (method.getName().equals(SamlAuthentication.SAML_AUTH_METHOD_NAME)) {
+                log.info("SAML authentication is enabled. Adding SAML login filter to security filter chain.");
+                // Add a filter before our SAML endpoints to do the authentication based on the data in the HTTP request.
+                // This endpoint only responds to GET as the actual authentication is performed by SAML, which then
+                // forwards to this endpoint to pass the authentication data to DSpace.
+                http.addFilterBefore(samlLoginFilter(authenticationManager, "/api/authn/saml"), LogoutFilter.class);
+            }
+        }
+
+        // Add a custom Token based authentication filter based on the token previously given to the client
+        // before each URL
+        http.addFilterBefore(new StatelessAuthenticationFilter(authenticationManager, restAuthenticationService,
+                                                            ePersonRestAuthenticationProvider, requestService),
+                            StatelessLoginFilter.class);
+
+        DefaultSecurityFilterChain securityFilterChain =  http.build();
+
+        List<Filter> filters = securityFilterChain.getFilters();
+        log.info("Security filter chain ({}):", filters.size());
+        for (Filter filter : filters) {
+            log.info("Security filter: {}", filter.getClass().getSimpleName());
+        }
+
+        return securityFilterChain;
     }
 
     /**
@@ -206,6 +252,83 @@ public class WebSecurityConfiguration {
     @Bean
     public DSpaceCsrfAuthenticationStrategy dSpaceCsrfAuthenticationStrategy() {
         return new DSpaceCsrfAuthenticationStrategy(csrfTokenRepository());
+    }
+
+    // Stateless
+
+    private StatelessLoginFilter<Set<String>, StatelessWebAuthenticationDetails> statelessLoginFilter(AuthenticationManager authenticationManager, String url) {
+        StatelessLoginFilter<Set<String>, StatelessWebAuthenticationDetails> statelessLoginFilter = new StatelessLoginFilter<>(url, HttpMethod.POST.name(),
+            authenticationManager, restAuthenticationService);
+
+        statelessLoginFilter.setAuthenticationDetailsSource(new AuthenticationDetailsSource<HttpServletRequest, StatelessWebAuthenticationDetails>() {
+            @Override
+            public StatelessWebAuthenticationDetails buildDetails(HttpServletRequest request) {
+                return new StatelessWebAuthenticationDetails(request);
+            }
+        });
+
+        return statelessLoginFilter;
+    }
+
+    // OIDC
+
+    private OidcLoginFilter oidcLoginFilter(AuthenticationManager authenticationManager, String url) {
+        OidcLoginFilter oidcLoginFilter = new OidcLoginFilter(url, HttpMethod.GET.name(),
+            authenticationManager, restAuthenticationService);
+
+        oidcLoginFilter.setAuthenticationDetailsSource(new AuthenticationDetailsSource<HttpServletRequest, OidcWebAuthenticationDetails>() {
+            @Override
+            public OidcWebAuthenticationDetails buildDetails(HttpServletRequest request) {
+                return new OidcWebAuthenticationDetails(request);
+            }
+        });
+
+        return oidcLoginFilter;
+    }
+
+    // Orcid
+
+    private OrcidLoginFilter orcidLoginFilter(AuthenticationManager authenticationManager, String url) {
+        OrcidLoginFilter orcidLoginFilter = new OrcidLoginFilter(url, HttpMethod.GET.name(),
+            authenticationManager, restAuthenticationService);
+        orcidLoginFilter.setAuthenticationDetailsSource(new AuthenticationDetailsSource<HttpServletRequest, OrcidWebAuthenticationDetails>() {
+            @Override
+            public OrcidWebAuthenticationDetails buildDetails(HttpServletRequest request) {
+                return new OrcidWebAuthenticationDetails(request);
+            }
+        });
+
+        return orcidLoginFilter;
+    }
+
+    // SAML
+
+    private SamlLoginFilter samlLoginFilter(AuthenticationManager authenticationManager, String url) {
+        SamlLoginFilter samlLoginFilter = new SamlLoginFilter(url, HttpMethod.GET.name(),
+            authenticationManager, restAuthenticationService);
+        samlLoginFilter.setAuthenticationDetailsSource(new AuthenticationDetailsSource<HttpServletRequest, SamlWebAuthenticationDetails>() {
+            @Override
+            public SamlWebAuthenticationDetails buildDetails(HttpServletRequest request) {
+                return new SamlWebAuthenticationDetails(request);
+            }
+        });
+
+        return samlLoginFilter;
+    }
+
+    // Shibboleth
+
+    private ShibbolethLoginFilter shibbolethLoginFilter(AuthenticationManager authenticationManager, String url) {
+        ShibbolethLoginFilter shibbolethLoginFilter = new ShibbolethLoginFilter(url, HttpMethod.GET.name(),
+            authenticationManager, restAuthenticationService);
+        shibbolethLoginFilter.setAuthenticationDetailsSource(new AuthenticationDetailsSource<HttpServletRequest, ShibbolethWebAuthenticationDetails>() {
+            @Override
+            public ShibbolethWebAuthenticationDetails buildDetails(HttpServletRequest request) {
+                return new ShibbolethWebAuthenticationDetails(request);
+            }
+        });
+
+        return shibbolethLoginFilter;
     }
 
 }

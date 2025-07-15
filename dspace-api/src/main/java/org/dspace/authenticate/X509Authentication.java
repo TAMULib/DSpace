@@ -102,6 +102,8 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  */
 public class X509Authentication implements AuthenticationMethod {
 
+    public static final String X509_AUTH_METHOD_NAME = "x509";
+
     /**
      * log4j category
      */
@@ -596,7 +598,7 @@ public class X509Authentication implements AuthenticationMethod {
 
     @Override
     public String getName() {
-        return "x509";
+        return X509_AUTH_METHOD_NAME;
     }
 
     @Override

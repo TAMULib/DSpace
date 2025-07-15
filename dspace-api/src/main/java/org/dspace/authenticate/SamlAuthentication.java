@@ -9,7 +9,6 @@ package org.dspace.authenticate;
 
 import java.sql.SQLException;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -42,6 +41,11 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * @author Ray Lee
  */
 public class SamlAuthentication implements AuthenticationMethod {
+
+    public static final String SAML_AUTH_METHOD_NAME = "saml";
+
+    public static final String SAML_AUTH_SG_ATTRIBUTE = "saml-sg";
+
     private static final Logger log = LogManager.getLogger(SamlAuthentication.class);
 
     // Additional metadata mappings.
@@ -51,8 +55,7 @@ public class SamlAuthentication implements AuthenticationMethod {
     protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
     protected MetadataFieldService metadataFieldService = ContentServiceFactory.getInstance().getMetadataFieldService();
 
-    protected MetadataSchemaService metadataSchemaService =
-        ContentServiceFactory.getInstance().getMetadataSchemaService();
+    protected MetadataSchemaService metadataSchemaService = ContentServiceFactory.getInstance().getMetadataSchemaService();
 
     protected ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
@@ -225,30 +228,7 @@ public class SamlAuthentication implements AuthenticationMethod {
 
     @Override
     public String getName() {
-        return "saml";
-    }
-
-    /**
-     * Check if the SAML plugin is enabled.
-     *
-     * @return true if enabled, false otherwise
-     */
-    public static boolean isEnabled() {
-        final String samlPluginName = new SamlAuthentication().getName();
-        boolean samlEnabled = false;
-
-        // Loop through all enabled authentication plugins to see if SAML is one of them.
-
-        Iterator<AuthenticationMethod> authenticationMethodIterator =
-            AuthenticateServiceFactory.getInstance().getAuthenticationService().authenticationMethodIterator();
-
-        while (authenticationMethodIterator.hasNext()) {
-            if (samlPluginName.equals(authenticationMethodIterator.next().getName())) {
-                samlEnabled = true;
-                break;
-            }
-        }
-        return samlEnabled;
+        return SAML_AUTH_METHOD_NAME;
     }
 
     /**

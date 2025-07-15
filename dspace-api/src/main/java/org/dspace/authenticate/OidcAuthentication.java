@@ -12,6 +12,7 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
@@ -26,6 +27,12 @@ import org.dspace.utils.DSpace;
  *
  */
 public class OidcAuthentication implements AuthenticationMethod {
+
+    public static final String OIDC_AUTH_METHOD_NAME = "oidc";
+
+    public static final String OIDC_AUTH_ATTRIBUTE = "oidc-authentication";
+
+    public static final String OIDC_AUTH_SG_ATTRIBUTE = "oidc-sg";
 
     private final ServiceManager serviceManager = new DSpace().getServiceManager();
 

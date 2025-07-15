@@ -16,7 +16,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -70,6 +69,11 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * @author <a href="http://www.scottphillips.com">Scott Phillips</a>
  */
 public class ShibAuthentication implements AuthenticationMethod {
+
+    public static final String SHIBBOLETH_AUTH_METHOD_NAME = "shibboleth";
+
+    public static final String SHIBBOLETH_AUTH_SG_ATTRIBUTE = "shibboleth-sg";
+
     /**
      * log4j category
      */
@@ -198,11 +202,9 @@ public class ShibAuthentication implements AuthenticationMethod {
             log.debug("Starting Shibboleth Authentication");
 
             String message = "Received the following headers:\n";
-            @SuppressWarnings("unchecked")
             Enumeration<String> headerNames = request.getHeaderNames();
             while (headerNames.hasMoreElements()) {
                 String headerName = headerNames.nextElement();
-                @SuppressWarnings("unchecked")
                 Enumeration<String> headerValues = request.getHeaders(headerName);
                 while (headerValues.hasMoreElements()) {
                     String headerValue = headerValues.nextElement();
@@ -522,26 +524,7 @@ public class ShibAuthentication implements AuthenticationMethod {
 
     @Override
     public String getName() {
-        return "shibboleth";
-    }
-
-    /**
-     * Check if Shibboleth plugin is enabled
-     * @return true if enabled, false otherwise
-     */
-    public static boolean isEnabled() {
-        final String shibPluginName = new ShibAuthentication().getName();
-        boolean shibEnabled = false;
-        // Loop through all enabled authentication plugins to see if Shibboleth is one of them.
-        Iterator<AuthenticationMethod> authenticationMethodIterator =
-                AuthenticateServiceFactory.getInstance().getAuthenticationService().authenticationMethodIterator();
-        while (authenticationMethodIterator.hasNext()) {
-            if (shibPluginName.equals(authenticationMethodIterator.next().getName())) {
-                shibEnabled = true;
-                break;
-            }
-        }
-        return shibEnabled;
+        return SHIBBOLETH_AUTH_METHOD_NAME;
     }
 
     /**

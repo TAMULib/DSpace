@@ -132,6 +132,8 @@ public abstract class JWTTokenHandler {
         // retrieve the EPerson from the claims set
         EPerson ePerson = getEPerson(context, jwtClaimsSet);
 
+        log.debug("JWT claims set: {}", jwtClaimsSet);
+
         // As long as the JWT is valid, parse all claims and return the EPerson
         if (isValidToken(request, signedJWT, jwtClaimsSet, ePerson)) {
 

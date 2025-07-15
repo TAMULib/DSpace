@@ -11,6 +11,9 @@ import static java.lang.String.format;
 import static java.net.URLEncoder.encode;
 import static org.apache.commons.lang.BooleanUtils.toBoolean;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.dspace.authenticate.OrcidAuthentication.ORCID_AUTH_ATTRIBUTE;
+import static org.dspace.authenticate.OrcidAuthentication.ORCID_AUTH_METHOD_NAME;
+import static org.dspace.authenticate.OrcidAuthentication.ORCID_REGISTRATION_TOKEN_ATTRUBUTE;
 import static org.dspace.content.Item.ANY;
 
 import java.io.UnsupportedEncodingException;
@@ -53,14 +56,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public class OrcidAuthenticationBean implements AuthenticationMethod {
 
-
-    public static final String ORCID_DEFAULT_FIRSTNAME = "Unnamed";
-    public static final String ORCID_DEFAULT_LASTNAME = ORCID_DEFAULT_FIRSTNAME;
-    public static final String ORCID_AUTH_ATTRIBUTE = "orcid-authentication";
-    public static final String ORCID_REGISTRATION_TOKEN = "orcid-registration-token";
-    public static final String ORCID_DEFAULT_REGISTRATION_URL = "/external-login/{0}";
-
     private final static Logger LOGGER = LogManager.getLogger();
+
+    private static final String ORCID_DEFAULT_FIRSTNAME = "Unnamed";
+    private static final String ORCID_DEFAULT_LASTNAME = ORCID_DEFAULT_FIRSTNAME;
 
     private final static String LOGIN_PAGE_URL_FORMAT = "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s";
 
@@ -102,7 +101,9 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
             LOGGER.warn("The incoming request has not code parameter");
             return NO_SUCH_USER;
         }
+
         request.setAttribute(ORCID_AUTH_ATTRIBUTE, true);
+
         return authenticateWithOrcid(context, code, request);
     }
 
@@ -165,7 +166,7 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public String getName() {
-        return "orcid";
+        return ORCID_AUTH_METHOD_NAME;
     }
 
     private int authenticateWithOrcid(Context context, String code, HttpServletRequest request) throws SQLException {
@@ -236,7 +237,7 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
 
             registrationDataService.update(context, registrationData);
 
-            request.setAttribute(ORCID_REGISTRATION_TOKEN, registrationData.getToken());
+            request.setAttribute(ORCID_REGISTRATION_TOKEN_ATTRUBUTE, registrationData.getToken());
             context.commit();
             context.dispatchEvents();
 

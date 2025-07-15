@@ -9,6 +9,7 @@ package org.dspace.app.rest.security;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -17,14 +18,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.authenticate.ShibAuthentication;
+import org.dspace.app.rest.security.details.ShibbolethWebAuthenticationDetails;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 
 /**
  * This class will filter Shibboleth requests to see if the user has been authenticated via Shibboleth.
@@ -51,7 +50,8 @@ import org.springframework.security.core.AuthenticationException;
  * @author Tim Donohue
  * @see org.dspace.authenticate.ShibAuthentication
  */
-public class ShibbolethLoginFilter extends StatelessLoginFilter {
+public class ShibbolethLoginFilter extends StatelessLoginFilter<Set<String>, ShibbolethWebAuthenticationDetails> {
+
     private static final Logger log = LogManager.getLogger(ShibbolethLoginFilter.class);
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
@@ -62,40 +62,12 @@ public class ShibbolethLoginFilter extends StatelessLoginFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req,
-                                                HttpServletResponse res) throws AuthenticationException {
-        // First, if Shibboleth is not enabled, throw an immediate ProviderNotFoundException
-        // This tells Spring Security that authentication failed
-        if (!ShibAuthentication.isEnabled()) {
-            throw new ProviderNotFoundException("Shibboleth is disabled.");
-        }
-
-        // In the case of Shibboleth, this method does NOT actually authenticate us. The authentication
-        // has already happened in Shibboleth. So, this call to "authenticate()" is just triggering
-        // ShibAuthentication.authenticate() to check for a valid Shibboleth login, and if found, the current user
-        // is considered authenticated via Shibboleth.
-        // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
-        return authenticationManager.authenticate(new DSpaceAuthentication());
-    }
-
-    @Override
     protected void successfulAuthentication(HttpServletRequest req,
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-        // Once we've gotten here, we know we have a successful login (i.e. attemptAuthentication() succeeded)
+        super.successfulAuthentication(req, res, chain, auth);
 
-        DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
-        log.debug("Shib authentication successful for EPerson {}. Sending back temporary auth cookie",
-                  dSpaceAuthentication.getName());
-        // OVERRIDE DEFAULT behavior of StatelessLoginFilter to return a temporary authentication cookie containing
-        // the Auth Token (JWT). This Cookie is required because we *redirect* the user back to the client/UI after
-        // a successful Shibboleth login. Headers cannot be sent via a redirect, so a Cookie must be sent to provide
-        // the auth token to the client. On the next request from the client, the cookie is read and destroyed & the
-        // Auth token is only used in the Header from that point forward.
-        restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, true);
-
-        // redirect user after completing Shibboleth authentication, sending along the temporary auth cookie
         redirectAfterSuccess(req, res);
     }
 

@@ -10,7 +10,9 @@ package org.dspace.app.rest.security;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -98,10 +100,11 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
             log.error("Access is denied (status:{})", HttpServletResponse.SC_FORBIDDEN, e);
             return;
         }
-        // If we have a valid Authentication, save it to Spring Security
+
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         chain.doFilter(req, res);
     }
 
@@ -143,10 +146,17 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                     }
                 }
 
-                //Return the Spring authentication object
-                return new DSpaceAuthentication(eperson, authorities);
-            } else {
-                return null;
+                // Get special groups from the context
+                Set<String> groups = context.getSpecialGroups()
+                    .stream()
+                    .map(group -> group.getName())
+                    .collect(Collectors.toSet());
+
+                return DSpaceAuthentication.create()
+                    .forEPerson(eperson) // EPerson being authenticated
+                    .withDetails(groups) // Special groups EPerson will be member of
+                    .withGrantedAuthorities(authorities) // Granted authorities
+                    .withAuthenticatedTrue(); // Authenticaed
             }
         } else {
             if (request.getHeader(ON_BEHALF_OF_REQUEST_PARAM) != null) {
@@ -178,8 +188,19 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
             context.switchContextUser(onBehalfOfEPerson);
             log.debug("Found 'on-behalf-of' authentication data in request for EPerson {}",
                     onBehalfOfEPerson::getEmail);
-            return new DSpaceAuthentication(onBehalfOfEPerson,
-                                            authenticationProvider.getGrantedAuthorities(context));
+
+            List<GrantedAuthority> authorities = authenticationProvider.getGrantedAuthorities(context);
+
+            Set<String> groups = context.getSpecialGroups()
+                .stream()
+                .map(group -> group.getName())
+                .collect(Collectors.toSet());
+
+            return DSpaceAuthentication.create()
+                .forEPerson(onBehalfOfEPerson)
+                .withDetails(groups)
+                .withGrantedAuthorities(authorities)
+                .withAuthenticatedTrue();
         } else {
             throw new IllegalArgumentException("You're unable to use the login as feature to log " +
                                                    "in as another admin");

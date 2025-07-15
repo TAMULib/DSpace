@@ -71,6 +71,8 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  */
 public class LDAPAuthentication implements AuthenticationMethod {
 
+    public static final String LDAP_AUTH_METHOD_NAME = "ldap";
+
     private static final Logger log
             = org.apache.logging.log4j.LogManager.getLogger(LDAPAuthentication.class);
 
@@ -716,7 +718,7 @@ public class LDAPAuthentication implements AuthenticationMethod {
 
     @Override
     public String getName() {
-        return "ldap";
+        return LDAP_AUTH_METHOD_NAME;
     }
 
     /**

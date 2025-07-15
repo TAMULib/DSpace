@@ -7,10 +7,9 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.authenticate.OidcAuthenticationBean.OIDC_AUTH_ATTRIBUTE;
-
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Set;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -19,12 +18,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.app.rest.security.details.OidcWebAuthenticationDetails;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 
 /**
  * This class will filter OpenID Connect (OIDC) requests and try and authenticate them.
@@ -33,7 +32,7 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author Pasquale Cavallo (pasquale.cavallo at 4science dot it)
  */
-public class OidcLoginFilter extends StatelessLoginFilter {
+public class OidcLoginFilter extends StatelessLoginFilter<Set<String>, OidcWebAuthenticationDetails> {
 
     private static final Logger log = LogManager.getLogger(OidcLoginFilter.class);
 
@@ -46,17 +45,10 @@ public class OidcLoginFilter extends StatelessLoginFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
-        throws AuthenticationException {
-        req.setAttribute(OIDC_AUTH_ATTRIBUTE, OIDC_AUTH_ATTRIBUTE);
-        // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
-        return authenticationManager.authenticate(new DSpaceAuthentication());
-    }
-
-    @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
         Authentication auth) throws IOException, ServletException {
-        restAuthenticationService.addAuthenticationDataForUser(req, res, (DSpaceAuthentication) auth, true);
+        super.successfulAuthentication(req, res, chain, auth);
+
         redirectAfterSuccess(req, res);
     }
 

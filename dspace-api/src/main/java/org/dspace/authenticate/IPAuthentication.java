@@ -47,6 +47,9 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  * @version $Revision$
  */
 public class IPAuthentication implements AuthenticationMethod {
+
+    public static final String IP_AUTH_METHOD_NAME = "ip";
+
     /**
      * Our logger
      */
@@ -64,7 +67,6 @@ public class IPAuthentication implements AuthenticationMethod {
 
     protected GroupService groupService;
     protected ClientInfoService clientInfoService;
-
 
     /**
      * Maps IPMatchers to group names when we don't know group DB ID yet. When
@@ -271,7 +273,7 @@ public class IPAuthentication implements AuthenticationMethod {
 
     @Override
     public String getName() {
-        return "ip";
+        return IP_AUTH_METHOD_NAME;
     }
 
     @Override

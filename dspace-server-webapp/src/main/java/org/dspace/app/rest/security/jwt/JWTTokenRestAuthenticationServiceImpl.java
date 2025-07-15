@@ -166,7 +166,11 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
     public void invalidateAuthenticationCookie(HttpServletRequest request, HttpServletResponse response) {
         // Re-send the same cookie (as addTokenToResponse()) with no value and a Max-Age of 0 seconds
         ResponseCookie cookie = ResponseCookie.from(AUTHORIZATION_COOKIE, "")
-                                              .maxAge(0).httpOnly(true).secure(true).sameSite("None").build();
+                                              .maxAge(0)
+                                              .httpOnly(true)
+                                              .secure(true)
+                                              .sameSite("None")
+                                              .build();
 
         // Write the cookie to the Set-Cookie header in order to send it
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());

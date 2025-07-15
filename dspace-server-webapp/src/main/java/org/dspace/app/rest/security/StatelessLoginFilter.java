@@ -9,17 +9,19 @@ package org.dspace.app.rest.security;
 
 import java.io.IOException;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetails;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This class will filter /api/authn/login requests to try and authenticate them. Keep in mind, this filter runs *after*
@@ -30,7 +32,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * @author Frederic Van Reet (frederic dot vanreet at atmire dot com)
  * @author Tom Desair (tom dot desair at atmire dot com)
  */
-public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
+public class StatelessLoginFilter<T, D extends SpecialGroupsWebAuthenticationDetails<T>> extends AbstractAuthenticationProcessingFilter {
     private static final Logger log = LogManager.getLogger();
 
     protected AuthenticationManager authenticationManager;
@@ -68,7 +70,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
      *
      * @param req current request
      * @param res current response
-     * @return a valid Spring Security Authentication object if authentication succeeds
+     * @return a Spring Security Authentication object if authentication succeeds
      * @throws AuthenticationException if authentication fails
      * @see EPersonRestAuthenticationProvider
      */
@@ -76,13 +78,23 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
 
+        DSpaceAuthentication authentication = DSpaceAuthentication.create();
+
+        log.debug(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
+
         String user = req.getParameter("user");
         String password = req.getParameter("password");
 
-        // Attempt to authenticate by passing user & password (if provided) to AuthenticationProvider class(es)
-        // NOTE: This method will check if the user was already authenticated by StatelessAuthenticationFilter,
-        // and, if so, just refresh their token.
-        return authenticationManager.authenticate(new DSpaceAuthentication(user, password));
+        if (user != null && user.length() > 0) {
+            authentication.withUsername(user);
+        }
+
+        if (password != null && password.length() > 0) {
+            authentication.withCredentials(password);
+        }
+
+        return ((DSpaceAuthentication) authenticationManager.authenticate(authentication))
+            .withDetails(getWebAuthenticationDetails(req));
     }
 
     /**
@@ -106,10 +118,12 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-
         DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
-        log.debug("Authentication successful for EPerson {}", dSpaceAuthentication::getName);
-        restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, false);
+        log.debug(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));
+        // This is okay unless an inheriting implementation calls the super method and should not add a cookie.
+        // If need be, add an interface to specify whether a stateless login filter will add a cookie or not.
+        boolean addCookie = !getClass().getSimpleName().equals("StatelessLoginFilter");
+        restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, addCookie);
     }
 
     /**
@@ -133,6 +147,11 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed!");
         log.error("Authentication failed (status:{})",
                   HttpServletResponse.SC_UNAUTHORIZED, failed);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected T getWebAuthenticationDetails(HttpServletRequest req) {
+        return authenticationDetailsSource != null ? ((D) authenticationDetailsSource.buildDetails(req)).getDetails() : null;
     }
 
 }

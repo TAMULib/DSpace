@@ -11,6 +11,8 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.eperson.EPerson;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -23,75 +25,52 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class DSpaceAuthentication implements Authentication {
 
+    private static final Logger log = LogManager.getLogger();
 
-    private Instant previousLoginDate;
     private String username;
+
     private String password;
+
     private List<GrantedAuthority> authorities;
+
     private boolean authenticated;
 
-    /**
-     * Create a DSpaceAuthentication instance for an already authenticated EPerson, including their GrantedAuthority
-     * objects.
-     * <P>
-     * NOTE: This type of DSpaceAuthentication object is returned to Spring after a successful authentication.
-     * @param ePerson authenticated EPerson
-     * @param authorities EPerson's authorities
-     */
-    public DSpaceAuthentication(EPerson ePerson, List<GrantedAuthority> authorities) {
-        this.previousLoginDate = ePerson.getPreviousActive();
-        this.username = ePerson.getEmail();
-        this.authorities = authorities;
-        this.authenticated = true;
-    }
+    private Object details;
 
-    /**
-     * Create a temporary DSpaceAuthentication instance which may be used to store information about the user who will
-     * be attempting authentication.
-     * <P>
-     * NOTE: This type of DSpaceAuthentication object is used to attempt a new authentication in DSpace. It is therefore
-     * temporary in nature, as it will be discarded after successful authentication.
-     * @param username username to attempt authentication for
-     * @param password password to use for authentication
-     */
-    public DSpaceAuthentication(String username, String password) {
-        this.username = username;
-        this.password = password;
+    private Instant previousLoginDate;
+
+    // Only allow use of static factory method create
+    private DSpaceAuthentication() {
         this.authenticated = false;
     }
 
-    /**
-     * Create a temporary, empty DSpaceAuthentication instance which may be used to trigger an implicit authentication.
-     * An example is Shibboleth, as this doesn't require an explicit username/password, as the user will have been
-     * authenticated externally, and DSpace just needs to perform an implicit authentication by looking for the auth
-     * data passed to it by Shibboleth.
-     */
-    public DSpaceAuthentication() {
-        // Initialize with a 'null' username and password
-        this(null, (String) null);
-    }
-
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
+    @Override
     public Object getCredentials() {
         return password;
     }
 
+    @Override
     public Object getDetails() {
-        return null;
+        return details;
     }
 
+    @Override
     public Object getPrincipal() {
         return username;
     }
 
+    @Override
     public boolean isAuthenticated() {
         return authenticated;
     }
 
-    public void setAuthenticated(boolean authenticated) throws IllegalArgumentException {
+    @Override
+    public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }
 
@@ -101,5 +80,116 @@ public class DSpaceAuthentication implements Authentication {
 
     public Instant getPreviousLoginDate() {
         return previousLoginDate;
+    }
+
+    /**
+     * Apply EPerson to authentication.
+     *
+     * Sets the username and previous login date.
+     *
+     * @param ePerson the current EPerson requesting authentication
+     * @return this DSpaceAuthentication
+     */
+    DSpaceAuthentication forEPerson(EPerson ePerson) {
+        this.username = ePerson.getEmail();
+        this.previousLoginDate = ePerson.getPreviousActive();
+
+        log.debug("Adding EPerson {} to authentication with previous active date {}", username, previousLoginDate);
+
+        return this;
+    }
+
+    /**
+     * Add user to authentication for password authentication.
+     *
+     * Sets the username.
+     *
+     * @param username a String username credential
+     * @return this DSpaceAuthentication
+     */
+    DSpaceAuthentication withUsername(String username) {
+        this.username = username;
+
+        log.debug("Adding user {} to authentication", username);
+
+        return this;
+    }
+
+    /**
+     * Add password to authentication for password authentication.
+     *
+     * Sets the password.
+     *
+     * @param username a String password credential
+     * @return this DSpaceAuthentication
+     */
+    DSpaceAuthentication withCredentials(String password) {
+        this.password = password;
+
+        log.debug("Credentials added to authentication for {}", username);
+
+        return this;
+    }
+
+    /**
+     * Add details to the authentication.
+     *
+     * Sets the details.
+     *
+     * Currently only a Set<String> for all WebAuthenticationDetails as list of special group names.
+     *
+     * @param details an Object details
+     * @return this DSpaceAuthentication
+     */
+    DSpaceAuthentication withDetails(Object details) {
+        this.details = details;
+
+        log.debug("Adding details {} to authentication for {}", details, username);
+
+        return this;
+    }
+
+    /**
+     * Add granted authorities to the authentication.
+     *
+     * Sets the authorities.
+     *
+     * @param authorities a List of GrantedAuthority
+     * @return this DSpaceAuthentication
+     */
+    DSpaceAuthentication withGrantedAuthorities(List<GrantedAuthority> authorities) {
+        this.authorities = authorities;
+
+        log.debug("Adding authorities {} to authentication for {}", authorities, username);
+
+        return this;
+    }
+
+    /**
+     * Authenticates the authentication request.
+     *
+     * Sets the authenticated true.
+     *
+     * @return this DSpaceAuthentication
+     */
+    DSpaceAuthentication withAuthenticatedTrue() {
+        this.authenticated = true;
+
+        log.debug("Authentication for {} authenticated", username);
+
+        return this;
+    }
+
+    /**
+     * Create a DSpace authentication object for Spring Security Context.
+     *
+     * Sets the authenticated true.
+     *
+     * @return this DSpaceAuthentication
+     */
+    public static DSpaceAuthentication create() {
+        log.debug("Authentication created for thread {}", Thread.currentThread().getId());
+
+        return new DSpaceAuthentication();
     }
 }

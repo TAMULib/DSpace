@@ -9,6 +9,7 @@ package org.dspace.app.rest.security;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import jakarta.servlet.FilterChain;
@@ -17,14 +18,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.authenticate.SamlAuthentication;
+import org.dspace.app.rest.security.details.SamlWebAuthenticationDetails;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 
 /**
  * A filter that examines requests to see if the user has been authenticated via SAML.
@@ -56,8 +55,9 @@ import org.springframework.security.core.AuthenticationException;
  *
  * @author Ray Lee
  */
-public class SamlLoginFilter extends StatelessLoginFilter {
-    private static final Logger logger = LogManager.getLogger(SamlLoginFilter.class);
+public class SamlLoginFilter extends StatelessLoginFilter<Set<String>, SamlWebAuthenticationDetails> {
+
+    private static final Logger log = LogManager.getLogger(SamlLoginFilter.class);
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
@@ -67,24 +67,11 @@ public class SamlLoginFilter extends StatelessLoginFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response)
-        throws AuthenticationException {
-
-        if (!SamlAuthentication.isEnabled()) {
-            throw new ProviderNotFoundException("SAML is disabled.");
-        }
-
-        // Because this authentication is implicit, we pass in an empty DSpaceAuthentication.
-        return authenticationManager.authenticate(new DSpaceAuthentication());
-    }
-
-    @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
+    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
         Authentication auth) throws IOException, ServletException {
+        super.successfulAuthentication(req, res, chain, auth);
 
-        restAuthenticationService.addAuthenticationDataForUser(request, response, (DSpaceAuthentication) auth, true);
-
-        redirectAfterSuccess(request, response);
+        redirectAfterSuccess(req, res);
     }
 
     /**
@@ -107,11 +94,11 @@ public class SamlLoginFilter extends StatelessLoginFilter {
             .anyMatch(hostName -> hostName.equalsIgnoreCase(redirectHostName));
 
         if (isRedirectAllowed) {
-            logger.debug("SAML redirecting to " + redirectUrl);
+            log.debug("SAML redirecting to " + redirectUrl);
 
             response.sendRedirect(redirectUrl);
         } else {
-            logger.error("SAML redirect URL {} is not allowed" + redirectUrl);
+            log.error("SAML redirect URL {} is not allowed" + redirectUrl);
 
             response.sendError(HttpServletResponse.SC_BAD_REQUEST,"SAML redirect URL not allowed");
         }

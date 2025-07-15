@@ -7,22 +7,19 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.authenticate.OrcidAuthenticationBean.ORCID_AUTH_ATTRIBUTE;
-import static org.dspace.authenticate.OrcidAuthenticationBean.ORCID_DEFAULT_REGISTRATION_URL;
-import static org.dspace.authenticate.OrcidAuthenticationBean.ORCID_REGISTRATION_TOKEN;
+import static org.dspace.authenticate.OrcidAuthentication.ORCID_AUTH_ATTRIBUTE;
+import static org.dspace.authenticate.OrcidAuthentication.ORCID_DEFAULT_REGISTRATION_URL;
+import static org.dspace.authenticate.OrcidAuthentication.ORCID_REGISTRATION_TOKEN_ATTRUBUTE;
 
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Set;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.authenticate.OrcidAuthentication;
+import org.dspace.app.rest.security.details.OrcidWebAuthenticationDetails;
 import org.dspace.authenticate.OrcidAuthenticationBean;
 import org.dspace.core.Context;
 import org.dspace.core.Utils;
@@ -31,9 +28,13 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.utils.DSpace;
 import org.dspace.web.ContextUtil;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This class will filter ORCID requests and try and authenticate them.
@@ -43,7 +44,7 @@ import org.springframework.security.core.AuthenticationException;
  * @author Luca Giamminonni (luca.giamminonni at 4science.it)
  */
 
-public class OrcidLoginFilter extends StatelessLoginFilter {
+public class OrcidLoginFilter extends StatelessLoginFilter<Set<String>, OrcidWebAuthenticationDetails> {
 
     private static final Logger log = LogManager.getLogger(OrcidLoginFilter.class);
 
@@ -59,28 +60,9 @@ public class OrcidLoginFilter extends StatelessLoginFilter {
     }
 
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
-        throws AuthenticationException {
-
-        if (!OrcidAuthentication.isEnabled()) {
-            throw new ProviderNotFoundException("Orcid login is disabled.");
-        }
-        // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
-        return authenticationManager.authenticate(new DSpaceAuthentication());
-
-    }
-
-    @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-
-
-        DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
-
-        log.debug("Orcid authentication successful for EPerson {}. Sending back temporary auth cookie",
-                  dSpaceAuthentication.getName());
-
-        restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, true);
+        super.successfulAuthentication(req, res, chain, auth);
 
         redirectAfterSuccess(req, res);
     }
@@ -98,7 +80,7 @@ public class OrcidLoginFilter extends StatelessLoginFilter {
 
         String baseRediredirectUrl = configurationService.getProperty("dspace.ui.url");
         String redirectUrl = baseRediredirectUrl + "/error?status=401&code=orcid.generic-error";
-        Object registrationToken = request.getAttribute(ORCID_REGISTRATION_TOKEN);
+        Object registrationToken = request.getAttribute(ORCID_REGISTRATION_TOKEN_ATTRUBUTE);
         if (registrationToken != null) {
             final String orcidRegistrationDataUrl =
                 configurationService.getProperty("orcid.registration-data.url", ORCID_DEFAULT_REGISTRATION_URL);

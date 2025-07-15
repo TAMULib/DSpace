@@ -8,12 +8,10 @@
 package org.dspace.authenticate;
 
 import java.sql.SQLException;
-import java.util.Iterator;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.dspace.authenticate.factory.AuthenticateServiceFactory;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
@@ -29,27 +27,17 @@ import org.dspace.utils.DSpace;
  */
 public class OrcidAuthentication implements AuthenticationMethod {
 
+    public static final String ORCID_AUTH_METHOD_NAME = "orcid";
+
+    public static final String ORCID_AUTH_ATTRIBUTE = "orcid-authentication";
+
+    public static final String ORCID_REGISTRATION_TOKEN_ATTRUBUTE = "orcid-registration-token";
+
+    public static final String ORCID_AUTH_SG_ATTRIBUTE = "orcid-sg";
+
+    public static final String ORCID_DEFAULT_REGISTRATION_URL = "/external-login/{0}";
+
     private final ServiceManager serviceManager = new DSpace().getServiceManager();
-
-    /**
-     * Check if OrcidAuthentication plugin is enabled
-     * @return true if enabled, false otherwise
-     */
-    public static boolean isEnabled() {
-
-        String pluginName = new OrcidAuthentication().getName();
-
-        Iterator<AuthenticationMethod> authenticationMethodIterator = AuthenticateServiceFactory.getInstance()
-            .getAuthenticationService().authenticationMethodIterator();
-
-        while (authenticationMethodIterator.hasNext()) {
-            if (pluginName.equals(authenticationMethodIterator.next().getName())) {
-                return true;
-            }
-        }
-
-        return false;
-    }
 
     @Override
     public boolean canSelfRegister(Context context, HttpServletRequest request, String username) throws SQLException {
