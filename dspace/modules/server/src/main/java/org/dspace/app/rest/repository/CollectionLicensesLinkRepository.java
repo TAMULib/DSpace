@@ -41,7 +41,7 @@ import org.springframework.data.domain.PageImpl;
  *
  * @author Luigi Andrea Pascarelli (luigiandrea.pascarelli at 4science.it)
  */
-@Component(CollectionRest.CATEGORY + "." + CollectionRest.PLURAL_NAME + "." + CollectionRest.LICENSE)
+@Component(CollectionRest.CATEGORY + "." + CollectionRest.PLURAL_NAME + "." + CollectionRest.LICENSES)
 // TAMU Customization - proxy license step
 // public class CollectionLicenseLinkRepository extends AbstractDSpaceRestRepository
 public class CollectionLicensesLinkRepository extends AbstractDSpaceRestRepository
