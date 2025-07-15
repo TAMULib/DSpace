@@ -989,8 +989,18 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         // Add information about our search fields
                         for (String field : searchFields) {
                             List<String> valuesAsString = new ArrayList<>();
-                            Optional.ofNullable(doc.getFieldValues(field))
-                                    .ifPresent(l -> l.forEach(o -> valuesAsString.add(String.valueOf(o))));
+                            // TAMU Customization - null check
+                            // for (Object o : doc.getFieldValues(field)) {
+                            //    valuesAsString.add(String.valueOf(o));
+                            //}
+                            var fieldValues = doc.getFieldValues(field);
+                            if (fieldValues != null)
+                            {
+                                for (Object o : fieldValues) {
+                                    valuesAsString.add(String.valueOf(o));
+                                }
+                            }
+                            // END TAMU Customization - null check
                             resultDoc.addSearchField(field, valuesAsString.toArray(new String[valuesAsString.size()]));
                         }
                         result.addSearchDocument(indexableObject, resultDoc);
