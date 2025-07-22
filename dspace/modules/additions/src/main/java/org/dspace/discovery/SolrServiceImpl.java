@@ -15,12 +15,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -28,11 +25,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
-import java.util.TimeZone;
 import java.util.UUID;
-import java.util.Vector;
-import javax.mail.MessagingException;
 
+import jakarta.mail.MessagingException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.collections4.Transformer;
@@ -42,6 +37,9 @@ import org.apache.solr.client.solrj.SolrQuery;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.response.FacetField;
 import org.apache.solr.client.solrj.response.QueryResponse;
+import org.apache.solr.client.solrj.response.json.BucketBasedJsonFacet;
+import org.apache.solr.client.solrj.response.json.BucketJsonFacet;
+import org.apache.solr.client.solrj.response.json.NestableJsonFacet;
 import org.apache.solr.client.solrj.util.ClientUtils;
 import org.apache.solr.common.SolrDocument;
 import org.apache.solr.common.SolrDocumentList;
@@ -53,14 +51,11 @@ import org.apache.solr.common.params.SpellingParams;
 import org.apache.solr.common.util.NamedList;
 import org.dspace.authorize.ResourcePolicy;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
-import org.dspace.content.Bitstream;
-import org.dspace.content.Bundle;
 import org.dspace.content.Collection;
 import org.dspace.content.Community;
 import org.dspace.content.DSpaceObject;
 import org.dspace.content.Item;
 import org.dspace.content.factory.ContentServiceFactory;
-import org.dspace.content.service.ItemService;
 import org.dspace.core.Constants;
 import org.dspace.core.Context;
 import org.dspace.core.Email;
@@ -76,14 +71,22 @@ import org.dspace.discovery.indexobject.IndexableCommunity;
 import org.dspace.discovery.indexobject.IndexableItem;
 import org.dspace.discovery.indexobject.factory.IndexFactory;
 import org.dspace.discovery.indexobject.factory.IndexObjectFactoryFactory;
+import org.dspace.discovery.indexobject.factory.ItemIndexFactory;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.GroupService;
-import org.dspace.handle.service.HandleService;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+// TAMU Customization
+import java.util.Vector;
+import org.dspace.content.Bitstream;
+import org.dspace.content.Bundle;
+import org.dspace.content.service.ItemService;
+import org.dspace.handle.service.HandleService;
+// END TAMU Customization
 
 /**
  * SolrIndexer contains the methods that index Items and their metadata,
@@ -124,11 +127,12 @@ public class SolrServiceImpl implements SearchService, IndexingService {
     protected SolrSearchCore solrSearchCore;
     @Autowired
     protected ConfigurationService configurationService;
-    // TAMU Customizations
+    // TAMU Customization
     @Autowired(required = true)
     protected ItemService itemService;
     @Autowired(required = true)
     protected HandleService handleService;
+    // END TAMU Customization
 
     protected SolrServiceImpl() {
 
@@ -200,134 +204,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         } else {
             update(context, indexableObjectService, indexableObject);
         }
-    }
-
-    /**
-     * TAMU Customization - to the image URL provided to the Solr documents
-     * @throws SQLException
-    */
-    private void addCommunityCollectionItem(
-        Context context,IndexableObject indexableObject, SolrInputDocument doc
-    ) throws IOException, SolrServerException, SQLException {
-
-        // IndexableObject.getType();
-        if (!(indexableObject instanceof IndexableItem)) {
-            return;
-        }
-
-        IndexableItem indexableItem = (IndexableItem)indexableObject;
-
-        Item item = (Item)indexableItem.getIndexedObject();
-
-
-        // get the location string (for searching by collection & community)
-        List<String> locations = getItemLocations(context, item);
-
-        String handle = item.getHandle();
-
-        if (handle == null) {
-            handle = handleService.findHandle(context, item);
-        }
-
-        // TAMU Customization - Write friendly community/collection names to index
-        if ( !locations.isEmpty() ) {
-            for (String location : locations) {
-                String field = location.startsWith("m") ? "location.comm" : "location.coll";
-                String dsoName = locationToName(context,field,location.substring(1));
-                log.debug("Adding location name:" + field + ".name_stored with value:" + dsoName);
-                doc.addField(field + ".name_stored", dsoName );
-            }
-        }
-
-        // TAMU Customization - Write bitstream URLs to index
-        List<String> bitstreamLocations = new ArrayList<>();
-        String dspaceUrl = configurationService.getProperty("dspace.server.url");
-        for (Bundle bundle : item.getBundles()) {
-            String bitstreamUrlTemplate = "%s/bitstream/handle/%s/%s?sequence=%d";
-            String primaryInternalId = null;
-            switch (bundle.getName()) {
-                case "ORIGINAL":
-                    if (bundle.getPrimaryBitstream() != null) {
-                        Bitstream primaryBitstream = bundle.getPrimaryBitstream();
-                        primaryInternalId = primaryBitstream.getInternalId();
-                        String primaryName = primaryBitstream.getName();
-                        int primarySequence = primaryBitstream.getSequenceID();
-                        String primaryUrl = String.format(
-                                            bitstreamUrlTemplate, dspaceUrl, handle, primaryName, primarySequence);
-                        doc.addField("primaryBitstream_stored", primaryUrl);
-                    }
-                    for (Bitstream bitstream : bundle.getBitstreams()) {
-                        if (bitstream != null && bitstream.getInternalId() != null && !bitstream.getInternalId().equals(primaryInternalId)) {
-                            String name = bitstream.getName();
-                            int sequence = bitstream.getSequenceID();
-                            String url = String.format(bitstreamUrlTemplate, dspaceUrl, handle, name, sequence);
-                            bitstreamLocations.add(url);
-                        }
-                    }
-                    break;
-                case "THUMBNAIL":
-                    if (!bundle.getBitstreams().isEmpty()) {
-                        Bitstream thumbnailBitstream = bundle.getBitstreams().get(0);
-                        if (thumbnailBitstream != null) {
-                            String thumbnailName = thumbnailBitstream.getName();
-                            int thumbnailSequence = thumbnailBitstream.getSequenceID();
-                            String thumbnailUrl = String.format(
-                                                bitstreamUrlTemplate,
-                                                dspaceUrl,
-                                                handle,
-                                                thumbnailName,
-                                                thumbnailSequence
-                                                );
-                            doc.addField("thumbnailBitstream_stored", thumbnailUrl);
-                        }
-                    }
-                    break;
-                case "LICENSE":
-                    if (!bundle.getBitstreams().isEmpty()) {
-                        Bitstream licenseBitstream = bundle.getBitstreams().get(0);
-                        if (licenseBitstream != null) {
-                            String licenseName = licenseBitstream.getName();
-                            int licenseSequence = licenseBitstream.getSequenceID();
-                            String licenseUrl = String.format(
-                                                bitstreamUrlTemplate, dspaceUrl, handle, licenseName, licenseSequence);
-                            doc.addField("licenseBitstream_stored", licenseUrl);
-                        }
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
-    }
-
-    /**
-     * @param context DSpace context
-     * @param myitem the item for which our locations are to be retrieved
-     * @return a list containing the identifiers of the communities and collections
-     * @throws SQLException sql exception
-     */
-    protected List<String> getItemLocations(Context context, Item myitem)
-            throws SQLException {
-        List<String> locations = new Vector<String>();
-
-        // build list of community ids
-        List<Community> communities = itemService.getCommunities(context, myitem);
-
-        // build list of collection ids
-        List<Collection> collections = myitem.getCollections();
-
-        // now put those into strings
-        int i = 0;
-
-        for (i = 0; i < communities.size(); i++) {
-            locations.add("m" + communities.get(i).getID());
-        }
-
-        for (i = 0; i < collections.size(); i++) {
-            locations.add("l" + collections.get(i).getID());
-        }
-
-        return locations;
     }
 
     /**
@@ -483,6 +359,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         try {
             final List<IndexFactory> indexableObjectServices = indexObjectServiceFactory.
                 getIndexFactories();
+            int indexObject = 0;
             for (IndexFactory indexableObjectService : indexableObjectServices) {
                 if (type == null || StringUtils.equals(indexableObjectService.getType(), type)) {
                     final Iterator<IndexableObject> indexableObjects = indexableObjectService.findAll(context);
@@ -490,6 +367,10 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         final IndexableObject indexableObject = indexableObjects.next();
                         indexContent(context, indexableObject, force);
                         context.uncacheEntity(indexableObject.getIndexedObject());
+                        indexObject++;
+                        if ((indexObject % 100) == 0 && indexableObjectService instanceof ItemIndexFactory) {
+                            context.uncacheEntities();
+                        }
                     }
                 }
             }
@@ -594,10 +475,10 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             if (solrSearchCore.getSolr() == null) {
                 return;
             }
-            long start = System.currentTimeMillis();
+            long start = Instant.now().toEpochMilli();
             System.out.println("SOLR Search Optimize -- Process Started:" + start);
             solrSearchCore.getSolr().optimize();
-            long finish = System.currentTimeMillis();
+            long finish = Instant.now().toEpochMilli();
             System.out.println("SOLR Search Optimize -- Process Finished:" + finish);
             System.out.println("SOLR Search Optimize -- Total time taken:" + (finish - start) + " (ms).");
         } catch (SolrServerException | IOException e) {
@@ -648,7 +529,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                         Locale.getDefault(), "internal_error"));
                 email.addRecipient(recipient);
                 email.addArgument(configurationService.getProperty("dspace.ui.url"));
-                email.addArgument(new Date());
+                email.addArgument(Instant.now());
 
                 String stackTrace;
 
@@ -684,7 +565,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
      * @throws IOException            io exception
      * @throws SearchServiceException if something went wrong with querying the solr server
      */
-    protected boolean requiresIndexing(String uniqueId, Date lastModified)
+    protected boolean requiresIndexing(String uniqueId, Instant lastModified)
         throws SQLException, IOException, SearchServiceException {
 
         // Check if we even have a last modified date
@@ -716,11 +597,13 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
             Object value = doc.getFieldValue(SearchUtils.LAST_INDEXED_FIELD);
 
-            if (value instanceof Date) {
-                Date lastIndexed = (Date) value;
+            // If it's a java.util.Date, convert to an Instant
+            if (value instanceof java.util.Date) {
+                value = ((java.util.Date) value).toInstant();
+            }
 
-                if (lastIndexed.before(lastModified)) {
-
+            if (value instanceof Instant lastIndexed) {
+                if (lastIndexed.isBefore(lastModified)) {
                     reindexItem = true;
                 }
             }
@@ -793,73 +676,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             }
         }
         return locationQuery.toString();
-    }
-
-    /**
-     * Helper function to retrieve a date using a best guess of the potential
-     * date encodings on a field
-     *
-     * @param t the string to be transformed to a date
-     * @return a date if the formatting was successful, null if not able to transform to a date
-     */
-    public Date toDate(String t) {
-        SimpleDateFormat[] dfArr;
-
-        // Choose the likely date formats based on string length
-        switch (t.length()) {
-            // case from 1 to 3 go through adding anyone a single 0. Case 4 define
-            // for all the SimpleDateFormat
-            case 1:
-                t = "0" + t;
-                // fall through
-            case 2:
-                t = "0" + t;
-                // fall through
-            case 3:
-                t = "0" + t;
-                // fall through
-            case 4:
-                dfArr = new SimpleDateFormat[] {new SimpleDateFormat("yyyy")};
-                break;
-            case 6:
-                dfArr = new SimpleDateFormat[] {new SimpleDateFormat("yyyyMM")};
-                break;
-            case 7:
-                dfArr = new SimpleDateFormat[] {new SimpleDateFormat("yyyy-MM")};
-                break;
-            case 8:
-                dfArr = new SimpleDateFormat[] {new SimpleDateFormat("yyyyMMdd"),
-                    new SimpleDateFormat("yyyy MMM")};
-                break;
-            case 10:
-                dfArr = new SimpleDateFormat[] {new SimpleDateFormat("yyyy-MM-dd")};
-                break;
-            case 11:
-                dfArr = new SimpleDateFormat[] {new SimpleDateFormat("yyyy MMM dd")};
-                break;
-            case 20:
-                dfArr = new SimpleDateFormat[] {new SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ss'Z'")};
-                break;
-            default:
-                dfArr = new SimpleDateFormat[] {new SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")};
-                break;
-        }
-
-        for (SimpleDateFormat df : dfArr) {
-            try {
-                // Parse the date
-                df.setCalendar(Calendar
-                                   .getInstance(TimeZone.getTimeZone("UTC")));
-                df.setLenient(false);
-                return df.parse(t);
-            } catch (ParseException pe) {
-                log.error("Unable to parse date format", pe);
-            }
-        }
-
-        return null;
     }
 
     public String locationToName(Context context, String field, String value) throws SQLException {
@@ -1207,6 +1023,8 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                 }
                 //Resolve our facet field values
                 resolveFacetFields(context, query, result, skipLoadingResponse, solrQueryResponse);
+                //Resolve our json facet field values used for metadata browsing
+                resolveJsonFacetFields(context, result, solrQueryResponse);
             }
             // If any stale entries are found in the current page of results,
             // we remove those stale entries and rerun the same query again.
@@ -1232,7 +1050,42 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         return result;
     }
 
+    /**
+     * Process the 'json.facet' response, which is currently only used for metadata browsing
+     *
+     * @param context context object
+     * @param result the result object to add the facet results to
+     * @param solrQueryResponse the solr query response
+     * @throws SQLException if database error
+     */
+    private void resolveJsonFacetFields(Context context, DiscoverResult result, QueryResponse solrQueryResponse)
+        throws SQLException {
 
+        NestableJsonFacet response = solrQueryResponse.getJsonFacetingResponse();
+        if (response != null && response.getBucketBasedFacetNames() != null) {
+            for (String facetName : response.getBucketBasedFacetNames()) {
+                BucketBasedJsonFacet facet = response.getBucketBasedFacets(facetName);
+                if (facet != null) {
+                    result.setTotalEntries(facet.getNumBucketsCount());
+                    for (BucketJsonFacet bucket : facet.getBuckets()) {
+                        String facetValue = bucket.getVal() != null ? bucket.getVal().toString() : "";
+                        String field = facetName + "_filter";
+                        String displayedValue = transformDisplayedValue(context, field, facetValue);
+                        String authorityValue = transformAuthorityValue(context, field, facetValue);
+                        String sortValue = transformSortValue(context, field, facetValue);
+                        String filterValue = displayedValue;
+                        if (StringUtils.isNotBlank(authorityValue)) {
+                            filterValue = authorityValue;
+                        }
+                        result.addFacetResult(facetName,
+                            new DiscoverResult.FacetResult(filterValue, displayedValue,
+                                authorityValue, sortValue, bucket.getCount(),
+                                DiscoveryConfigurationParameters.TYPE_TEXT));
+                    }
+                }
+            }
+        }
+    }
 
     private void resolveFacetFields(Context context, DiscoverQuery query, DiscoverResult result,
             boolean skipLoadingResponse, QueryResponse solrQueryResponse) throws SQLException {
@@ -1382,11 +1235,10 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         } catch (IOException | SQLException | SolrServerException e) {
             // Any acception that we get ignore it.
             // We do NOT want any crashed to shown by the user
-            log.error(LogHelper.getHeader(context, "Error while quering solr", "Query: " + query), e);
+            log.error(LogHelper.getHeader(context, "Error while querying solr", "Query: " + query), e);
             return new ArrayList<>(0);
         }
     }
-
     @Override
     public DiscoverFilterQuery toFilterQuery(Context context, String field, String operator, String value,
         DiscoveryConfiguration config)
@@ -1416,10 +1268,14 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             }
 
 
+
             filterQuery.append(":");
             if ("equals".equals(operator) || "notequals".equals(operator)) {
+                //DO NOT ESCAPE RANGE QUERIES !
                 // TAMU Customization - calling the modified regex expression
+                // if (!value.matches("\\[.*TO.*\\]")) {
                 if ( isNotRangeQuery(value) ) {
+                // END TAMU Customization - calling the modified regex expression
                     value = ClientUtils.escapeQueryChars(value);
                     filterQuery.append(value);
                 } else {
@@ -1431,8 +1287,11 @@ public class SolrServiceImpl implements SearchService, IndexingService {
                     filterQuery.append(value);
                 }
             } else {
+                //DO NOT ESCAPE RANGE QUERIES !
                 // TAMU Customization - calling the modified regex expression
+                // if (!value.matches("\\[.*TO.*\\]")) {
                 if ( isNotRangeQuery(value) ) {
+                // END TAMU Customization - calling the modified regex expression
                     value = ClientUtils.escapeQueryChars(value);
                     filterQuery.append("\"").append(value).append("\"");
                 } else {
@@ -1447,20 +1306,13 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         return result;
     }
 
-    /**
-     * TAMU Customization - checking the conditions
-     */
-    private boolean isNotRangeQuery(String value) {
-        return (!(value.startsWith("[") || value.contains("TO") || value.endsWith("]")));
-    }
-
     @Override
     public List<Item> getRelatedItems(Context context, Item item, DiscoveryMoreLikeThisConfiguration mltConfig) {
         List<Item> results = new ArrayList<>();
         try {
             SolrQuery solrQuery = new SolrQuery();
             //Set the query to handle since this is unique
-            solrQuery.setQuery(SearchUtils.RESOURCE_UNIQUE_ID + ": " + new IndexableItem(item).getUniqueIndexID());
+            solrQuery.setQuery(SearchUtils.RESOURCE_UNIQUE_ID + ":" + new IndexableItem(item).getUniqueIndexID());
             //Only return obj identifier fields in result doc
             solrQuery.setFields(SearchUtils.RESOURCE_TYPE_FIELD, SearchUtils.RESOURCE_ID_FIELD);
             //Add the more like this parameters !
@@ -1518,7 +1370,7 @@ public class SolrServiceImpl implements SearchService, IndexingService {
      * Gets the solr field that contains the facet value split on each word break to the end, so can be searched
      * on each word in the value, see {@link org.dspace.discovery.indexobject.ItemIndexFactoryImpl
      * #saveFacetPrefixParts(SolrInputDocument, DiscoverySearchFilter, String, String)}
-     * Ony applicable to facets of type {@link DiscoveryConfigurationParameters.TYPE_TEXT}, otherwise uses the regular
+     * Only applicable to facets of type {@link DiscoveryConfigurationParameters.TYPE_TEXT}, otherwise uses the regular
      * facet filter field
      */
     protected String transformPrefixFacetField(DiscoverFacetField facetFieldConfig, String field,
@@ -1570,8 +1422,6 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             } else {
                 return field + "_acid";
             }
-        } else if (facetFieldConfig.getType().equals(DiscoveryConfigurationParameters.TYPE_STANDARD)) {
-            return field;
         } else {
             return field;
         }
@@ -1754,6 +1604,148 @@ public class SolrServiceImpl implements SearchService, IndexingService {
             }
         }
         return null;
+    }
+
+    /**
+     * TAMU Customization
+     * 
+     * @param context DSpace context
+     * @param indexableObject object to index
+     * @param doc Solr document being indexed
+     * @return a list containing the identifiers of the communities and collections
+     * @throws SQLException sql exception
+     */
+    private void addCommunityCollectionItem(
+        Context context, IndexableObject indexableObject, SolrInputDocument doc
+    ) throws IOException, SolrServerException, SQLException {
+
+        // IndexableObject.getType();
+        if (!(indexableObject instanceof IndexableItem)) {
+            return;
+        }
+
+        IndexableItem indexableItem = (IndexableItem)indexableObject;
+
+        Item item = indexableItem.getIndexedObject();
+
+
+        // get the location string (for searching by collection & community)
+        List<String> locations = getItemLocations(context, item);
+
+        String handle = item.getHandle();
+
+        if (handle == null) {
+            handle = handleService.findHandle(context, item);
+        }
+
+        // TAMU Customization - Write friendly community/collection names to index
+        if ( !locations.isEmpty() ) {
+            for (String location : locations) {
+                String field = location.startsWith("m") ? "location.comm" : "location.coll";
+                String dsoName = locationToName(context,field,location.substring(1));
+                log.debug("Adding location name:" + field + ".name_stored with value:" + dsoName);
+                doc.addField(field + ".name_stored", dsoName );
+            }
+        }
+
+        // TAMU Customization - Write bitstream URLs to index
+        List<String> bitstreamLocations = new ArrayList<>();
+        String dspaceUrl = configurationService.getProperty("dspace.server.url");
+        for (Bundle bundle : item.getBundles()) {
+            String bitstreamUrlTemplate = "%s/bitstream/handle/%s/%s?sequence=%d";
+            String primaryInternalId = null;
+            switch (bundle.getName()) {
+                case "ORIGINAL":
+                    if (bundle.getPrimaryBitstream() != null) {
+                        Bitstream primaryBitstream = bundle.getPrimaryBitstream();
+                        primaryInternalId = primaryBitstream.getInternalId();
+                        String primaryName = primaryBitstream.getName();
+                        int primarySequence = primaryBitstream.getSequenceID();
+                        String primaryUrl = String.format(
+                                            bitstreamUrlTemplate, dspaceUrl, handle, primaryName, primarySequence);
+                        doc.addField("primaryBitstream_stored", primaryUrl);
+                    }
+                    for (Bitstream bitstream : bundle.getBitstreams()) {
+                        if (bitstream != null && bitstream.getInternalId() != null && !bitstream.getInternalId().equals(primaryInternalId)) {
+                            String name = bitstream.getName();
+                            int sequence = bitstream.getSequenceID();
+                            String url = String.format(bitstreamUrlTemplate, dspaceUrl, handle, name, sequence);
+                            bitstreamLocations.add(url);
+                        }
+                    }
+                    break;
+                case "THUMBNAIL":
+                    if (!bundle.getBitstreams().isEmpty()) {
+                        Bitstream thumbnailBitstream = bundle.getBitstreams().get(0);
+                        if (thumbnailBitstream != null) {
+                            String thumbnailName = thumbnailBitstream.getName();
+                            int thumbnailSequence = thumbnailBitstream.getSequenceID();
+                            String thumbnailUrl = String.format(
+                                                bitstreamUrlTemplate,
+                                                dspaceUrl,
+                                                handle,
+                                                thumbnailName,
+                                                thumbnailSequence
+                                                );
+                            doc.addField("thumbnailBitstream_stored", thumbnailUrl);
+                        }
+                    }
+                    break;
+                case "LICENSE":
+                    if (!bundle.getBitstreams().isEmpty()) {
+                        Bitstream licenseBitstream = bundle.getBitstreams().get(0);
+                        if (licenseBitstream != null) {
+                            String licenseName = licenseBitstream.getName();
+                            int licenseSequence = licenseBitstream.getSequenceID();
+                            String licenseUrl = String.format(
+                                                bitstreamUrlTemplate, dspaceUrl, handle, licenseName, licenseSequence);
+                            doc.addField("licenseBitstream_stored", licenseUrl);
+                        }
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+
+    /**
+     * TAMU Customization - checking the conditions
+     */
+    private boolean isNotRangeQuery(String value) {
+        return (!(value.startsWith("[") || value.contains("TO") || value.endsWith("]")));
+    }
+
+    /**
+     * TAMU Customization
+     * 
+     * @param context DSpace context
+     * @param myitem the item for which our locations are to be retrieved
+     * @return a list containing the identifiers of the communities and collections
+     * @throws SQLException sql exception
+     */
+    private List<String> getItemLocations(Context context, Item myitem)
+            throws SQLException {
+        List<String> locations = new Vector<>();
+
+        // build list of community ids
+        List<Community> communities = itemService.getCommunities(context, myitem);
+
+        // build list of collection ids
+        List<Collection> collections = myitem.getCollections();
+
+        // now put those into strings
+        int i = 0;
+
+        for (i = 0; i < communities.size(); i++) {
+            locations.add("m" + communities.get(i).getID());
+        }
+
+        for (i = 0; i < collections.size(); i++) {
+            locations.add("l" + collections.get(i).getID());
+        }
+
+        return locations;
     }
 
 }
