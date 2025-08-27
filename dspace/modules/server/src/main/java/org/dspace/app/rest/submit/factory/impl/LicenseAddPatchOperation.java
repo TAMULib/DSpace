@@ -7,25 +7,33 @@
  */
 package org.dspace.app.rest.submit.factory.impl;
 
-import javax.servlet.http.HttpServletRequest;
-
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.BooleanUtils;
-import org.dspace.app.rest.utils.ProxyLicenseUtils;
 import org.dspace.content.InProgressSubmission;
 import org.dspace.content.Item;
+import org.dspace.content.LicenseUtils;
 import org.dspace.content.service.ItemService;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.springframework.beans.factory.annotation.Autowired;
 
+// TAMU Customization - proxy license step
+import org.dspace.app.rest.utils.ProxyLicenseUtils;
+// END TAMU Customization - proxy license step
+
 /**
- * TAMU Customization - Customized Submission "add" PATCH operation
+ * Submission "add" PATCH operation
  *
- * To accept/reject the granted license:
+ * To accept/reject the license.
  *
  * Example: <code>
  * curl -X PATCH http://${dspace.server.url}/api/submission/workspaceitems/31599 -H "Content-Type:
  * application/json" -d '[{ "op": "add", "path": "/sections/license/granted", "value":"true"}]'
  * </code>
+ *
+ * Please note that according to the JSON Patch specification RFC6902 a
+ * subsequent add operation on the "granted" path will have the effect to
+ * replace the previous granted license with a new one.
  *
  * @author Luigi Andrea Pascarelli (luigiandrea.pascarelli at 4science.it)
  */
@@ -62,12 +70,27 @@ public class LicenseAddPatchOperation extends AddPatchOperation<String> {
         }
 
         Item item = source.getItem();
-
+        // TAMU Customization - proxy license step
         if (grant) {
             ProxyLicenseUtils.grantLicense(context, item);
         } else {
             ProxyLicenseUtils.revokeLicense(context, item);
         }
+        /*
+        EPerson submitter = context.getCurrentUser();
+
+        // remove any existing DSpace license (just in case the user
+        // accepted it previously)
+        itemService.removeDSpaceLicense(context, item);
+
+        if (grant) {
+            String license = LicenseUtils.getLicenseText(context.getCurrentLocale(), source.getCollection(), item,
+                                                         submitter);
+
+            LicenseUtils.grantLicense(context, item, license, null);
+        }
+        */
+        // END TAMU Customization - proxy license step
     }
 
 }

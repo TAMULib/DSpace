@@ -12,20 +12,23 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
-import javax.servlet.http.HttpServletRequest;
 
+import jakarta.servlet.http.HttpServletRequest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.core.service.LicenseService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.services.model.Request;
 import org.dspace.web.ContextUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+// TAMU Customization - proxy license step
+import java.io.FilenameFilter;
+// END TAMU Customization - proxy license step
 
 /**
  * Encapsulate the deposit license.
@@ -33,7 +36,7 @@ import org.slf4j.LoggerFactory;
  * @author mhwood
  */
 public class LicenseServiceImpl implements LicenseService {
-    private final Logger log = LoggerFactory.getLogger(LicenseServiceImpl.class);
+    private final Logger log = LogManager.getLogger();
 
     /**
      * The default license
@@ -54,7 +57,7 @@ public class LicenseServiceImpl implements LicenseService {
             out.print(newLicense);
             out.close();
         } catch (IOException e) {
-            log.warn("license_write: " + e.getLocalizedMessage());
+            log.warn("license_write: {}", e::getLocalizedMessage);
         }
         license = newLicense;
     }
@@ -102,7 +105,21 @@ public class LicenseServiceImpl implements LicenseService {
         return license;
     }
 
-    // TAMU Customization - proxy license step get available license filenames
+    /**
+     * Get the site-wide default license that submitters need to grant
+     *
+     * Localized license requires: default_{{locale}}.license file.
+     * Locale also must be listed in webui.supported.locales setting.
+     *
+     * @return the default license
+     */
+    @Override
+    public String getDefaultSubmissionLicense() {
+        init();
+        return license;
+    }
+
+    // TAMU Customization - proxy license step - get available license filenames
     @Override
     public String[] getLicenseFilenames() {
         String homeDir = DSpaceServicesFactory.getInstance()
@@ -121,20 +138,7 @@ public class LicenseServiceImpl implements LicenseService {
             }
         });
     }
-
-    /**
-     * Get the site-wide default license that submitters need to grant
-     *
-     * Localized license requires: default_{{locale}}.license file.
-     * Locale also must be listed in webui.supported.locales setting.
-     *
-     * @return the default license
-     */
-    @Override
-    public String getDefaultSubmissionLicense() {
-        init();
-        return license;
-    }
+    // END TAMU Customization - proxy license step - get available license filenames
 
     /**
      * Load in the default license.
@@ -161,7 +165,7 @@ public class LicenseServiceImpl implements LicenseService {
             br.close();
 
         } catch (IOException e) {
-            log.error("Can't load license: " + licenseFile.toString(), e);
+            log.error("Can't load license {}: ", licenseFile.toString(), e);
 
             // FIXME: Maybe something more graceful here, but with the
             // configuration we can't do anything

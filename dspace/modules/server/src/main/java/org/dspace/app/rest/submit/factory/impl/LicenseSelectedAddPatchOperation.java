@@ -8,7 +8,7 @@
 package org.dspace.app.rest.submit.factory.impl;
 
 import java.io.File;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.dspace.app.rest.utils.ProxyLicenseUtils;
