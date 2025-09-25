@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -104,13 +106,26 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        final Set<String> groupNames = threadLocalGroupNames.get();
+
+        if (context.getSpecialGroups().size() > 0 ) {
+            LOGGER.info("Returning cached special groups.");
+            return context.getSpecialGroups();
+        }
+
+        String code = (String) request.getParameter("code");
+        if (StringUtils.isEmpty(code)) {
+            LOGGER.info("The incoming request does not have a code parameter");
+        }
+
+        printRequestDetails(request);
+
+        final Set<String> groupNames = Set.copyOf(threadLocalGroupNames.get());
         LOGGER.info("Determining Special Groups " + groupNames);
 
-        List<Group> groups = new ArrayList<>();
+        final List<Group> groups = new ArrayList<>();
 
         try {
-            if (context.getCurrentUser() != null && groupNames != null) {
+            if (context.getCurrentUser() != null) {
                 for (String groupName : groupNames) {
                     if (groupName == null || groupName.isEmpty()) {
                         continue;
@@ -154,7 +169,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
         String code = (String) request.getParameter("code");
         if (StringUtils.isEmpty(code)) {
-            LOGGER.warn("The incoming request has not code parameter");
+            LOGGER.warn("The incoming request does not have a code parameter");
             return NO_SUCH_USER;
         }
 
@@ -553,6 +568,74 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         int padding = 4 - (base64.length() % 4);
 
         return base64 + "=".repeat(padding % 4);
+    }
+
+    private static void printRequestDetails(HttpServletRequest request) {
+        LOGGER.info("=== HTTP SERVLET REQUEST DETAILS ===");
+
+        LOGGER.info("--- PARAMETERS ---");
+        Enumeration<String> paramNames = request.getParameterNames();
+        if (!paramNames.hasMoreElements()) {
+            LOGGER.info("No parameters found");
+        } else {
+            while (paramNames.hasMoreElements()) {
+                String paramName = paramNames.nextElement();
+                String[] paramValues = request.getParameterValues(paramName);
+                if (paramValues.length == 1) {
+                    LOGGER.info(paramName + " = " + paramValues[0]);
+                } else {
+                    String message = paramName + " = [";
+                    for (int i = 0; i < paramValues.length; i++) {
+                        message += paramValues[i];
+                        if (i < paramValues.length - 1) {
+                            message += ", ";
+                        }
+                    }
+                    message += "]";
+                    LOGGER.info(message);
+                }
+            }
+        }
+
+        LOGGER.info("--- HEADERS ---");
+        Enumeration<String> headerNames = request.getHeaderNames();
+        if (!headerNames.hasMoreElements()) {
+            LOGGER.info("No headers found");
+        } else {
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                Enumeration<String> headerValues = request.getHeaders(headerName);
+
+                String message  = headerName + " = ";
+
+                boolean first = true;
+                while (headerValues.hasMoreElements()) {
+                    if (!first) {
+                        message += ", ";
+                    }
+                    message += headerValues.nextElement();
+                    first = false;
+                }
+                LOGGER.info(message);
+            }
+        }
+
+        LOGGER.info("--- COOKIES ---");
+        Cookie[] cookies = request.getCookies();
+        if (cookies == null || cookies.length == 0) {
+            LOGGER.info("No cookies found");
+        } else {
+            for (Cookie cookie : cookies) {
+                LOGGER.info(cookie.getName() + " = " + cookie.getValue() +
+                    " (domain: " + cookie.getDomain() +
+                    ", path: " + cookie.getPath() +
+                    ", maxAge: " + cookie.getMaxAge() +
+                    ", secure: " + cookie.getSecure() +
+                    ", httpOnly: " + cookie.isHttpOnly() + ")");
+            }
+        }
+
+        LOGGER.info("=== END REQUEST DETAILS ===");
     }
 
 }
