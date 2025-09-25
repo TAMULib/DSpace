@@ -16,11 +16,21 @@ import static org.apache.commons.lang3.StringUtils.isBlank;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Base64;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -36,6 +46,7 @@ import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -60,6 +71,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final String OIDC_AUTHENTICATED = "oidc.authenticated";
+
+    private static ThreadLocal<Set<String>> threadLocalGroupNames = ThreadLocal.withInitial(() -> new HashSet<>());
 
     @Autowired
     private ConfigurationService configurationService;
@@ -91,27 +104,32 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        // Check if authentication-oidc.login.specialgroup config has a group defined
+        final Set<String> groupNames = threadLocalGroupNames.get();
+        LOGGER.info("Determining Special Groups " + groupNames);
+
+        List<Group> groups = new ArrayList<>();
+
         try {
-            // without a logged in user, this method should return an empty list
-            if (context.getCurrentUser() == null) {
-                return List.of();
-            }
-            String groupName = configurationService.getProperty("authentication-oidc.login.specialgroup");
-            if ((groupName != null) && (!groupName.trim().equals(""))) {
-                Group group = groupService.findByName(context, groupName);
-                if (group == null) {
-                    // Group not found
-                    LOGGER.warn("Group defined in authentication-oidc.login.specialgroup does not exist");
-                    return List.of();
-                } else {
-                    return Arrays.asList(group);
+            if (context.getCurrentUser() != null && groupNames != null) {
+                for (String groupName : groupNames) {
+                    if (groupName == null || groupName.isEmpty()) {
+                        continue;
+                    }
+                    LOGGER.info("Looking Up Special Group " + groupName);
+                    Group group = groupService.findByName(context, groupName);
+                    if (group == null) {
+                        LOGGER.warn("Group {} does not exist", groupName);
+                    } else {
+                        LOGGER.info("Found Special Group " + groupName);
+                        groups.add(group);
+                    }
                 }
             }
         } catch (SQLException ex) {
-            // Database error, ignore
+            // Ignoring database error
         }
-        return List.of();
+
+        return groups;
     }
 
     @Override
@@ -122,6 +140,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     @Override
     public int authenticate(Context context, String username, String password, String realm, HttpServletRequest request)
         throws SQLException {
+
+        LOGGER.info("Authenticating");
 
         if (request == null) {
             LOGGER.warn("Unable to authenticate using OIDC because the request object is null.");
@@ -149,7 +169,30 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             return NO_SUCH_USER;
         }
 
+        LOGGER.info("Access Token " + accessToken.getAccessToken());
+
+        LOGGER.info("Access Claims " + decodeJwt(accessToken.getAccessToken()));
+
+        LOGGER.info("ID Token " + accessToken.getIdToken());
+
+        Map<String, Object> claims = decodeJwt(accessToken.getIdToken()).get("payload");
+
+        LOGGER.info("ID Claims " + claims);
+
         Map<String, Object> userInfo = getOidcUserInfo(accessToken.getAccessToken());
+
+        LOGGER.info("User Info " + userInfo);
+
+        Map<String, Map<String, String[]>> groupMappings = getGroupMappings();
+
+        LOGGER.info("Group Mappings " + groupMappings);
+
+        Set<String> groups = determineGroups(groupMappings, claims);
+
+        LOGGER.info("Groups " + groups);
+
+        threadLocalGroupNames.set(groups);
+
 
         String email = getAttributeAsString(userInfo, getEmailAttribute());
         if (StringUtils.isBlank(email)) {
@@ -164,7 +207,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         }
 
         // if self registration is disabled, warn about this failure to find a matching eperson
-        if (! canSelfRegister()) {
+        if (!canSelfRegister()) {
             LOGGER.warn("Self registration is currently disabled for OIDC, and no ePerson could be found for email: {}",
                 email);
             return NO_SUCH_USER;
@@ -301,6 +344,131 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         return configurationService.getProperty("authentication-oidc.user-info.last-name", "family_name");
     }
 
+    private Map<String, Map<String, String[]>> getGroupMappings() {
+        final Map<String, Map<String, String[]>> groupMappings = new HashMap<>();
+
+        final String groupClaims = configurationService.getProperty("authentication-oidc.group.claims", "groups");
+
+        LOGGER.info("Group Claims " + groupClaims);
+
+        final String[] groupKeys = groupClaims.split(",");
+
+        for (String groupKey : groupKeys) {
+            final String claimKey = groupKey.trim();
+            LOGGER.info("Claim Key " + claimKey);
+            if (claimKey.length() > 0) {
+                groupKey = claimKey;
+
+                LOGGER.info("Group Key " + groupKey);
+                final Map<String, String[]> groupMapping = getGroupMapping(claimKey);
+                LOGGER.info("Group Mapping " + groupMapping);
+                groupMappings.put(groupKey, groupMapping);
+            }
+        }
+
+        // {claim key, {claim value, [groups]}}
+        return groupMappings;
+    }
+
+    private Map<String, String[]> getGroupMapping(String claimKey) {
+        final Map<String, String[]> groupMapping = new HashMap<>();
+
+        final String configPrefix = String.join(".", "authentication-oidc", claimKey);
+
+        LOGGER.info("Config Prefix " + configPrefix);
+
+        final List<String> claimGroupPropertyKeys = configurationService.getPropertyKeys(configPrefix);
+
+        LOGGER.info("Claim Group Property Keys " + claimGroupPropertyKeys);
+
+        for (String claimGroupPropertyKey : claimGroupPropertyKeys) {
+
+            LOGGER.info("Claim Group Property Key " + claimGroupPropertyKey);
+
+            final String[] claimGroupPropertyKeySections = claimGroupPropertyKey.split("\\.");
+
+            LOGGER.info("Claim Group Property Key Sections " + Arrays.toString(claimGroupPropertyKeySections));
+
+            if (claimGroupPropertyKeySections.length == 3) {
+
+                final String groupClaimValue = claimGroupPropertyKeySections[2];
+
+                LOGGER.info("Group Claim Value " + groupClaimValue);
+
+                final String groupClaim = configurationService.getProperty(claimGroupPropertyKey, "").trim();
+
+                LOGGER.info("Group Claim " + groupClaim);
+
+                if (groupClaim.length() > 0) {
+                    final String[] groups = groupClaim.split(",");
+
+                    LOGGER.info("Groups " + Arrays.toString(groups));
+
+                    for (String group : groups) {
+                        group = group.trim();
+                    }
+                    groupMapping.put(groupClaimValue, groups);
+                }
+            }
+        }
+
+        // {claim value, [groups]}
+        return groupMapping;
+    }
+
+    private Set<String> determineGroups(Map<String, Map<String, String[]>> groupMappings, Map<String, Object> claims) {
+        final Set<String> groups = new HashSet<>();
+
+        for (Entry<String, Object> claimEntry : claims.entrySet()) {
+            if (claimEntry.getKey() == null || claimEntry.getValue() == null) {
+                continue;
+            }
+
+            final String claimKey = claimEntry.getKey().trim();
+            final Object claimValue = claimEntry.getValue();
+
+            if (claimKey.length() > 0 && groupMappings.containsKey(claimKey)) {
+                final Map<String, String[]> groupMapping = groupMappings.get(claimKey);
+
+                for (Entry<String, String[]> groupMappingEntry : groupMapping.entrySet()) {
+                    if (groupMappingEntry.getKey() == null || groupMappingEntry.getValue() == null) {
+                        continue;
+                    }
+
+                    final String groupClaimValue = groupMappingEntry.getKey().trim();
+                    final List<String> groupsForClaim = Arrays.asList(groupMappingEntry.getValue())
+                        .stream()
+                        .map(groupForClaim -> groupForClaim.trim())
+                        .filter(groupForClaim -> groupForClaim.length() > 0)
+                        .collect(Collectors.toList());
+
+                    if (claimValue instanceof String claim) {
+                        final String[] groupClaims = claim.split(",");
+                        for (String groupClaim : groupClaims) {
+                            groupClaim = groupClaim.trim();
+                            if (groupClaim.length() > 0 && groupClaim.startsWith(groupClaimValue)) {
+                                groups.addAll(groupsForClaim);
+                            }
+                        }
+                    } else if (claimValue instanceof Collection claim) {
+                        for (Object groupsClaim : claim) {
+                            if (!(groupsClaim instanceof String)) {
+                                continue;
+                            }
+                            final String groupClaim = ((String) groupsClaim).trim();
+                            if (groupClaim.length() > 0 && groupClaim.startsWith(groupClaimValue)) {
+                                groups.addAll(groupsForClaim);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // [groups]
+        return groups;
+    }
+
     private boolean canSelfRegister() {
         String canSelfRegister = configurationService.getProperty("authentication-oidc.can-self-register", "true");
         if (isBlank(canSelfRegister)) {
@@ -330,6 +498,61 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     @Override
     public boolean canChangePassword(Context context, EPerson ePerson, String currentPassword) {
         return false;
+    }
+
+    /**
+     * Decodes a JWT string and returns its header and payload as structured maps.
+     *
+     * <p>
+     * ⚠️ This decoder is designed for JWTs (RFC 7519), not JWEs (RFC 7516).
+     * JWEs are encrypted and require decryption before decoding.
+     * </p>
+     * @param jwt the JWT string in the format {@code header.payload.signature}
+     * @return a map containing two entries:
+     *         <ul>
+     *             <li>{@code "header"} → decoded JWT header as a map</li>
+     *             <li>{@code "payload"} → decoded JWT payload as a map</li>
+     *         </ul>
+     * 
+     * @throws IllegalArgumentException if the JWT format is invalid or decoding fails
+     */
+    private static Map<String, Map<String, Object>> decodeJwt(String jwt) {
+        String[] parts = jwt.split("\\.");
+        if (parts.length != 3) {
+            throw new IllegalArgumentException("Invalid JWT format");
+        }
+       
+        Map<String, Map<String, Object>> result = new HashMap<>();
+        result.put("header", parseJson(parts[0]));
+        result.put("payload", parseJson(parts[1]));
+
+        return result;
+    }
+
+    /**
+     * Decodes a Base64URL-encoded JWT section and parses it into a map.
+     *
+     * @param base64Url the Base64URL-encoded string
+     * @return a map representing the decoded JSON object
+     * @throws IllegalArgumentException if decoding or parsing fails
+     */
+    private static Map<String, Object> parseJson(String base64Url) {
+        String json = new String(Base64.getUrlDecoder().decode(padBase64(base64Url)));
+        JSONObject jsonObject = new JSONObject(json);
+
+        return jsonObject.toMap();
+    }
+
+    /**
+     * Pads a Base64URL string to ensure it has correct length for decoding.
+     *
+     * @param base64 the unpadded Base64URL string
+     * @return a padded Base64URL string suitable for decoding
+     */
+    private static String padBase64(String base64) {
+        int padding = 4 - (base64.length() % 4);
+
+        return base64 + "=".repeat(padding % 4);
     }
 
 }
