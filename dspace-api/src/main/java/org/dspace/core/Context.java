@@ -89,6 +89,8 @@ public class Context implements AutoCloseable {
      */
     private Deque<String> authStateClassCallHistory;
 
+    private Set<String> specialGroupNames;
+
     /**
      * Group IDs of special groups user is a member of
      */
@@ -189,6 +191,7 @@ public class Context implements AutoCloseable {
         extraLogInfo = "";
         ignoreAuth = false;
 
+        specialGroupNames = new HashSet<>();
         specialGroups = new HashSet<>();
 
         authStateChangeHistory = new ConcurrentLinkedDeque<>();
@@ -659,6 +662,10 @@ public class Context implements AutoCloseable {
         return mode != null && mode == Mode.READ_ONLY;
     }
 
+    public void setSpecialGroupNames(Set<String> groupNames) {
+        specialGroupNames.addAll(groupNames);
+    }
+
     /**
      * Add a group's UUID to the list of special groups cached in Context
      * @param groupID UUID of group
@@ -675,6 +682,10 @@ public class Context implements AutoCloseable {
      */
     public boolean inSpecialGroup(UUID groupID) {
         return specialGroups.contains(groupID);
+    }
+
+    public Set<String> getSpecialGroupNames() {
+        return specialGroupNames;
     }
 
     /**

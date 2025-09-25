@@ -119,8 +119,13 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
         printRequestDetails(request);
 
-        final Set<String> groupNames = Set.copyOf(threadLocalGroupNames.get());
-        LOGGER.info("Determining Special Groups " + groupNames);
+        Set<String> groupNames = threadLocalGroupNames.get();
+        LOGGER.info("Determining Special Groups (thread local) " + groupNames);
+
+        if (groupNames.isEmpty()) {
+            groupNames = context.getSpecialGroupNames();
+            LOGGER.info("Determining Special Groups (context) " + groupNames);
+        }
 
         final List<Group> groups = new ArrayList<>();
 
@@ -207,6 +212,10 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         LOGGER.info("Groups " + groups);
 
         threadLocalGroupNames.set(groups);
+
+        request.setAttribute("specialgroups", groups);
+
+        context.setSpecialGroupNames(groups);
 
 
         String email = getAttributeAsString(userInfo, getEmailAttribute());
