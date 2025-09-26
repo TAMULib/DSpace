@@ -22,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.app.rest.security.WebSecurityConfiguration.OidcWebAuthenticationDetails;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
@@ -53,7 +54,25 @@ public class OidcLoginFilter extends StatelessLoginFilter {
         throws AuthenticationException {
         req.setAttribute(OIDC_AUTH_ATTRIBUTE, OIDC_AUTH_ATTRIBUTE);
         // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
-        return authenticationManager.authenticate(new DSpaceAuthentication());
+
+        // :( why was this method returning a new authentication object?
+        Authentication authentication = authenticationManager.authenticate(new DSpaceAuthentication());
+
+        // NOTE: this is a cross module knowledge via request attribute
+        // Authentication setting details from the request must occur after dspace-api OidcAuthentcationBean
+        // authenticate in which places the specialgroups attribute on the request
+        OidcWebAuthenticationDetails oidcWebAuthenticationDetails = (OidcWebAuthenticationDetails) authenticationDetailsSource.buildDetails(req);
+        log.info("OIDC Web Authentication Details: {}", oidcWebAuthenticationDetails);
+
+        Object details = oidcWebAuthenticationDetails.getDetails();
+        log.info("details: {}", details);
+
+        ((DSpaceAuthentication) authentication).setDetails(details);
+
+
+        log.info("Authentication details: {}", authentication.getDetails());
+
+        return authentication;
     }
 
     @Override
@@ -61,7 +80,7 @@ public class OidcLoginFilter extends StatelessLoginFilter {
         Authentication auth) throws IOException, ServletException {
         restAuthenticationService.addAuthenticationDataForUser(req, res, (DSpaceAuthentication) auth, true);
 
-        // NOTE: this is a cross module coupling
+        // NOTE: this is a cross module knowledge via request attribute
         // dspace-api OidcAuthenticationBean authenticate adds the determined special groups to the request attribute
         // this spring security filter on success adds the special groups as a response cookie
         log.info("--- ATTRIBUTES filter successful authentication ---");

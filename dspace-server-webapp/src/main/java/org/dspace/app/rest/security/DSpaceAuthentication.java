@@ -30,6 +30,8 @@ public class DSpaceAuthentication implements Authentication {
     private List<GrantedAuthority> authorities;
     private boolean authenticated;
 
+    private Object details;
+
     /**
      * Create a DSpaceAuthentication instance for an already authenticated EPerson, including their GrantedAuthority
      * objects.
@@ -80,7 +82,11 @@ public class DSpaceAuthentication implements Authentication {
     }
 
     public Object getDetails() {
-        return null;
+        return details;
+    }
+
+    public void setDetails(Object details) {
+        this.details = details;
     }
 
     public Object getPrincipal() {
@@ -101,5 +107,24 @@ public class DSpaceAuthentication implements Authentication {
 
     public Instant getPreviousLoginDate() {
         return previousLoginDate;
+    }
+
+    DSpaceAuthentication forEPerson(EPerson ePerson) {
+         this.previousLoginDate = ePerson.getPreviousActive();
+         this.username = ePerson.getEmail();
+
+         return this;
+    }
+
+    DSpaceAuthentication withGrantedAuthorities(List<GrantedAuthority> authorities) {
+        this.authorities = authorities;
+
+        return this;
+    }
+
+    DSpaceAuthentication withAuthenticatedTrue() {
+        this.authenticated = true;
+
+        return this;
     }
 }

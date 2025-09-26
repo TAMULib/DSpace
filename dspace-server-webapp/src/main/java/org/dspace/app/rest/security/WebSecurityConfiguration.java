@@ -99,7 +99,7 @@ public class WebSecurityConfiguration {
         // Get the current AuthenticationManager (defined above) to apply filters below
         AuthenticationManager authenticationManager = authenticationManager();
 
-        // TODO: move into a method
+        // TODO: move into a method and use constants for paths
         OidcLoginFilter oidcLoginFilter = new OidcLoginFilter("/api/authn/oidc", HttpMethod.GET.name(),
             authenticationManager, restAuthenticationService);
         oidcLoginFilter.setAuthenticationDetailsSource(oidcAuthenticationDetailsSource());
@@ -226,12 +226,21 @@ public class WebSecurityConfiguration {
     }
 
     public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> oidcAuthenticationDetailsSource() {
-        return request -> new OidcWebAuthenticationDetails(request);
+        // TODO: move into appropriate package and instantiate without method in WebSecurityConfig
+        return new AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>() {
+
+            @Override
+            public WebAuthenticationDetails buildDetails(HttpServletRequest request) {
+                return new OidcWebAuthenticationDetails(request);
+            }
+
+        };
     }
 
+    // TODO: move into appropriate package and type details using generics
     public class OidcWebAuthenticationDetails extends WebAuthenticationDetails {
 
-        private final Object extraDetail;
+        private final Object details;
 
         public OidcWebAuthenticationDetails(HttpServletRequest request) {
             super(request);
@@ -249,11 +258,12 @@ public class WebSecurityConfiguration {
             }
             log.info("--- END ATTRIBUTES custom web authentication details ---");
 
-            this.extraDetail = request.getAttribute("specialgroups");
+            // TODO: find or create constant for specialgroups
+            this.details = request.getAttribute("specialgroups");
         }
 
-        public Object getExtraDetail() {
-            return extraDetail;
+        public Object getDetails() {
+            return details;
         }
     }
 

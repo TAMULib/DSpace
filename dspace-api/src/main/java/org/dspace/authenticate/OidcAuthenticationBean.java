@@ -118,16 +118,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
         LOGGER.info("Getting special groups");
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        LOGGER.info("Authentication: {}", authentication);
-
-        LOGGER.info("Authentication name: {}", authentication.getName());
-
-        LOGGER.info("Authentication credentials: {}", authentication.getCredentials());
-        LOGGER.info("Authentication details: {}", authentication.getDetails());
-        LOGGER.info("Authentication principal: {}", authentication.getPrincipal());
-
         final List<Group> groups = new ArrayList<>();
 
         try {
@@ -149,11 +139,29 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
             Set<String> groupNames = new HashSet<>();
 
-            Cookie cookie = WebUtils.getCookie(request, "specialgroups");
-            if (cookie != null) {
-                String specialGroups = cookie.getValue();
-                if (specialGroups != null && specialGroups.length() > 0) {
-                    groupNames = Set.of(specialGroups.split(":"));
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+            LOGGER.info("Authentication: {}", authentication);
+
+            LOGGER.info("Authentication name: {}", authentication.getName());
+
+            LOGGER.info("Authentication credentials: {}", authentication.getCredentials());
+            LOGGER.info("Authentication details: {}", authentication.getDetails());
+            LOGGER.info("Authentication principal: {}", authentication.getPrincipal());
+
+            if (authentication.getDetails() != null) {
+                groupNames = (Set<String>) authentication.getDetails();
+                LOGGER.info("Determining Special Groups (authentication details) " + groupNames);
+            }
+
+            if (groupNames.isEmpty()) {
+                Cookie cookie = WebUtils.getCookie(request, "specialgroups");
+                if (cookie != null) {
+                    String specialGroups = cookie.getValue();
+                    if (specialGroups != null && specialGroups.length() > 0) {
+                        groupNames = Set.of(specialGroups.split(":"));
+                        LOGGER.info("Determining Special Groups (session cookie) " + groupNames);
+                    }
                 }
             }
 
@@ -222,6 +230,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     }
 
     private int authenticateWithOidc(Context context, String code, HttpServletRequest request) throws SQLException {
+
+        // TODO: cleanup according to selected functional implementation
 
         OidcTokenResponseDTO accessToken = getOidcAccessToken(code);
         if (accessToken == null) {
@@ -409,6 +419,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         return configurationService.getProperty("authentication-oidc.user-info.last-name", "family_name");
     }
 
+    // TODO: add JavaDocs and update logging (debug)
     private Map<String, Map<String, String[]>> getGroupMappings() {
         final Map<String, Map<String, String[]>> groupMappings = new HashMap<>();
 
@@ -435,6 +446,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         return groupMappings;
     }
 
+    // TODO: add JavaDocs and update logging (debug)
     private Map<String, String[]> getGroupMapping(String claimKey) {
         final Map<String, String[]> groupMapping = new HashMap<>();
 
@@ -481,6 +493,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         return groupMapping;
     }
 
+    // TODO: add JavaDocs and logging (debug)
     private Set<String> determineGroups(Map<String, Map<String, String[]>> groupMappings, Map<String, Object> claims) {
         final Set<String> groups = new HashSet<>();
 
@@ -564,6 +577,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public boolean canChangePassword(Context context, EPerson ePerson, String currentPassword) {
         return false;
     }
+
+    // TODO: look for existing utility for JWT and possible JWE otherwise move into a simple utility class
 
     /**
      * Decodes a JWT string and returns its header and payload as structured maps.

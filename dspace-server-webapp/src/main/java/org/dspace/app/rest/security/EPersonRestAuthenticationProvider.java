@@ -81,11 +81,11 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
         if (context != null && context.getCurrentUser() != null) {
             // Simply refresh/reload the auth token. If token has expired, the token will change.
             log.debug("Request to refresh auth token");
-            return authenticateRefreshTokenRequest(context);
+            return authenticateRefreshTokenRequest(context, (DSpaceAuthentication) authentication);
         } else {
             // Otherwise, this is a new login & we need to attempt authentication
             log.debug("Request to authenticate new login");
-            return authenticateNewLogin(context, authentication);
+            return authenticateNewLogin(context, (DSpaceAuthentication) authentication);
         }
     }
 
@@ -97,9 +97,10 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
      * @param context current DSpace context (for currently logged in user information)
      * @return DSpaceAuthentication object representing authenticated user
      */
-    private Authentication authenticateRefreshTokenRequest(Context context) {
+    private Authentication authenticateRefreshTokenRequest(Context context, DSpaceAuthentication authentication) {
         authenticationService.updateLastActiveDate(context);
-        return createAuthentication(context);
+
+        return processAuthentication(context, authentication);
     }
 
     /**
@@ -112,8 +113,7 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
      * @param authentication Authentication class to attempt authentication.
      * @return new Authentication class containing logged-in user information or null
      */
-    private Authentication authenticateNewLogin(Context context, Authentication authentication) {
-        Authentication output = null;
+    private Authentication authenticateNewLogin(Context context, DSpaceAuthentication authentication) {
 
         if (authentication != null) {
             String name = authentication.getName();
@@ -123,14 +123,14 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
 
             if (implicitStatus == AuthenticationMethod.SUCCESS) {
                 log.info(LogHelper.getHeader(context, "login", "type=implicit"));
-                output = createAuthentication(context);
+                processAuthentication(context, authentication);
             } else {
                 int authenticateResult = authenticationService.authenticate(context, name, password, null, request);
                 if (AuthenticationMethod.SUCCESS == authenticateResult) {
 
                     log.info(LogHelper.getHeader(context, "login", "type=explicit"));
 
-                    output = createAuthentication(context);
+                    processAuthentication(context, authentication);
 
                     for (PostLoggedInAction action : postLoggedInActions) {
                         try {
@@ -148,26 +148,27 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
             }
         }
 
-        return output;
+        return authentication;
     }
 
     /**
-     * Create a valid Spring Authentication object for the user currently authenticated in the Context.
+     * Process existing valid Spring Authentication object for the user currently authenticated in the Context.
      * If no current user is found in the Context, then the login must have failed and a BadCredentialsException is
      * thrown.
      * @param context current DSpace context
      * @return DSpaceAuthentication object for currently authenticated user
      * @throws BadCredentialsException if no current user found
      */
-    private Authentication createAuthentication(final Context context) {
+    private Authentication processAuthentication(final Context context, final DSpaceAuthentication authentication) {
         EPerson ePerson = context.getCurrentUser();
 
         if (ePerson != null && StringUtils.isNotBlank(ePerson.getEmail())) {
             //Pass the eperson ID to the request service
             requestService.setCurrentUserId(ePerson.getID());
 
-            return new DSpaceAuthentication(ePerson, getGrantedAuthorities(context));
-
+            return authentication.forEPerson(ePerson)
+                .withGrantedAuthorities(getGrantedAuthorities(context))
+                .withAuthenticatedTrue();
         } else {
             log.info(LogHelper.getHeader(context, "failed_login", "No eperson with a non-blank e-mail address found"));
             throw new BadCredentialsException("Login failed");
