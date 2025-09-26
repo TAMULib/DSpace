@@ -110,15 +110,15 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
         LOGGER.info("Getting special groups");
 
+        if (context.getSpecialGroups().size() > 0 ) {
+            LOGGER.info("Returning cached special groups.");
+            return context.getSpecialGroups();
+        }
+
         final List<Group> groups = new ArrayList<>();
 
         try {
             if (context.getCurrentUser() != null) {
-
-                if (context.getSpecialGroups().size() > 0 ) {
-                    LOGGER.info("Returning cached special groups.");
-                    return context.getSpecialGroups();
-                }
 
                 String code = (String) request.getParameter("code");
                 if (StringUtils.isEmpty(code)) {
