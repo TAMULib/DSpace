@@ -7,6 +7,10 @@
  */
 package org.dspace.app.rest.security;
 
+import java.util.Enumeration;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.exception.DSpaceAccessDeniedHandler;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.services.RequestService;
@@ -19,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationDetailsSource;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.config.Customizer;
@@ -26,11 +31,14 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * Spring Security configuration for DSpace Server Webapp
@@ -42,6 +50,8 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableConfigurationProperties(SecurityProperties.class)
 public class WebSecurityConfiguration {
+
+    private static final Logger log = LogManager.getLogger(WebSecurityConfiguration.class);
 
     public static final String ADMIN_GRANT = "ADMIN";
     public static final String AUTHENTICATED_GRANT = "AUTHENTICATED";
@@ -206,6 +216,39 @@ public class WebSecurityConfiguration {
     @Bean
     public DSpaceCsrfAuthenticationStrategy dSpaceCsrfAuthenticationStrategy() {
         return new DSpaceCsrfAuthenticationStrategy(csrfTokenRepository());
+    }
+
+    @Bean
+    public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource() {
+        return request -> new CustomWebAuthenticationDetails(request);
+    }
+
+    public class CustomWebAuthenticationDetails extends WebAuthenticationDetails {
+
+        private final Object extraDetail;
+
+        public CustomWebAuthenticationDetails(HttpServletRequest request) {
+            super(request);
+
+            log.info("--- ATTRIBUTES custom web authentication details ---");
+            Enumeration<String> attributeNames = request.getAttributeNames();
+            if (!attributeNames.hasMoreElements()) {
+                log.info("No attributes found");
+            } else {
+                while (attributeNames.hasMoreElements()) {
+                    String attributeName = attributeNames.nextElement();
+                    Object attributeValue = request.getAttribute(attributeName);
+                    log.info(attributeName + " = " + attributeValue);
+                }
+            }
+            log.info("--- END ATTRIBUTES custom web authentication details ---");
+
+            this.extraDetail = request.getAttribute("specialgroups");
+        }
+
+        public Object getExtraDetail() {
+            return extraDetail;
+        }
     }
 
 }
