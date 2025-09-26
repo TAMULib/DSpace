@@ -48,6 +48,7 @@ import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
+import org.dspace.web.ContextUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -65,10 +66,9 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     public static final String OIDC_AUTH_ATTRIBUTE = "oidc";
 
-    protected GroupService groupService
-            = EPersonServiceFactory.getInstance().getGroupService();
+    protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
 
-    private final static String LOGIN_PAGE_URL_FORMAT = "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s";
+    private static final String LOGIN_PAGE_URL_FORMAT = "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s";
 
     private static final Logger LOGGER = LogManager.getLogger();
 
@@ -107,30 +107,38 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
 
-        if (context.getSpecialGroups().size() > 0 ) {
-            LOGGER.info("Returning cached special groups.");
-            return context.getSpecialGroups();
-        }
-
-        String code = (String) request.getParameter("code");
-        if (StringUtils.isEmpty(code)) {
-            LOGGER.info("The incoming request does not have a code parameter");
-        }
-
-        printRequestDetails(request);
-
-        Set<String> groupNames = threadLocalGroupNames.get();
-        LOGGER.info("Determining Special Groups (thread local) " + groupNames);
-
-        if (groupNames.isEmpty()) {
-            groupNames = context.getSpecialGroupNames();
-            LOGGER.info("Determining Special Groups (context) " + groupNames);
-        }
+        LOGGER.info("Getting special groups");
 
         final List<Group> groups = new ArrayList<>();
 
         try {
             if (context.getCurrentUser() != null) {
+
+                if (context.getSpecialGroups().size() > 0 ) {
+                    LOGGER.info("Returning cached special groups.");
+                    return context.getSpecialGroups();
+                }
+
+                printRequestDetails(request);
+
+                Set<String> groupNames = threadLocalGroupNames.get();
+                LOGGER.info("Determining Special Groups (thread local) " + groupNames);
+
+                if (groupNames.isEmpty()) {
+                    groupNames = context.getSpecialGroupNames();
+                    LOGGER.info("Determining Special Groups (context) " + groupNames);
+                }
+
+                if (groupNames.isEmpty()) {
+                    groupNames = ContextUtil.obtainContext(request).getSpecialGroupNames();
+                    LOGGER.info("Determining Special Groups (request context) " + groupNames);
+                }
+
+                if (groupNames.isEmpty()) {
+                    groupNames = ContextUtil.obtainCurrentRequestContext().getSpecialGroupNames();
+                    LOGGER.info("Determining Special Groups (current request context) " + groupNames);
+                }
+
                 for (String groupName : groupNames) {
                     if (groupName == null || groupName.isEmpty()) {
                         continue;
@@ -213,6 +221,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
         threadLocalGroupNames.set(groups);
 
+        request.setAttribute("code", code);
         request.setAttribute("specialgroups", groups);
 
         context.setSpecialGroupNames(groups);
