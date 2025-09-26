@@ -102,6 +102,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public void initEPerson(Context context, HttpServletRequest request, EPerson eperson) throws SQLException {
+        // do nothing
     }
 
     @Override
@@ -117,6 +118,12 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                 if (context.getSpecialGroups().size() > 0 ) {
                     LOGGER.info("Returning cached special groups.");
                     return context.getSpecialGroups();
+                }
+
+                String code = (String) request.getParameter("code");
+                if (StringUtils.isEmpty(code)) {
+                    LOGGER.warn("The incoming request does not have a code parameter");
+                    return NO_SUCH_USER;
                 }
 
                 printRequestDetails(request);
@@ -149,7 +156,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                 }
             }
         } catch (SQLException ex) {
-            // Ignoring database error
+            // ignoring database error
         }
 
         return groups;
