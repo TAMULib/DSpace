@@ -134,11 +134,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                     LOGGER.info("Determining Special Groups (request context) " + groupNames);
                 }
 
-                if (groupNames.isEmpty()) {
-                    groupNames = ContextUtil.obtainCurrentRequestContext().getSpecialGroupNames();
-                    LOGGER.info("Determining Special Groups (current request context) " + groupNames);
-                }
-
                 for (String groupName : groupNames) {
                     if (groupName == null || groupName.isEmpty()) {
                         continue;
