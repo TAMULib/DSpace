@@ -123,7 +123,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                 String code = (String) request.getParameter("code");
                 if (StringUtils.isEmpty(code)) {
                     LOGGER.warn("The incoming request does not have a code parameter");
-                    return NO_SUCH_USER;
                 }
 
                 printRequestDetails(request);
