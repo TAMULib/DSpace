@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,6 +42,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authenticate.oidc.OidcClient;
 import org.dspace.authenticate.oidc.model.OidcTokenResponseDTO;
+import org.dspace.content.service.MetadataValueService;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
@@ -51,6 +53,9 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.web.ContextUtil;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.util.WebUtils;
 
 /**
  * OpenID Connect Authentication for DSpace.
@@ -85,6 +90,9 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     @Autowired
     private EPersonService ePersonService;
 
+    @Autowired
+    private MetadataValueService metadataValueService;
+
     @Override
     public boolean allowSetPassword(Context context, HttpServletRequest request, String username) throws SQLException {
         return false;
@@ -110,48 +118,71 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
         LOGGER.info("Getting special groups");
 
-        if (context.getSpecialGroups().size() > 0 ) {
-            LOGGER.info("Returning cached special groups.");
-            return context.getSpecialGroups();
-        }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        LOGGER.info("Authentication: {}", authentication);
+
+        LOGGER.info("Authentication name: {}", authentication.getName());
+
+        LOGGER.info("Authentication credentials: {}", authentication.getCredentials());
+        LOGGER.info("Authentication details: {}", authentication.getDetails());
+        LOGGER.info("Authentication principal: {}", authentication.getPrincipal());
 
         final List<Group> groups = new ArrayList<>();
 
         try {
-            if (context.getCurrentUser() != null) {
+            if (request == null || context.getCurrentUser() == null) {
+                return Collections.EMPTY_LIST;
+            }
 
-                String code = (String) request.getParameter("code");
-                if (StringUtils.isEmpty(code)) {
-                    LOGGER.warn("The incoming request does not have a code parameter");
+            if (context.getSpecialGroups().size() > 0) {
+                LOGGER.info("Returning cached special groups.");
+                return context.getSpecialGroups();
+            }
+
+            String code = (String) request.getParameter("code");
+            if (StringUtils.isEmpty(code)) {
+                LOGGER.warn("The incoming request does not have a code parameter");
+            }
+
+            printRequestDetails(request);
+
+            Set<String> groupNames = new HashSet<>();
+
+            Cookie cookie = WebUtils.getCookie(request, "specialgroups");
+            if (cookie != null) {
+                String specialGroups = cookie.getValue();
+                if (specialGroups != null && specialGroups.length() > 0) {
+                    groupNames = Set.of(specialGroups.split(":"));
                 }
+            }
 
-                printRequestDetails(request);
-
-                Set<String> groupNames = threadLocalGroupNames.get();
+            if (groupNames.isEmpty()) {
+                groupNames = threadLocalGroupNames.get();
                 LOGGER.info("Determining Special Groups (thread local) " + groupNames);
+            }
 
-                if (groupNames.isEmpty()) {
-                    groupNames = context.getSpecialGroupNames();
-                    LOGGER.info("Determining Special Groups (context) " + groupNames);
+            if (groupNames.isEmpty()) {
+                groupNames = context.getSpecialGroupNames();
+                LOGGER.info("Determining Special Groups (context) " + groupNames);
+            }
+
+            if (groupNames.isEmpty()) {
+                groupNames = ContextUtil.obtainContext(request).getSpecialGroupNames();
+                LOGGER.info("Determining Special Groups (request context) " + groupNames);
+            }
+
+            for (String groupName : groupNames) {
+                if (groupName == null || groupName.isEmpty()) {
+                    continue;
                 }
-
-                if (groupNames.isEmpty()) {
-                    groupNames = ContextUtil.obtainContext(request).getSpecialGroupNames();
-                    LOGGER.info("Determining Special Groups (request context) " + groupNames);
-                }
-
-                for (String groupName : groupNames) {
-                    if (groupName == null || groupName.isEmpty()) {
-                        continue;
-                    }
-                    LOGGER.info("Looking Up Special Group " + groupName);
-                    Group group = groupService.findByName(context, groupName);
-                    if (group == null) {
-                        LOGGER.warn("Group {} does not exist", groupName);
-                    } else {
-                        LOGGER.info("Found Special Group " + groupName);
-                        groups.add(group);
-                    }
+                LOGGER.info("Looking Up Special Group " + groupName);
+                Group group = groupService.findByName(context, groupName);
+                if (group == null) {
+                    LOGGER.warn("Group {} does not exist", groupName);
+                } else {
+                    LOGGER.info("Found Special Group " + groupName);
+                    groups.add(group);
                 }
             }
         } catch (SQLException ex) {
@@ -241,11 +272,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         }
 
         // if self registration is disabled, warn about this failure to find a matching eperson
-        if (!canSelfRegister()) {
-            LOGGER.warn("Self registration is currently disabled for OIDC, and no ePerson could be found for email: {}",
-                email);
-            return NO_SUCH_USER;
-        } else {
+        if (canSelfRegister()) {
             int result = registerNewEPerson(context, userInfo, email);
             if (result == SUCCESS) {
                 // It is important to set this attribute so the new user
@@ -253,6 +280,10 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                 request.setAttribute(OIDC_AUTHENTICATED, true);
             }
             return result;
+        } else {
+            LOGGER.warn("Self registration is currently disabled for OIDC, and no ePerson could be found for email: {}",
+                email);
+            return NO_SUCH_USER;
         }
     }
 
@@ -591,6 +622,18 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     private static void printRequestDetails(HttpServletRequest request) {
         LOGGER.info("=== HTTP SERVLET REQUEST DETAILS ===");
+
+        LOGGER.info("--- ATTRIBUTES ---");
+        Enumeration<String> attributeNames = request.getAttributeNames();
+        if (!attributeNames.hasMoreElements()) {
+            LOGGER.info("No attributes found");
+        } else {
+            while (attributeNames.hasMoreElements()) {
+                String attributeName = attributeNames.nextElement();
+                Object attributeValue = request.getAttribute(attributeName);
+                LOGGER.info(attributeName + " = " + attributeValue);
+            }
+        }
 
         LOGGER.info("--- PARAMETERS ---");
         Enumeration<String> paramNames = request.getParameterNames();

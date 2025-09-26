@@ -11,9 +11,12 @@ import static org.dspace.authenticate.OidcAuthenticationBean.OIDC_AUTH_ATTRIBUTE
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.Set;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
@@ -57,6 +60,35 @@ public class OidcLoginFilter extends StatelessLoginFilter {
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
         Authentication auth) throws IOException, ServletException {
         restAuthenticationService.addAuthenticationDataForUser(req, res, (DSpaceAuthentication) auth, true);
+
+        log.info("--- ATTRIBUTES filter successful authentication ---");
+        Enumeration<String> attributeNames = req.getAttributeNames();
+        if (!attributeNames.hasMoreElements()) {
+            log.info("No attributes found");
+        } else {
+            while (attributeNames.hasMoreElements()) {
+                String attributeName = attributeNames.nextElement();
+                Object attributeValue = req.getAttribute(attributeName);
+                log.info(attributeName + " = " + attributeValue);
+            }
+        }
+        log.info("--- END ATTRIBUTES filter successful authentication ---");
+
+        String specialGroups = String.join(":", (Set<String>) req.getAttribute("specialgroups"));
+        String path = req.getContextPath();
+
+        log.info("Special groups (filter successful authentication): {}", specialGroups);
+        log.info("Path (filter successful authentication): {}", path);
+
+        Cookie specialGroupsCookie = new Cookie("specialgroups", specialGroups);
+        specialGroupsCookie.setMaxAge(7200);
+        specialGroupsCookie.setPath(path);
+        specialGroupsCookie.setHttpOnly(true);
+        specialGroupsCookie.setSecure(true);
+        specialGroupsCookie.setAttribute("SameSite", "Strict");
+
+        res.addCookie(specialGroupsCookie);
+
         redirectAfterSuccess(req, res);
     }
 
