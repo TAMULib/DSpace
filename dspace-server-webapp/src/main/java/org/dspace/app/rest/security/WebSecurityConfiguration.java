@@ -12,6 +12,7 @@ import java.util.Enumeration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.exception.DSpaceAccessDeniedHandler;
+import org.dspace.app.rest.security.WebSecurityConfiguration.OidcWebAuthenticationDetails;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,6 +99,14 @@ public class WebSecurityConfiguration {
         // Get the current AuthenticationManager (defined above) to apply filters below
         AuthenticationManager authenticationManager = authenticationManager();
 
+        // TODO: move into a method
+        OidcLoginFilter oidcLoginFilter = new OidcLoginFilter("/api/authn/oidc", HttpMethod.GET.name(),
+            authenticationManager, restAuthenticationService);
+        oidcLoginFilter.setAuthenticationDetailsSource(oidcAuthenticationDetailsSource());
+
+        // TODO: Create all login filters similar to above and add to security filter chain respecting the configured
+        // authentication method order
+
         // Configure authentication requirements for ${dspace.server.url}/api/ URL only
         // NOTE: REST API is hardcoded to respond on /api/. Other modules (OAI, SWORD, IIIF, etc) use other root paths.
         http.securityMatcher("/api/**", "/iiif/**", actuatorBasePath + "/**", "/signposting/**")
@@ -168,9 +177,7 @@ public class WebSecurityConfiguration {
             // Add a filter before our OIDC endpoints to do the authentication based on the data in the HTTP request.
             // This endpoint only responds to GET as the actual authentication is performed by OIDC, which then
             // redirects to this endpoint to forward the authentication data to DSpace.
-            .addFilterBefore(new OidcLoginFilter("/api/authn/oidc", HttpMethod.GET.name(),
-                                                 authenticationManager, restAuthenticationService),
-                             LogoutFilter.class)
+            .addFilterBefore(oidcLoginFilter, LogoutFilter.class)
             // Add a filter before our SAML endpoints to do the authentication based on the data in the HTTP request.
             // This endpoint only responds to GET as the actual authentication is performed by SAML, which then
             // forwards to this endpoint to pass the authentication data to DSpace.
@@ -218,16 +225,15 @@ public class WebSecurityConfiguration {
         return new DSpaceCsrfAuthenticationStrategy(csrfTokenRepository());
     }
 
-    @Bean
-    public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> authenticationDetailsSource() {
-        return request -> new CustomWebAuthenticationDetails(request);
+    public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> oidcAuthenticationDetailsSource() {
+        return request -> new OidcWebAuthenticationDetails(request);
     }
 
-    public class CustomWebAuthenticationDetails extends WebAuthenticationDetails {
+    public class OidcWebAuthenticationDetails extends WebAuthenticationDetails {
 
         private final Object extraDetail;
 
-        public CustomWebAuthenticationDetails(HttpServletRequest request) {
+        public OidcWebAuthenticationDetails(HttpServletRequest request) {
             super(request);
 
             log.info("--- ATTRIBUTES custom web authentication details ---");
