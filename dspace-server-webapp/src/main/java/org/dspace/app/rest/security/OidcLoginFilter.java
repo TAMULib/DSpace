@@ -61,6 +61,9 @@ public class OidcLoginFilter extends StatelessLoginFilter {
         Authentication auth) throws IOException, ServletException {
         restAuthenticationService.addAuthenticationDataForUser(req, res, (DSpaceAuthentication) auth, true);
 
+        // NOTE: this is a cross module coupling
+        // dspace-api OidcAuthenticationBean authenticate adds the determined special groups to the request attribute
+        // this spring security filter on success adds the special groups as a response cookie
         log.info("--- ATTRIBUTES filter successful authentication ---");
         Enumeration<String> attributeNames = req.getAttributeNames();
         if (!attributeNames.hasMoreElements()) {
@@ -81,7 +84,7 @@ public class OidcLoginFilter extends StatelessLoginFilter {
         log.info("Path (filter successful authentication): {}", path);
 
         Cookie specialGroupsCookie = new Cookie("specialgroups", specialGroups);
-        specialGroupsCookie.setMaxAge(7200);
+        specialGroupsCookie.setMaxAge(-1);
         specialGroupsCookie.setPath(path);
         specialGroupsCookie.setHttpOnly(true);
         specialGroupsCookie.setSecure(true);
