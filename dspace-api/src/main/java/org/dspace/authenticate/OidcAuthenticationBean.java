@@ -180,6 +180,11 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                 LOGGER.info("Determining Special Groups (request context) " + groupNames);
             }
 
+            if (groupNames.isEmpty()) {
+                groupNames = (Set<String>) request.getAttribute("specialgroups");
+                LOGGER.info("Determining Special Groups (request context) " + groupNames);
+            }
+
             for (String groupName : groupNames) {
                 if (groupName == null || groupName.isEmpty()) {
                     continue;
@@ -638,23 +643,96 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     private static void printRequestDetails(HttpServletRequest request) {
         LOGGER.info("=== HTTP SERVLET REQUEST DETAILS ===");
 
-        LOGGER.info("--- ATTRIBUTES ---");
+        int results = 0;
+
+        results = printRequestAttributes(request);
+        results = printRequestCookies(request);
+        results = printRequestHeaders(request);
+        results = printRequestParameters(request);
+
+        if (results < 0) {
+            LOGGER.warn(request);
+            LOGGER.info("*** EMPTY REQUEST ***");
+        }
+
+        LOGGER.info("=== END REQUEST DETAILS ===");
+    }
+
+    private static int printRequestAttributes(HttpServletRequest request) {
+        int results = 0;
         Enumeration<String> attributeNames = request.getAttributeNames();
-        if (!attributeNames.hasMoreElements()) {
-            LOGGER.info("No attributes found");
-        } else {
+        if (attributeNames.hasMoreElements()) {
+            LOGGER.info("--- ATTRIBUTES ---");
             while (attributeNames.hasMoreElements()) {
                 String attributeName = attributeNames.nextElement();
                 Object attributeValue = request.getAttribute(attributeName);
                 LOGGER.info(attributeName + " = " + attributeValue);
             }
+        } else {
+            LOGGER.info("No attributes found");
+            results = -1;
         }
 
-        LOGGER.info("--- PARAMETERS ---");
-        Enumeration<String> paramNames = request.getParameterNames();
-        if (!paramNames.hasMoreElements()) {
-            LOGGER.info("No parameters found");
+        return results;
+    }
+
+    private static int printRequestCookies(HttpServletRequest request) {
+        int results = 0;
+        Cookie[] cookies = request.getCookies();
+        boolean hasCookies = !(cookies == null || cookies.length == 0);
+        if (hasCookies) {
+            LOGGER.info("--- COOKIES ---");
+            for (Cookie cookie : cookies) {
+                LOGGER.info(cookie.getName() + " = " + cookie.getValue() +
+                    " (domain: " + cookie.getDomain() +
+                    ", path: " + cookie.getPath() +
+                    ", maxAge: " + cookie.getMaxAge() +
+                    ", secure: " + cookie.getSecure() +
+                    ", httpOnly: " + cookie.isHttpOnly() + ")");
+            }
+            
         } else {
+            LOGGER.info("No cookies found");
+            results = -1;
+        }
+
+        return results;
+    }
+
+    private static int printRequestHeaders(HttpServletRequest request) {
+        int results = 0;
+        Enumeration<String> headerNames = request.getHeaderNames();
+        if (headerNames.hasMoreElements()) {
+            LOGGER.info("--- HEADERS ---");
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                Enumeration<String> headerValues = request.getHeaders(headerName);
+
+                String message  = headerName + " = ";
+
+                boolean first = true;
+                while (headerValues.hasMoreElements()) {
+                    if (!first) {
+                        message += ", ";
+                    }
+                    message += headerValues.nextElement();
+                    first = false;
+                }
+                LOGGER.info(message);
+            }
+        } else {
+            LOGGER.info("No headers found");
+            results = -1;
+        }
+
+        return results;
+    }
+
+    private static int printRequestParameters(HttpServletRequest request) {
+        int results = 0;
+        Enumeration<String> paramNames = request.getParameterNames();
+        if (paramNames.hasMoreElements()) {
+            LOGGER.info("--- PARAMETERS ---");
             while (paramNames.hasMoreElements()) {
                 String paramName = paramNames.nextElement();
                 String[] paramValues = request.getParameterValues(paramName);
@@ -672,47 +750,12 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                     LOGGER.info(message);
                 }
             }
-        }
-
-        LOGGER.info("--- HEADERS ---");
-        Enumeration<String> headerNames = request.getHeaderNames();
-        if (!headerNames.hasMoreElements()) {
-            LOGGER.info("No headers found");
         } else {
-            while (headerNames.hasMoreElements()) {
-                String headerName = headerNames.nextElement();
-                Enumeration<String> headerValues = request.getHeaders(headerName);
-
-                String message  = headerName + " = ";
-
-                boolean first = true;
-                while (headerValues.hasMoreElements()) {
-                    if (!first) {
-                        message += ", ";
-                    }
-                    message += headerValues.nextElement();
-                    first = false;
-                }
-                LOGGER.info(message);
-            }
+            LOGGER.info("No parameters found");
+            results = -1;
         }
 
-        LOGGER.info("--- COOKIES ---");
-        Cookie[] cookies = request.getCookies();
-        if (cookies == null || cookies.length == 0) {
-            LOGGER.info("No cookies found");
-        } else {
-            for (Cookie cookie : cookies) {
-                LOGGER.info(cookie.getName() + " = " + cookie.getValue() +
-                    " (domain: " + cookie.getDomain() +
-                    ", path: " + cookie.getPath() +
-                    ", maxAge: " + cookie.getMaxAge() +
-                    ", secure: " + cookie.getSecure() +
-                    ", httpOnly: " + cookie.isHttpOnly() + ")");
-            }
-        }
-
-        LOGGER.info("=== END REQUEST DETAILS ===");
+        return results;
     }
 
 }
