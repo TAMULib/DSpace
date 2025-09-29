@@ -150,13 +150,6 @@ public class WebSecurityConfiguration {
             // (e.g. anonymous users may be added to special DSpace groups if they are in a given IP range)
             .addFilterBefore(new AnonymousAdditionalAuthorizationFilter(authenticationManager, authenticationService),
                              StatelessAuthenticationFilter.class)
-
-            // Add a custom Token based authentication filter based on the token previously given to the client
-            // before each URL
-            .addFilterBefore(new StatelessAuthenticationFilter(authenticationManager, restAuthenticationService,
-                                                               ePersonRestAuthenticationProvider, requestService),
-                             StatelessLoginFilter.class)
-
             // Add a filter before our login endpoints to do the authentication based on the data in the HTTP request.
             // This login endpoint only responds to POST as it is used for PasswordAuthentication
             .addFilterBefore(new StatelessLoginFilter("/api/authn/login", HttpMethod.POST.name(),
@@ -183,7 +176,12 @@ public class WebSecurityConfiguration {
             // forwards to this endpoint to pass the authentication data to DSpace.
             .addFilterBefore(new SamlLoginFilter("/api/authn/saml", HttpMethod.GET.name(),
                                                  authenticationManager, restAuthenticationService),
-                             LogoutFilter.class);
+                             LogoutFilter.class)
+            // Add a custom Token based authentication filter based on the token previously given to the client
+            // before each URL
+            .addFilterBefore(new StatelessAuthenticationFilter(authenticationManager, restAuthenticationService,
+                                                               ePersonRestAuthenticationProvider, requestService),
+                             StatelessLoginFilter.class);
         return http.build();
     }
 
