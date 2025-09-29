@@ -384,7 +384,6 @@
             <artifactId>spring-boot-starter-security</artifactId>
             <version>${spring-boot.version}</version>
             <exclusions>
-                <!-- Use version brought in by spring-boot-starter-web above -->
                 <exclusion>
                     <groupId>io.micrometer</groupId>
                     <artifactId>micrometer-observation</artifactId>
