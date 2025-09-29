@@ -71,6 +71,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     public static final String OIDC_AUTH_ATTRIBUTE = "oidc";
 
+    public static final String OIDC_AUTH_SG_ATTRIBUTE = "oidc-sg";
+
     protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
 
     private static final String LOGIN_PAGE_URL_FORMAT = "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s";
@@ -78,8 +80,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static final String OIDC_AUTHENTICATED = "oidc.authenticated";
-
-    private static ThreadLocal<Set<String>> threadLocalGroupNames = ThreadLocal.withInitial(() -> new HashSet<>());
 
     @Autowired
     private ConfigurationService configurationService;
@@ -110,14 +110,11 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public void initEPerson(Context context, HttpServletRequest request, EPerson eperson) throws SQLException {
-        // do nothing
+        // empty method
     }
 
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-
-        LOGGER.info("Getting special groups");
-
         final List<Group> groups = new ArrayList<>();
 
         try {
@@ -126,75 +123,37 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             }
 
             if (context.getSpecialGroups().size() > 0) {
-                LOGGER.info("Returning cached special groups.");
+                LOGGER.debug("Returning cached special groups.");
                 return context.getSpecialGroups();
             }
-
-            String code = (String) request.getParameter("code");
-            if (StringUtils.isEmpty(code)) {
-                LOGGER.warn("The incoming request does not have a code parameter");
-            }
-
-            printRequestDetails(request);
 
             Set<String> groupNames = new HashSet<>();
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            LOGGER.info("Authentication: {}", authentication);
+            LOGGER.debug("Authentication name: {}", authentication.getName());
 
-            LOGGER.info("Authentication name: {}", authentication.getName());
-
-            LOGGER.info("Authentication credentials: {}", authentication.getCredentials());
-            LOGGER.info("Authentication details: {}", authentication.getDetails());
-            LOGGER.info("Authentication principal: {}", authentication.getPrincipal());
+            LOGGER.debug("Authentication credentials: {}", authentication.getCredentials());
+            LOGGER.debug("Authentication details: {}", authentication.getDetails());
+            LOGGER.debug("Authentication principal: {}", authentication.getPrincipal());
 
             if (authentication.getDetails() != null) {
                 groupNames = (Set<String>) authentication.getDetails();
-                LOGGER.info("Determining Special Groups (authentication details) " + groupNames);
-            }
-
-            if (groupNames.isEmpty()) {
-                Cookie cookie = WebUtils.getCookie(request, "specialgroups");
-                if (cookie != null) {
-                    String specialGroups = cookie.getValue();
-                    if (specialGroups != null && specialGroups.length() > 0) {
-                        groupNames = Set.of(specialGroups.split(":"));
-                        LOGGER.info("Determining Special Groups (session cookie) " + groupNames);
-                    }
-                }
-            }
-
-            if (groupNames.isEmpty()) {
-                groupNames = threadLocalGroupNames.get();
-                LOGGER.info("Determining Special Groups (thread local) " + groupNames);
-            }
-
-            if (groupNames.isEmpty()) {
-                groupNames = context.getSpecialGroupNames();
-                LOGGER.info("Determining Special Groups (context) " + groupNames);
-            }
-
-            if (groupNames.isEmpty()) {
-                groupNames = ContextUtil.obtainContext(request).getSpecialGroupNames();
-                LOGGER.info("Determining Special Groups (request context) " + groupNames);
-            }
-
-            if (groupNames.isEmpty()) {
-                groupNames = (Set<String>) request.getAttribute("specialgroups");
-                LOGGER.info("Determining Special Groups (request context) " + groupNames);
+                LOGGER.debug("Special Groups (authentication details): {}", groupNames);
+            } else {
+                LOGGER.warn("Authentication details not defined");
             }
 
             for (String groupName : groupNames) {
                 if (groupName == null || groupName.isEmpty()) {
                     continue;
                 }
-                LOGGER.info("Looking Up Special Group " + groupName);
+                LOGGER.debug("Looking up special group {}", groupName);
                 Group group = groupService.findByName(context, groupName);
                 if (group == null) {
                     LOGGER.warn("Group {} does not exist", groupName);
                 } else {
-                    LOGGER.info("Found Special Group " + groupName);
+                    LOGGER.debug("Found special group {}", groupName);
                     groups.add(group);
                 }
             }
@@ -213,8 +172,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     @Override
     public int authenticate(Context context, String username, String password, String realm, HttpServletRequest request)
         throws SQLException {
-
-        LOGGER.info("Authenticating");
 
         if (request == null) {
             LOGGER.warn("Unable to authenticate using OIDC because the request object is null.");
@@ -236,43 +193,31 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     private int authenticateWithOidc(Context context, String code, HttpServletRequest request) throws SQLException {
 
-        // TODO: cleanup according to selected functional implementation
-
         OidcTokenResponseDTO accessToken = getOidcAccessToken(code);
         if (accessToken == null) {
             LOGGER.warn("No access token retrieved by code");
             return NO_SUCH_USER;
         }
 
-        LOGGER.info("Access Token " + accessToken.getAccessToken());
+        LOGGER.debug("Access token: {}", accessToken.getAccessToken());
+        LOGGER.debug("ID token: {}", accessToken.getIdToken());
 
-        LOGGER.info("Access Claims " + decodeJwt(accessToken.getAccessToken()));
+        LOGGER.debug("Access claims: {}", decodeJwt(accessToken.getAccessToken()));
 
-        LOGGER.info("ID Token " + accessToken.getIdToken());
-
-        Map<String, Object> claims = decodeJwt(accessToken.getIdToken()).get("payload");
-
-        LOGGER.info("ID Claims " + claims);
+        Map<String, Object> claims = decodeJwt(accessToken.getIdToken())
+            .get("payload");
+        LOGGER.info("ID claims: {}", claims);
 
         Map<String, Object> userInfo = getOidcUserInfo(accessToken.getAccessToken());
-
-        LOGGER.info("User Info " + userInfo);
+        LOGGER.debug("User info: {}", userInfo);
 
         Map<String, Map<String, String[]>> groupMappings = getGroupMappings();
-
-        LOGGER.info("Group Mappings " + groupMappings);
+        LOGGER.debug("Group mappings: {}", groupMappings);
 
         Set<String> groups = determineGroups(groupMappings, claims);
+        LOGGER.debug("Groups: {}", groups);
 
-        LOGGER.info("Groups " + groups);
-
-        threadLocalGroupNames.set(groups);
-
-        request.setAttribute("code", code);
-        request.setAttribute("specialgroups", groups);
-
-        context.setSpecialGroupNames(groups);
-
+        request.setAttribute(OIDC_AUTH_SG_ATTRIBUTE, groups);
 
         String email = getAttributeAsString(userInfo, getEmailAttribute());
         if (StringUtils.isBlank(email)) {
@@ -424,25 +369,30 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         return configurationService.getProperty("authentication-oidc.user-info.last-name", "family_name");
     }
 
-    // TODO: add JavaDocs and update logging (debug)
+    /**
+     * Get `authentication-oidc.group.claim` and build group mappings defined in authentication-oidc.cfg.
+     *
+     * Defaulting to `groups` claims.
+     *
+     * @return map of claim key to map of claim value to array of groups
+     */
     private Map<String, Map<String, String[]>> getGroupMappings() {
         final Map<String, Map<String, String[]>> groupMappings = new HashMap<>();
 
         final String groupClaims = configurationService.getProperty("authentication-oidc.group.claims", "groups");
-
-        LOGGER.info("Group Claims " + groupClaims);
+        LOGGER.debug("Group claims: {}", groupClaims);
 
         final String[] groupKeys = groupClaims.split(",");
 
         for (String groupKey : groupKeys) {
             final String claimKey = groupKey.trim();
-            LOGGER.info("Claim Key " + claimKey);
+            LOGGER.debug("Claim key: {}", claimKey);
             if (claimKey.length() > 0) {
                 groupKey = claimKey;
 
-                LOGGER.info("Group Key " + groupKey);
+                LOGGER.debug("Group key: {}", groupKey);
                 final Map<String, String[]> groupMapping = getGroupMapping(claimKey);
-                LOGGER.info("Group Mapping " + groupMapping);
+                LOGGER.debug("Group mapping: {}", groupMapping);
                 groupMappings.put(groupKey, groupMapping);
             }
         }
@@ -451,40 +401,38 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         return groupMappings;
     }
 
-    // TODO: add JavaDocs and update logging (debug)
+    /**
+     * Get dynamic configuration values as group mapping.
+     *
+     * @param claimKey claim key subsection of config key
+     * @return map of claim value to array of groups
+     */
     private Map<String, String[]> getGroupMapping(String claimKey) {
         final Map<String, String[]> groupMapping = new HashMap<>();
 
         final String configPrefix = String.join(".", "authentication-oidc", claimKey);
-
-        LOGGER.info("Config Prefix " + configPrefix);
+        LOGGER.debug("Config prefix: {}", configPrefix);
 
         final List<String> claimGroupPropertyKeys = configurationService.getPropertyKeys(configPrefix);
-
-        LOGGER.info("Claim Group Property Keys " + claimGroupPropertyKeys);
+        LOGGER.debug("Claim group property keys: {}", claimGroupPropertyKeys);
 
         for (String claimGroupPropertyKey : claimGroupPropertyKeys) {
-
-            LOGGER.info("Claim Group Property Key " + claimGroupPropertyKey);
+            LOGGER.debug("Claim group property key: {}", claimGroupPropertyKey);
 
             final String[] claimGroupPropertyKeySections = claimGroupPropertyKey.split("\\.");
-
-            LOGGER.info("Claim Group Property Key Sections " + Arrays.toString(claimGroupPropertyKeySections));
+            LOGGER.debug("Claim group property key sections: {}", Arrays.toString(claimGroupPropertyKeySections));
 
             if (claimGroupPropertyKeySections.length == 3) {
 
                 final String groupClaimValue = claimGroupPropertyKeySections[2];
-
-                LOGGER.info("Group Claim Value " + groupClaimValue);
+                LOGGER.debug("Group claim value: {}", groupClaimValue);
 
                 final String groupClaim = configurationService.getProperty(claimGroupPropertyKey, "").trim();
-
-                LOGGER.info("Group Claim " + groupClaim);
+                LOGGER.debug("Group claim: {}", groupClaim);
 
                 if (groupClaim.length() > 0) {
                     final String[] groups = groupClaim.split(",");
-
-                    LOGGER.info("Groups " + Arrays.toString(groups));
+                    LOGGER.debug("Groups: {}", Arrays.toString(groups));
 
                     for (String group : groups) {
                         group = group.trim();
@@ -498,7 +446,13 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         return groupMapping;
     }
 
-    // TODO: add JavaDocs and logging (debug)
+    /**
+     * Determine set of groups claims match (by starting with) the group mappings.
+     *
+     * @param groupMappings configured group mappings
+     * @param claims the claims from the identity provider id token
+     * @return unique set of group names
+     */
     private Set<String> determineGroups(Map<String, Map<String, String[]>> groupMappings, Map<String, Object> claims) {
         final Set<String> groups = new HashSet<>();
 
@@ -545,6 +499,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                         }
                     }
                 }
+            } else {
+                LOGGER.warn("Claim value for key {} not found.", claimKey);
             }
         }
 
@@ -582,8 +538,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public boolean canChangePassword(Context context, EPerson ePerson, String currentPassword) {
         return false;
     }
-
-    // TODO: look for existing utility for JWT and possible JWE otherwise move into a simple utility class
 
     /**
      * Decodes a JWT string and returns its header and payload as structured maps.
@@ -638,124 +592,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         int padding = 4 - (base64.length() % 4);
 
         return base64 + "=".repeat(padding % 4);
-    }
-
-    private static void printRequestDetails(HttpServletRequest request) {
-        LOGGER.info("=== HTTP SERVLET REQUEST DETAILS ===");
-
-        int results = 0;
-
-        results = printRequestAttributes(request);
-        results = printRequestCookies(request);
-        results = printRequestHeaders(request);
-        results = printRequestParameters(request);
-
-        if (results < 0) {
-            LOGGER.warn(request);
-            LOGGER.info("*** EMPTY REQUEST ***");
-        }
-
-        LOGGER.info("=== END REQUEST DETAILS ===");
-    }
-
-    private static int printRequestAttributes(HttpServletRequest request) {
-        int results = 0;
-        Enumeration<String> attributeNames = request.getAttributeNames();
-        if (attributeNames.hasMoreElements()) {
-            LOGGER.info("--- ATTRIBUTES ---");
-            while (attributeNames.hasMoreElements()) {
-                String attributeName = attributeNames.nextElement();
-                Object attributeValue = request.getAttribute(attributeName);
-                LOGGER.info(attributeName + " = " + attributeValue);
-            }
-        } else {
-            LOGGER.info("No attributes found");
-            results = -1;
-        }
-
-        return results;
-    }
-
-    private static int printRequestCookies(HttpServletRequest request) {
-        int results = 0;
-        Cookie[] cookies = request.getCookies();
-        boolean hasCookies = !(cookies == null || cookies.length == 0);
-        if (hasCookies) {
-            LOGGER.info("--- COOKIES ---");
-            for (Cookie cookie : cookies) {
-                LOGGER.info(cookie.getName() + " = " + cookie.getValue() +
-                    " (domain: " + cookie.getDomain() +
-                    ", path: " + cookie.getPath() +
-                    ", maxAge: " + cookie.getMaxAge() +
-                    ", secure: " + cookie.getSecure() +
-                    ", httpOnly: " + cookie.isHttpOnly() + ")");
-            }
-            
-        } else {
-            LOGGER.info("No cookies found");
-            results = -1;
-        }
-
-        return results;
-    }
-
-    private static int printRequestHeaders(HttpServletRequest request) {
-        int results = 0;
-        Enumeration<String> headerNames = request.getHeaderNames();
-        if (headerNames.hasMoreElements()) {
-            LOGGER.info("--- HEADERS ---");
-            while (headerNames.hasMoreElements()) {
-                String headerName = headerNames.nextElement();
-                Enumeration<String> headerValues = request.getHeaders(headerName);
-
-                String message  = headerName + " = ";
-
-                boolean first = true;
-                while (headerValues.hasMoreElements()) {
-                    if (!first) {
-                        message += ", ";
-                    }
-                    message += headerValues.nextElement();
-                    first = false;
-                }
-                LOGGER.info(message);
-            }
-        } else {
-            LOGGER.info("No headers found");
-            results = -1;
-        }
-
-        return results;
-    }
-
-    private static int printRequestParameters(HttpServletRequest request) {
-        int results = 0;
-        Enumeration<String> paramNames = request.getParameterNames();
-        if (paramNames.hasMoreElements()) {
-            LOGGER.info("--- PARAMETERS ---");
-            while (paramNames.hasMoreElements()) {
-                String paramName = paramNames.nextElement();
-                String[] paramValues = request.getParameterValues(paramName);
-                if (paramValues.length == 1) {
-                    LOGGER.info(paramName + " = " + paramValues[0]);
-                } else {
-                    String message = paramName + " = [";
-                    for (int i = 0; i < paramValues.length; i++) {
-                        message += paramValues[i];
-                        if (i < paramValues.length - 1) {
-                            message += ", ";
-                        }
-                    }
-                    message += "]";
-                    LOGGER.info(message);
-                }
-            }
-        } else {
-            LOGGER.info("No parameters found");
-            results = -1;
-        }
-
-        return results;
     }
 
 }

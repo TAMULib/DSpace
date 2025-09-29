@@ -12,7 +12,8 @@ import java.util.Enumeration;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.exception.DSpaceAccessDeniedHandler;
-import org.dspace.app.rest.security.WebSecurityConfiguration.OidcWebAuthenticationDetails;
+import org.dspace.app.rest.security.details.OidcWebAuthenticationDetails;
+import org.dspace.authenticate.OidcAuthenticationBean;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +33,9 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.security.web.csrf.CsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
@@ -98,14 +99,6 @@ public class WebSecurityConfiguration {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // Get the current AuthenticationManager (defined above) to apply filters below
         AuthenticationManager authenticationManager = authenticationManager();
-
-        // TODO: move into a method and use constants for paths
-        OidcLoginFilter oidcLoginFilter = new OidcLoginFilter("/api/authn/oidc", HttpMethod.GET.name(),
-            authenticationManager, restAuthenticationService);
-        oidcLoginFilter.setAuthenticationDetailsSource(oidcAuthenticationDetailsSource());
-
-        // TODO: Create all login filters similar to above and add to security filter chain respecting the configured
-        // authentication method order
 
         // Configure authentication requirements for ${dspace.server.url}/api/ URL only
         // NOTE: REST API is hardcoded to respond on /api/. Other modules (OAI, SWORD, IIIF, etc) use other root paths.
@@ -177,7 +170,7 @@ public class WebSecurityConfiguration {
             // Add a filter before our OIDC endpoints to do the authentication based on the data in the HTTP request.
             // This endpoint only responds to GET as the actual authentication is performed by OIDC, which then
             // redirects to this endpoint to forward the authentication data to DSpace.
-            .addFilterBefore(oidcLoginFilter, LogoutFilter.class)
+            .addFilterBefore(oidcLoginFilter(authenticationManager, "/api/authn/oidc"), LogoutFilter.class)
             // Add a filter before our SAML endpoints to do the authentication based on the data in the HTTP request.
             // This endpoint only responds to GET as the actual authentication is performed by SAML, which then
             // forwards to this endpoint to pass the authentication data to DSpace.
@@ -225,46 +218,21 @@ public class WebSecurityConfiguration {
         return new DSpaceCsrfAuthenticationStrategy(csrfTokenRepository());
     }
 
-    public AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> oidcAuthenticationDetailsSource() {
-        // TODO: move into appropriate package and instantiate without method in WebSecurityConfig
-        return new AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>() {
+    private OidcLoginFilter oidcLoginFilter(AuthenticationManager authenticationManager, String url) {
+        OidcLoginFilter oidcLoginFilter = new OidcLoginFilter(url, HttpMethod.GET.name(),
+            authenticationManager, restAuthenticationService);
+        oidcLoginFilter.setAuthenticationDetailsSource(oidcAuthenticationDetailsSource());
 
+        return oidcLoginFilter;
+    }
+
+    private AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails> oidcAuthenticationDetailsSource() {
+        return new AuthenticationDetailsSource<HttpServletRequest, WebAuthenticationDetails>() {
             @Override
             public WebAuthenticationDetails buildDetails(HttpServletRequest request) {
                 return new OidcWebAuthenticationDetails(request);
             }
-
         };
-    }
-
-    // TODO: move into appropriate package and type details using generics
-    public class OidcWebAuthenticationDetails extends WebAuthenticationDetails {
-
-        private final Object details;
-
-        public OidcWebAuthenticationDetails(HttpServletRequest request) {
-            super(request);
-
-            log.info("--- ATTRIBUTES custom web authentication details ---");
-            Enumeration<String> attributeNames = request.getAttributeNames();
-            if (!attributeNames.hasMoreElements()) {
-                log.info("No attributes found");
-            } else {
-                while (attributeNames.hasMoreElements()) {
-                    String attributeName = attributeNames.nextElement();
-                    Object attributeValue = request.getAttribute(attributeName);
-                    log.info(attributeName + " = " + attributeValue);
-                }
-            }
-            log.info("--- END ATTRIBUTES custom web authentication details ---");
-
-            // TODO: find or create constant for specialgroups
-            this.details = request.getAttribute("specialgroups");
-        }
-
-        public Object getDetails() {
-            return details;
-        }
     }
 
 }
