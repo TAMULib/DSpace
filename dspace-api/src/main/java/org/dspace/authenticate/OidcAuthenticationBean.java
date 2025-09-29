@@ -13,6 +13,7 @@ import static java.net.URLEncoder.encode;
 import static org.apache.commons.lang.BooleanUtils.toBoolean;
 import static org.apache.commons.lang3.StringUtils.isAnyBlank;
 import static org.apache.commons.lang3.StringUtils.isBlank;
+import static org.dspace.authenticate.OidcAuthenticationBean.OIDC_AUTH_SG_ATTRIBUTE;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
@@ -142,6 +143,17 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                 LOGGER.debug("Special Groups (authentication details): {}", groupNames);
             } else {
                 LOGGER.warn("Authentication details not defined");
+            }
+
+            if (groupNames.isEmpty()) {
+                Cookie cookie = WebUtils.getCookie(request, OIDC_AUTH_SG_ATTRIBUTE);
+                if (cookie != null) {
+                    String specialGroups = cookie.getValue();
+                    if (specialGroups != null && specialGroups.length() > 0) {
+                        groupNames = Set.of(specialGroups.split(":"));
+                        LOGGER.info("Special Groups (session cookie) " + groupNames);
+                    }
+                }
             }
 
             for (String groupName : groupNames) {

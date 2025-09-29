@@ -8,6 +8,7 @@
 package org.dspace.app.rest.security;
 
 import static org.dspace.authenticate.OidcAuthenticationBean.OIDC_AUTH_ATTRIBUTE;
+import static org.dspace.authenticate.OidcAuthenticationBean.OIDC_AUTH_SG_ATTRIBUTE;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -72,6 +73,22 @@ public class OidcLoginFilter extends StatelessLoginFilter {
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
         Authentication auth) throws IOException, ServletException {
         restAuthenticationService.addAuthenticationDataForUser(req, res, (DSpaceAuthentication) auth, true);
+
+        String specialGroups = String.join(":", (Set<String>) req.getAttribute(OIDC_AUTH_SG_ATTRIBUTE));
+        String path = req.getContextPath();
+
+        log.info("Special groups (filter successful authentication): {}", specialGroups);
+        log.info("Path (filter successful authentication): {}", path);
+
+        Cookie specialGroupsCookie = new Cookie(OIDC_AUTH_SG_ATTRIBUTE, specialGroups);
+        specialGroupsCookie.setMaxAge(-1);
+        specialGroupsCookie.setPath(path);
+        specialGroupsCookie.setHttpOnly(true);
+        specialGroupsCookie.setSecure(true);
+        specialGroupsCookie.setAttribute("SameSite", "Strict");
+
+        res.addCookie(specialGroupsCookie);
+
         redirectAfterSuccess(req, res);
     }
 
