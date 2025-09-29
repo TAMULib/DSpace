@@ -123,11 +123,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                 return Collections.EMPTY_LIST;
             }
 
-            if (context.getSpecialGroups().size() > 0) {
-                LOGGER.debug("Returning cached special groups.");
-                return context.getSpecialGroups();
-            }
-
             Set<String> groupNames = new HashSet<>();
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
