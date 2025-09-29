@@ -60,8 +60,8 @@ public class OidcLoginFilter extends StatelessLoginFilter {
         OidcWebAuthenticationDetails oidcWebAuthenticationDetails = (OidcWebAuthenticationDetails) authenticationDetailsSource.buildDetails(req);
 
         if (oidcWebAuthenticationDetails != null && oidcWebAuthenticationDetails.getDetails() != null) {
+            log.info("OIDC web authentication details: {}", oidcWebAuthenticationDetails.getDetails());
             ((DSpaceAuthentication) authentication).setDetails(oidcWebAuthenticationDetails.getDetails());
-            log.info("OIDC web authentication details: {}", authentication.getDetails());
         } else {
             log.warn("Unable to get OIDC web authentication details: {}", authentication.getDetails());
         }

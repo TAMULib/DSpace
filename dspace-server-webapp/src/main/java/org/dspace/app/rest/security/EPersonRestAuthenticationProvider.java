@@ -81,12 +81,14 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
         if (context != null && context.getCurrentUser() != null) {
             // Simply refresh/reload the auth token. If token has expired, the token will change.
             log.debug("Request to refresh auth token");
-            return authenticateRefreshTokenRequest(context, (DSpaceAuthentication) authentication);
+            authenticateRefreshTokenRequest(context, (DSpaceAuthentication) authentication);
         } else {
             // Otherwise, this is a new login & we need to attempt authentication
             log.debug("Request to authenticate new login");
-            return authenticateNewLogin(context, (DSpaceAuthentication) authentication);
+            authenticateNewLogin(context, (DSpaceAuthentication) authentication);
         }
+
+        return authentication;
     }
 
     /**
@@ -95,12 +97,12 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
      * cause the token to change (if expiration time has passed). If expiration has not passed, this request will
      * return the same token as before.
      * @param context current DSpace context (for currently logged in user information)
-     * @return DSpaceAuthentication object representing authenticated user
+     * @param authentication Authentication class to attempt authentication.
      */
-    private Authentication authenticateRefreshTokenRequest(Context context, DSpaceAuthentication authentication) {
+    private void authenticateRefreshTokenRequest(Context context, DSpaceAuthentication authentication) {
         authenticationService.updateLastActiveDate(context);
 
-        return processAuthentication(context, authentication);
+        processAuthentication(context, authentication);
     }
 
     /**
@@ -110,10 +112,9 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
      * or explicit, then null is returned.
      *
      * @param context The current DSpace context
-     * @param authentication Authentication class to attempt authentication.
-     * @return new Authentication class containing logged-in user information or null
+     * @param authentication Authentication authentication object from security context.
      */
-    private Authentication authenticateNewLogin(Context context, DSpaceAuthentication authentication) {
+    private void authenticateNewLogin(Context context, DSpaceAuthentication authentication) {
 
         if (authentication != null) {
             String name = authentication.getName();
@@ -147,8 +148,6 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
                 }
             }
         }
-
-        return authentication;
     }
 
     /**
@@ -156,17 +155,17 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
      * If no current user is found in the Context, then the login must have failed and a BadCredentialsException is
      * thrown.
      * @param context current DSpace context
-     * @return DSpaceAuthentication object for currently authenticated user
+     * @param authentication Authentication authentication object from security context.
      * @throws BadCredentialsException if no current user found
      */
-    private Authentication processAuthentication(final Context context, final DSpaceAuthentication authentication) {
+    private void processAuthentication(final Context context, final DSpaceAuthentication authentication) {
         EPerson ePerson = context.getCurrentUser();
 
         if (ePerson != null && StringUtils.isNotBlank(ePerson.getEmail())) {
             //Pass the eperson ID to the request service
             requestService.setCurrentUserId(ePerson.getID());
 
-            return authentication.forEPerson(ePerson)
+            authentication.forEPerson(ePerson)
                 .withGrantedAuthorities(getGrantedAuthorities(context))
                 .withAuthenticatedTrue();
         } else {
