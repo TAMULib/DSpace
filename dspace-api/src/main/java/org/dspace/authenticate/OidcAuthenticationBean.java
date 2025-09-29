@@ -500,7 +500,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                     }
                 }
             } else {
-                LOGGER.warn("Claim value for key {} not found.", claimKey);
+                LOGGER.debug("Claim value mapping for key {} not found.", claimKey);
             }
         }
 
