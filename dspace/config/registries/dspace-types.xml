@@ -114,14 +114,5 @@
         <scope_note>Metadata field storing the user-configured accessibility settings values for the EPerson.</scope_note>
     </dc-type>
 
-    <!-- TAMU Customization - EPerson metadata for last OIDC last known ID token -->
-    <dc-type>
-        <schema>dspace</schema>
-        <element>oidc</element>
-        <qualifier>id</qualifier>
-        <scope_note>Metadata field storing the last known ID token from OIDC authentication values for the EPerson.</scope_note>
-    </dc-type>
-    <!-- END TAMU Customization - EPerson metadata for last OIDC last known ID token -->
-
 
 </dspace-dc-types>
