@@ -23,6 +23,7 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -74,14 +75,22 @@ public class SamlLoginFilter extends StatelessLoginFilter {
             throw new ProviderNotFoundException("SAML is disabled.");
         }
 
-        // Because this authentication is implicit, we pass in an empty DSpaceAuthentication.
-        return authenticationManager.authenticate(new DSpaceAuthentication());
+        Authentication authenticationOnContext = SecurityContextHolder.getContext().getAuthentication();
+        logger.info("SamlLoginFilter attemptAuthentication (authentication from context): {}", authenticationOnContext);
+
+        DSpaceAuthentication authentication = authenticationOnContext != null
+            ? (DSpaceAuthentication) authenticationOnContext
+            : DSpaceAuthentication.create();
+
+        authenticationManager.authenticate(authentication);
+
+        return authentication;
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain,
         Authentication auth) throws IOException, ServletException {
-
+        SecurityContextHolder.getContext().setAuthentication(auth);
         restAuthenticationService.addAuthenticationDataForUser(request, response, (DSpaceAuthentication) auth, true);
 
         redirectAfterSuccess(request, response);

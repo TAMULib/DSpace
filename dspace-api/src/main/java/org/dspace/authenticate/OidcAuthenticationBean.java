@@ -127,15 +127,17 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-            LOGGER.debug("Authentication name: {}", authentication.getName());
+            LOGGER.info("Authentication: {}", authentication);
 
-            LOGGER.debug("Authentication credentials: {}", authentication.getCredentials());
-            LOGGER.debug("Authentication details: {}", authentication.getDetails());
-            LOGGER.debug("Authentication principal: {}", authentication.getPrincipal());
+            LOGGER.info("Authentication name: {}", authentication.getName());
+
+            LOGGER.info("Authentication credentials: {}", authentication.getCredentials());
+            LOGGER.info("Authentication details: {}", authentication.getDetails());
+            LOGGER.info("Authentication principal: {}", authentication.getPrincipal());
 
             if (authentication.getDetails() != null) {
                 groupNames = (Set<String>) authentication.getDetails();
-                LOGGER.debug("Special Groups (authentication details): {}", groupNames);
+                LOGGER.info("Special Groups (authentication details): {}", groupNames);
             } else {
                 LOGGER.warn("Authentication details not defined");
             }

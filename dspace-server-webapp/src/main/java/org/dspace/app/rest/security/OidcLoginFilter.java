@@ -28,6 +28,7 @@ import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -54,14 +55,21 @@ public class OidcLoginFilter extends StatelessLoginFilter {
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
         throws AuthenticationException {
         req.setAttribute(OIDC_AUTH_ATTRIBUTE, OIDC_AUTH_ATTRIBUTE);
-        // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
-        Authentication authentication = authenticationManager.authenticate(new DSpaceAuthentication());
+
+        Authentication authenticationOnContext = SecurityContextHolder.getContext().getAuthentication();
+        log.info("OidcLoginFilter attemptAuthentication (authentication from context): {}", authenticationOnContext);
+
+        DSpaceAuthentication authentication = authenticationOnContext != null
+            ? (DSpaceAuthentication) authenticationOnContext
+            : DSpaceAuthentication.create();
+
+        authenticationManager.authenticate(authentication);
 
         OidcWebAuthenticationDetails oidcWebAuthenticationDetails = (OidcWebAuthenticationDetails) authenticationDetailsSource.buildDetails(req);
 
         if (oidcWebAuthenticationDetails != null && oidcWebAuthenticationDetails.getDetails() != null) {
             log.info("OIDC web authentication details: {}", oidcWebAuthenticationDetails.getDetails());
-            ((DSpaceAuthentication) authentication).setDetails(oidcWebAuthenticationDetails.getDetails());
+            authentication.withDetails(oidcWebAuthenticationDetails.getDetails());
         } else {
             log.warn("Unable to get OIDC web authentication details: {}", authentication.getDetails());
         }
@@ -72,6 +80,7 @@ public class OidcLoginFilter extends StatelessLoginFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
         Authentication auth) throws IOException, ServletException {
+        SecurityContextHolder.getContext().setAuthentication(auth);
         restAuthenticationService.addAuthenticationDataForUser(req, res, (DSpaceAuthentication) auth, true);
 
         String specialGroups = String.join(":", (Set<String>) req.getAttribute(OIDC_AUTH_SG_ATTRIBUTE));

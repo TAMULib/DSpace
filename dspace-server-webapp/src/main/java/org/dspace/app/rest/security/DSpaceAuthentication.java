@@ -23,81 +23,49 @@ import org.springframework.security.core.GrantedAuthority;
  */
 public class DSpaceAuthentication implements Authentication {
 
-
-    private Instant previousLoginDate;
     private String username;
+
     private String password;
+
     private List<GrantedAuthority> authorities;
+
     private boolean authenticated;
 
     private Object details;
 
-    /**
-     * Create a DSpaceAuthentication instance for an already authenticated EPerson, including their GrantedAuthority
-     * objects.
-     * <P>
-     * NOTE: This type of DSpaceAuthentication object is returned to Spring after a successful authentication.
-     * @param ePerson authenticated EPerson
-     * @param authorities EPerson's authorities
-     */
-    public DSpaceAuthentication(EPerson ePerson, List<GrantedAuthority> authorities) {
-        this.previousLoginDate = ePerson.getPreviousActive();
-        this.username = ePerson.getEmail();
-        this.authorities = authorities;
-        this.authenticated = true;
-    }
+    private Instant previousLoginDate;
 
-    /**
-     * Create a temporary DSpaceAuthentication instance which may be used to store information about the user who will
-     * be attempting authentication.
-     * <P>
-     * NOTE: This type of DSpaceAuthentication object is used to attempt a new authentication in DSpace. It is therefore
-     * temporary in nature, as it will be discarded after successful authentication.
-     * @param username username to attempt authentication for
-     * @param password password to use for authentication
-     */
-    public DSpaceAuthentication(String username, String password) {
-        this.username = username;
-        this.password = password;
+    private DSpaceAuthentication() {
         this.authenticated = false;
     }
 
-    /**
-     * Create a temporary, empty DSpaceAuthentication instance which may be used to trigger an implicit authentication.
-     * An example is Shibboleth, as this doesn't require an explicit username/password, as the user will have been
-     * authenticated externally, and DSpace just needs to perform an implicit authentication by looking for the auth
-     * data passed to it by Shibboleth.
-     */
-    public DSpaceAuthentication() {
-        // Initialize with a 'null' username and password
-        this(null, (String) null);
-    }
-
+    @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
 
+    @Override
     public Object getCredentials() {
         return password;
     }
 
+    @Override
     public Object getDetails() {
         return details;
     }
 
-    public void setDetails(Object details) {
-        this.details = details;
-    }
-
+    @Override
     public Object getPrincipal() {
         return username;
     }
 
+    @Override
     public boolean isAuthenticated() {
         return authenticated;
     }
 
-    public void setAuthenticated(boolean authenticated) throws IllegalArgumentException {
+    @Override
+    public void setAuthenticated(boolean authenticated) {
         this.authenticated = authenticated;
     }
 
@@ -116,6 +84,24 @@ public class DSpaceAuthentication implements Authentication {
          return this;
     }
 
+    DSpaceAuthentication withUsername(String username) {
+        this.username = username;
+
+        return this;
+    }
+
+    DSpaceAuthentication withCredentials(String password) {
+        this.password = password;
+
+        return this;
+    }
+
+    DSpaceAuthentication withDetails(Object details) {
+        this.details = details;
+
+        return this;
+    }
+
     DSpaceAuthentication withGrantedAuthorities(List<GrantedAuthority> authorities) {
         this.authorities = authorities;
 
@@ -126,5 +112,9 @@ public class DSpaceAuthentication implements Authentication {
         this.authenticated = true;
 
         return this;
+    }
+
+    public static DSpaceAuthentication create() {
+        return new DSpaceAuthentication();
     }
 }

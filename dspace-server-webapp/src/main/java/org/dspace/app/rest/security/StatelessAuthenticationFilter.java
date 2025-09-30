@@ -98,6 +98,8 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
             log.error("Access is denied (status:{})", HttpServletResponse.SC_FORBIDDEN, e);
             return;
         }
+
+        log.info("StatelessAuthenticationFilter doFilterInternal (authentication): {}", authentication);
         // If we have a valid Authentication, save it to Spring Security
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -143,8 +145,16 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                     }
                 }
 
-                //Return the Spring authentication object
-                return new DSpaceAuthentication(eperson, authorities);
+                DSpaceAuthentication authenticationOnContext = (DSpaceAuthentication) SecurityContextHolder.getContext().getAuthentication();
+                log.info("StatelessAuthenticationFilter getAuthentication (authentication from context): {}", authenticationOnContext);
+
+                DSpaceAuthentication authentication = authenticationOnContext != null
+                    ? authenticationOnContext
+                    : DSpaceAuthentication.create();
+
+                return authentication.forEPerson(eperson)
+                        .withGrantedAuthorities(authorities)
+                        .withAuthenticatedTrue();
             } else {
                 return null;
             }
@@ -178,8 +188,19 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
             context.switchContextUser(onBehalfOfEPerson);
             log.debug("Found 'on-behalf-of' authentication data in request for EPerson {}",
                     onBehalfOfEPerson::getEmail);
-            return new DSpaceAuthentication(onBehalfOfEPerson,
-                                            authenticationProvider.getGrantedAuthorities(context));
+
+            List<GrantedAuthority> authorities = authenticationProvider.getGrantedAuthorities(context);
+
+            Authentication authenticationOnContext = SecurityContextHolder.getContext().getAuthentication();
+            log.info("StatelessAuthenticationFilter getOnBehalfOfAuthentication (authentication from context): {}", authenticationOnContext);
+
+            DSpaceAuthentication authentication = authenticationOnContext != null
+                ? (DSpaceAuthentication) authenticationOnContext
+                : DSpaceAuthentication.create();
+
+            return authentication.forEPerson(onBehalfOfEPerson)
+                    .withGrantedAuthorities(authorities)
+                    .withAuthenticatedTrue();
         } else {
             throw new IllegalArgumentException("You're unable to use the login as feature to log " +
                                                    "in as another admin");

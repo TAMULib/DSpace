@@ -23,6 +23,7 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -70,12 +71,16 @@ public class ShibbolethLoginFilter extends StatelessLoginFilter {
             throw new ProviderNotFoundException("Shibboleth is disabled.");
         }
 
-        // In the case of Shibboleth, this method does NOT actually authenticate us. The authentication
-        // has already happened in Shibboleth. So, this call to "authenticate()" is just triggering
-        // ShibAuthentication.authenticate() to check for a valid Shibboleth login, and if found, the current user
-        // is considered authenticated via Shibboleth.
-        // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
-        return authenticationManager.authenticate(new DSpaceAuthentication());
+        Authentication authenticationOnContext = SecurityContextHolder.getContext().getAuthentication();
+        log.info("ShibbolethLoginFilter attemptAuthentication (authentication from context): {}", authenticationOnContext);
+
+        DSpaceAuthentication authentication = authenticationOnContext != null
+            ? (DSpaceAuthentication) authenticationOnContext
+            : DSpaceAuthentication.create();
+
+        authenticationManager.authenticate(authentication);
+
+        return authentication;
     }
 
     @Override
@@ -84,7 +89,7 @@ public class ShibbolethLoginFilter extends StatelessLoginFilter {
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
         // Once we've gotten here, we know we have a successful login (i.e. attemptAuthentication() succeeded)
-
+        SecurityContextHolder.getContext().setAuthentication(auth);
         DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
         log.debug("Shib authentication successful for EPerson {}. Sending back temporary auth cookie",
                   dSpaceAuthentication.getName());

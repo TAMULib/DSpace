@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -79,10 +80,16 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
         String user = req.getParameter("user");
         String password = req.getParameter("password");
 
-        // Attempt to authenticate by passing user & password (if provided) to AuthenticationProvider class(es)
-        // NOTE: This method will check if the user was already authenticated by StatelessAuthenticationFilter,
-        // and, if so, just refresh their token.
-        return authenticationManager.authenticate(new DSpaceAuthentication(user, password));
+        Authentication authenticationOnContext = SecurityContextHolder.getContext().getAuthentication();
+        log.info("StatelessLoginFilter attemptAuthentication (authentication from context): {}", authenticationOnContext);
+
+        DSpaceAuthentication authentication = authenticationOnContext != null
+            ? (DSpaceAuthentication) authenticationOnContext
+            : DSpaceAuthentication.create();
+
+        authenticationManager.authenticate(authentication.withUsername(user).withCredentials(password));
+
+        return authentication;
     }
 
     /**
@@ -106,7 +113,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-
+        SecurityContextHolder.getContext().setAuthentication(auth);
         DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
         log.debug("Authentication successful for EPerson {}", dSpaceAuthentication::getName);
         restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, false);

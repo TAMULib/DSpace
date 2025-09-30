@@ -32,6 +32,7 @@ import org.dspace.utils.DSpace;
 import org.dspace.web.ContextUtil;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -65,18 +66,24 @@ public class OrcidLoginFilter extends StatelessLoginFilter {
         if (!OrcidAuthentication.isEnabled()) {
             throw new ProviderNotFoundException("Orcid login is disabled.");
         }
-        // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
-        return authenticationManager.authenticate(new DSpaceAuthentication());
 
+        Authentication authenticationOnContext = SecurityContextHolder.getContext().getAuthentication();
+        log.info("OrcidLoginFilter attemptAuthentication (authentication from context): {}", authenticationOnContext);
+
+        DSpaceAuthentication authentication = authenticationOnContext != null
+            ? (DSpaceAuthentication) authenticationOnContext
+            : DSpaceAuthentication.create();
+
+        authenticationManager.authenticate(authentication);
+
+        return authentication;
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-
-
+        SecurityContextHolder.getContext().setAuthentication(auth);
         DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
-
         log.debug("Orcid authentication successful for EPerson {}. Sending back temporary auth cookie",
                   dSpaceAuthentication.getName());
 

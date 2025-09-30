@@ -165,6 +165,7 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
             //Pass the eperson ID to the request service
             requestService.setCurrentUserId(ePerson.getID());
 
+            // set granted authorities and authenticated true
             authentication.forEPerson(ePerson)
                 .withGrantedAuthorities(getGrantedAuthorities(context))
                 .withAuthenticatedTrue();
