@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -151,6 +152,8 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                 DSpaceAuthentication authentication = authenticationOnContext != null
                     ? authenticationOnContext
                     : DSpaceAuthentication.create();
+
+                authentication.withDetails(context.getSpecialGroups().stream().map(group -> group.getName()).collect(Collectors.toSet()));
 
                 return authentication.forEPerson(eperson)
                         .withGrantedAuthorities(authorities)
