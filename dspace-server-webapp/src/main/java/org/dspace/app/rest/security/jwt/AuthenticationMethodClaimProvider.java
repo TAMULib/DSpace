@@ -42,7 +42,6 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
         if (context.getAuthenticationMethod() != null) {
             return context.getAuthenticationMethod();
         }
-
         return authenticationService.getAuthenticationMethod(context, request);
     }
 

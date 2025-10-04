@@ -105,7 +105,10 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
         List<Group> groups = new ArrayList<>();
 
-        LOG.debug("OIDC Get special groups");
+        var unused = AuthenticationUtility.print(request)
+            .apply("OIDC Get special groups");
+
+        LOG.debug("Unused: {}", unused);
 
         try {
             if (request == null || context.getCurrentUser() == null) {
@@ -132,15 +135,17 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             }
 
             for (String groupName : groupNames) {
-                boolean inGroups = false;
-                for (Group group : groups) {
-                    if (groupName.equals(group.getName())) {
-                        inGroups = true;
-                        break;
+                if (groupName != null && !groupName.isEmpty()) {
+                    boolean inGroups = false;
+                    for (Group group : groups) {
+                        if (groupName.equals(group.getName())) {
+                            inGroups = true;
+                            break;
+                        }
                     }
-                }
-                if (groupName == null || groupName.isEmpty() || inGroups) {
-                    continue;
+                    if (inGroups) {
+                        continue;
+                    }
                 }
                 LOG.debug("Looking up special group {}", groupName);
                 Group group = groupService.findByName(context, groupName);

@@ -126,6 +126,7 @@ public class DSpaceAuthentication implements Authentication {
     DSpaceAuthentication withCredentials(String password) {
         this.password = password;
 
+        // dont log password!
         log.debug("Credentials added to authentication for {}", username);
 
         return this;
