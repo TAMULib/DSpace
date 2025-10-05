@@ -19,21 +19,57 @@ import jakarta.servlet.http.HttpServletRequest;
  * Enumeration factory for stateless authentication filters with details.
  */
 public enum StatelessAuthDetailsFactory { // use constants
-    PASSWORD   ("password",   "POST", request -> new StatelessLoginFilter<>(request.getUrl(), request.getHttpMethod(), request.getAuthenticationManager(), request.getRestAuthenticationService())),
-    OIDC       ("oidc",       "GET",  request -> new OidcLoginFilter(request.getUrl(), request.getHttpMethod(), request.getAuthenticationManager(), request.getRestAuthenticationService())),
-    ORCID      ("orcid",      "GET",  request -> new OrcidLoginFilter(request.getUrl(), request.getHttpMethod(), request.getAuthenticationManager(), request.getRestAuthenticationService())),
-    SAML       ("saml",       "GET",  request -> new SamlLoginFilter(request.getUrl(), request.getHttpMethod(), request.getAuthenticationManager(), request.getRestAuthenticationService())),
-    SHIBBOLETH ("shibboleth", "GET",  request -> new ShibbolethLoginFilter(request.getUrl(), request.getHttpMethod(), request.getAuthenticationManager(), request.getRestAuthenticationService())),
-    STATELESS  ("stateless",  "POST", request -> new StatelessLoginFilter<>(request.getUrl(), request.getHttpMethod(), request.getAuthenticationManager(), request.getRestAuthenticationService()));
+    PASSWORD ("password", "POST",
+        request -> new StatelessLoginFilter<>(
+            request.getUrl(),
+            request.getHttpMethod(),
+            request.getAuthenticationManager(),
+            request.getRestAuthenticationService())),
+    OIDC ("oidc", "GET",
+        request -> new OidcLoginFilter(
+            request.getUrl(),
+            request.getHttpMethod(),
+            request.getAuthenticationManager(),
+            request.getRestAuthenticationService())),
+    ORCID  ("orcid", "GET",
+        request -> new OrcidLoginFilter(
+            request.getUrl(),
+            request.getHttpMethod(),
+            request.getAuthenticationManager(),
+            request.getRestAuthenticationService())),
+    SAML ("saml", "GET",
+        request -> new SamlLoginFilter(
+            request.getUrl(),
+            request.getHttpMethod(),
+            request.getAuthenticationManager(),
+            request.getRestAuthenticationService())),
+    SHIBBOLETH ("shibboleth", "GET", 
+        request -> new ShibbolethLoginFilter(
+            request.getUrl(),
+            request.getHttpMethod(),
+            request.getAuthenticationManager(),
+            request.getRestAuthenticationService())),
+    STATELESS ("stateless", "POST",
+        request -> new StatelessLoginFilter<>(
+            request.getUrl(),
+            request.getHttpMethod(),
+            request.getAuthenticationManager(),
+            request.getRestAuthenticationService()));
 
     // ip, x509, ldap
+
+    // basic, form, cert, digest
 
     private final String name;
     private final String method;
     private final Function<StatelessAuthRequest, StatelessLoginFilter<?, ?>> filter;
 
-    private static final Map<String, Function<StatelessAuthRequest, StatelessLoginFilter<?,?>>> frames = new HashMap<>();
-    private static final Map<String, Function<HttpServletRequest, WebAuthenticationDetails>> observetory = new HashMap<>();
+    private static final
+    Map<String, Function<StatelessAuthRequest, StatelessLoginFilter<?,?>>> frames
+        = new HashMap<>();
+    private static final
+    Map<String, Function<HttpServletRequest, WebAuthenticationDetails>> observetory
+        = new HashMap<>();
 
     static {
         for (StatelessAuthDetailsFactory factory : values()) {

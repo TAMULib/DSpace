@@ -171,7 +171,9 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public int authenticate(Context context, String username, String password, String realm, HttpServletRequest request)
         throws SQLException {
 
-        LOG.debug("Authenticate {}", getName());
+        int results = AuthenticationUtility.print("OidcAuthenticationBean#authenticate", request)
+            .apply("Authenticate OIDC");
+        LOG.debug("Results: {}", results);
 
         if (request == null) {
             LOG.warn("Unable to authenticate using OIDC because the request object is null.");
