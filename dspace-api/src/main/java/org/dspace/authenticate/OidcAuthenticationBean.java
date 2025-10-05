@@ -105,10 +105,9 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
         List<Group> groups = new ArrayList<>();
 
-        var unused = AuthenticationUtility.print(request)
+        int results = AuthenticationUtility.print("OidcAuthenticationBean#getSpecialGroups", request)
             .apply("OIDC Get special groups");
-
-        LOG.debug("Unused: {}", unused);
+        LOG.debug("Results: {}", results);
 
         try {
             if (request == null || context.getCurrentUser() == null) {

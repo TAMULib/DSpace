@@ -1,11 +1,17 @@
 package org.dspace.authenticate;
 
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.function.Function;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Trace HttpServletRequest through authentication to type the web authentication details.
+ */
 public class AuthenticationUtility {
 
     private AuthenticationUtility() {
@@ -13,45 +19,73 @@ public class AuthenticationUtility {
     }
 
     /**
-     * Utility method for printing to stdout.
+     * Utility method for printing requests details to stdout.
      * 
-     * @param anything
-     * @return function to call with a template to print about anything
+     * @param location String request is found in code
+     * @param request HttpServletRequest to print
+     * @return function to call with a template to print about request details
      */
-    public static Function<String, Integer> print(Object anything) {
+    public static Function<String, Integer> print(String location, HttpServletRequest request) {
+        // completely type Map
+        Map<String, Object> details = new HashMap<>();
 
-        if (anything instanceof HttpServletRequest request) {
-            printRequestDetails(request); // as JSON
-        }
+        int results = printRequestDetails(request, details);
 
-        /**
-         * Print the template.
-         * 
-         * @param template
-         * @return 0
-         */
         return (String template) -> {
-            System.out.println(template); // template with details as context
+            System.out.println(template); // Java 21 interpolation with details
+            System.out.println(details);
 
-            return 0;
+            return results;
         };
     }
 
-    private static void printRequestDetails(HttpServletRequest request) {
+    private static int printRequestDetails(HttpServletRequest request, Map<String, Object> details) {
         System.out.println("=== HTTP SERVLET REQUEST DETAILS ===");
 
         int results = 0;
+
+        System.out.println("requestId: " + request.getRequestId());
+        System.out.println("method: " + request.getMethod());
+        System.out.println("pathInfo: " + request.getPathInfo());
+        System.out.println("pathTranslated: " + request.getPathTranslated());
+        System.out.println("contextPath: " + request.getContextPath());
+        System.out.println("queryString: " + request.getQueryString());
+        System.out.println("requestURI: " + request.getRequestURI());
+        System.out.println("servletPath: " + request.getServletPath());
+        
+        if (Objects.nonNull(request.getRequestURL())) {
+            System.out.println("requestURL: " + request.getRequestURL());
+        }
+
+        // @see HttpServletRequest#[BASIC_AUTH, FORM_AUTH, CLIENT_CERT_AUTH, DIGEST_AUTH]
+        System.out.println("authType: " + request.getAuthType());
+        System.out.println("remoteUser: " + request.getRemoteUser());
+        System.out.println("sessionId: " + request.getRequestedSessionId());
+        System.out.println("requestedSessionIdValid: " + request.isRequestedSessionIdValid());
+        System.out.println("requestedSessionIdFromCookie: " + request.isRequestedSessionIdFromCookie());
+        System.out.println("requestedSessionIdFromURL: " + request.isRequestedSessionIdFromURL());
+
+        System.out.println("trailerFieldsReady: " + request.isTrailerFieldsReady());
 
         results = printRequestAttributes(request);
         results = printRequestCookies(request);
         results = printRequestHeaders(request);
         results = printRequestParameters(request);
 
+        // results = printRequestSession(request);
+        // results = printServletMapping(request);
+        // results = printUserPrincipal(request);
+        // results = printSession(request);
+        // results = printParts(request);\
+        // results = printTrailerFields(request);
+
         if (results < 0) {
             System.out.println("*** EMPTY REQUEST ***");
         }
 
         System.out.println("=== END REQUEST DETAILS ===");
+
+        return results;
     }
 
     private static int printRequestAttributes(HttpServletRequest request) {
