@@ -32,12 +32,12 @@ public class AuthenticationUtility {
     private static final String PARENTHESIS_CLOSE = ")";
 
     private static final String[] COOKIE_DELIMETERS = new String[] {
-        DOMAIN + SEMICOLON, // 0
-        PATH + SEMICOLON, // 0
-        DOMAIN + SEMICOLON, // 0
-        MAX_AGE + SEMICOLON, // 0
-        SECURE + SEMICOLON, // 0
-        HTTP_ONLY + SEMICOLON, // 0
+        DOMAIN + SEMICOLON,    // 0
+        PATH + SEMICOLON,      // 1
+        DOMAIN + SEMICOLON,    // 2
+        MAX_AGE + SEMICOLON,   // 3
+        SECURE + SEMICOLON,    // 4
+        HTTP_ONLY + SEMICOLON, // 5
     };
 
     private AuthenticationUtility() {
@@ -147,7 +147,7 @@ public class AuthenticationUtility {
 
         int results = 0;
         // if request has a cookie
-        if (!(request.getCookies() == null || request.getCookies().length == 0)) {
+        if (Objects.nonNull(request.getCookies()) && request.getCookies().length > 0) {
             System.out.println("--- COOKIES ---");
             for (Cookie cookie : request.getCookies()) {
                 final String cookieKey = String.join(SPACED_EQUAL, cookie.getName(), cookie.getValue());
