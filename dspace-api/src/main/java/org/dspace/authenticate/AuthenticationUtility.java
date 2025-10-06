@@ -14,6 +14,32 @@ import jakarta.servlet.http.HttpServletRequest;
  */
 public class AuthenticationUtility {
 
+    public static final String ATTRIBUTES = "attributes";
+    public static final String COOKIES = "cookies";
+    public static final String HEADERS = "headers";
+    public static final String PARAMETERS = "parameters";
+
+    public static final String DOMAIN = "domain";
+    public static final String PATH = "path";
+    public static final String MAX_AGE = "maxAge";
+    public static final String SECURE = "secure";
+    public static final String HTTP_ONLY = "httpOnly";
+
+    private static final String COMMA = ",";
+    private static final String SEMICOLON = ":";
+    private static final String SPACED_EQUAL = " = ";
+    private static final String PARENTHESIS_OPEN = "(";
+    private static final String PARENTHESIS_CLOSE = ")";
+
+    private static final String[] COOKIE_DELIMETERS = new String[] {
+        DOMAIN + SEMICOLON, // 0
+        PATH + SEMICOLON, // 0
+        DOMAIN + SEMICOLON, // 0
+        MAX_AGE + SEMICOLON, // 0
+        SECURE + SEMICOLON, // 0
+        HTTP_ONLY + SEMICOLON, // 0
+    };
+
     private AuthenticationUtility() {
         throw new RuntimeException();
     }
@@ -26,7 +52,7 @@ public class AuthenticationUtility {
      * @return function to call with a template to print about request details
      */
     public static Function<String, Integer> print(String location, HttpServletRequest request) {
-        // completely type Map
+        // complete type Map
         Map<String, Object> details = new HashMap<>();
 
         int results = printRequestDetails(request, details);
@@ -65,21 +91,24 @@ public class AuthenticationUtility {
         System.out.println("requestedSessionIdFromCookie: " + request.isRequestedSessionIdFromCookie());
         System.out.println("requestedSessionIdFromURL: " + request.isRequestedSessionIdFromURL());
 
+        // check if response set something to read after the response body is read
         System.out.println("trailerFieldsReady: " + request.isTrailerFieldsReady());
 
-        results = printRequestAttributes(request);
-        results = printRequestCookies(request);
-        results = printRequestHeaders(request);
-        results = printRequestParameters(request);
+        int i = 0;
+        results = printRequestAttributes(request, details); i++;
+        results = printRequestCookies(request, details); i++;
+        results = printRequestHeaders(request, details); i++;
+        results = printRequestParameters(request, details); i++;
 
-        // results = printRequestSession(request);
-        // results = printServletMapping(request);
-        // results = printUserPrincipal(request);
-        // results = printSession(request);
-        // results = printParts(request);\
-        // results = printTrailerFields(request);
+        // results = printRequestSession(request, details); i++;
+        // results = printServletMapping(request, details); i++;
+        // results = printUserPrincipal(request, details); i++;
+        // results = printSession(request, details); i++;
+        // results = printParts(request, details); i++;
+        // results = printTrailerFields(request, details); i++;
 
-        if (results < 0) {
+        // results 0 success, results -n number of request properties not printed
+        if (results < i) {
             System.out.println("*** EMPTY REQUEST ***");
         }
 
@@ -88,15 +117,21 @@ public class AuthenticationUtility {
         return results;
     }
 
-    private static int printRequestAttributes(HttpServletRequest request) {
+    private static int printRequestAttributes(HttpServletRequest request, Map<String, Object> details) {
+        final Map<String, Object> attributes = new HashMap<>();
+        details.put(ATTRIBUTES, attributes);
+
         int results = 0;
         Enumeration<String> attributeNames = request.getAttributeNames();
         if (attributeNames.hasMoreElements()) {
             System.out.println("--- ATTRIBUTES ---");
             while (attributeNames.hasMoreElements()) {
-                String attributeName = attributeNames.nextElement();
-                Object attributeValue = request.getAttribute(attributeName);
-                System.out.println(attributeName + " = " + attributeValue);
+                final String attributeName = attributeNames.nextElement();
+                final Object attributeValue = request.getAttribute(attributeName);
+
+                attributes.put(attributeName, attributeValue);
+
+                System.out.println(attributeName + SPACED_EQUAL + attributeValue);
             }
         } else {
             System.out.println("No attributes found");
@@ -106,19 +141,29 @@ public class AuthenticationUtility {
         return results;
     }
 
-    private static int printRequestCookies(HttpServletRequest request) {
+    private static int printRequestCookies(HttpServletRequest request, Map<String, Object> details) {
+        final Map<String, Object> cookies = new HashMap<>();
+        details.put(COOKIES, cookies);
+
         int results = 0;
-        Cookie[] cookies = request.getCookies();
-        boolean hasCookies = !(cookies == null || cookies.length == 0);
-        if (hasCookies) {
+        // if request has a cookie
+        if (!(request.getCookies() == null || request.getCookies().length == 0)) {
             System.out.println("--- COOKIES ---");
-            for (Cookie cookie : cookies) {
-                System.out.println(cookie.getName() + " = " + cookie.getValue() +
-                    " (domain: " + cookie.getDomain() +
-                    ", path: " + cookie.getPath() +
-                    ", maxAge: " + cookie.getMaxAge() +
-                    ", secure: " + cookie.getSecure() +
-                    ", httpOnly: " + cookie.isHttpOnly() + ")");
+            for (Cookie cookie : request.getCookies()) {
+                final String cookieKey = String.join(SPACED_EQUAL, cookie.getName(), cookie.getValue());
+
+                cookies.put(cookieKey, cookie);
+
+                StringBuilder cookieDetails = new StringBuilder();
+                cookieDetails.append(PARENTHESIS_OPEN);
+                cookieDetails.append(String.join(COOKIE_DELIMETERS[0], cookie.getDomain()));
+                cookieDetails.append(String.join(COOKIE_DELIMETERS[1], cookie.getPath()));
+                cookieDetails.append(String.join(COOKIE_DELIMETERS[2], String.valueOf(cookie.getMaxAge())));
+                cookieDetails.append(String.join(COOKIE_DELIMETERS[3], String.valueOf(cookie.getSecure())));
+                cookieDetails.append(String.join(COOKIE_DELIMETERS[4], String.valueOf(cookie.isHttpOnly())));
+                cookieDetails.append(PARENTHESIS_CLOSE);
+
+                System.out.println(cookieKey + cookieDetails.toString());
             }
         } else {
             System.out.println("No cookies found");
@@ -128,26 +173,30 @@ public class AuthenticationUtility {
         return results;
     }
 
-    private static int printRequestHeaders(HttpServletRequest request) {
+    private static int printRequestHeaders(HttpServletRequest request, Map<String, Object> details) {
+        final Map<String, Object> headers = new HashMap<>();
+        details.put(HEADERS, headers);
+
         int results = 0;
-        Enumeration<String> headerNames = request.getHeaderNames();
+        final Enumeration<String> headerNames = request.getHeaderNames();
         if (headerNames.hasMoreElements()) {
             System.out.println("--- HEADERS ---");
             while (headerNames.hasMoreElements()) {
-                String headerName = headerNames.nextElement();
-                Enumeration<String> headerValues = request.getHeaders(headerName);
-
-                String message  = headerName + " = ";
-
+                final String headerName = headerNames.nextElement();
+                final Enumeration<String> headerValues = request.getHeaders(headerName);
+                final StringBuilder headerValue = new StringBuilder();
                 boolean first = true;
                 while (headerValues.hasMoreElements()) {
                     if (!first) {
-                        message += ", ";
+                        headerValue.append(COMMA);
                     }
-                    message += headerValues.nextElement();
+                    headerValue.append(headerValues.nextElement());
                     first = false;
                 }
-                System.out.println(message);
+
+                headers.put(headerName, headerValue);
+
+                System.out.println(headerName + SPACED_EQUAL + headerValue);
             }
         } else {
             System.out.println("No headers found");
@@ -157,27 +206,21 @@ public class AuthenticationUtility {
         return results;
     }
 
-    private static int printRequestParameters(HttpServletRequest request) {
+    private static int printRequestParameters(HttpServletRequest request, Map<String, Object> details) {
+        final Map<String, Object> parameters = new HashMap<>();
+        details.put(PARAMETERS, parameters);
+
         int results = 0;
         Enumeration<String> paramNames = request.getParameterNames();
         if (paramNames.hasMoreElements()) {
             System.out.println("--- PARAMETERS ---");
             while (paramNames.hasMoreElements()) {
-                String paramName = paramNames.nextElement();
-                String[] paramValues = request.getParameterValues(paramName);
-                if (paramValues.length == 1) {
-                    System.out.println(paramName + " = " + paramValues[0]);
-                } else {
-                    String message = paramName + " = [";
-                    for (int i = 0; i < paramValues.length; i++) {
-                        message += paramValues[i];
-                        if (i < paramValues.length - 1) {
-                            message += ", ";
-                        }
-                    }
-                    message += "]";
-                    System.out.println(message);
-                }
+                final String paramName = paramNames.nextElement();
+                final String paramValue = String.join(COMMA, request.getParameterValues(paramName));
+
+                parameters.put(paramName, paramValue);
+
+                System.out.println(String.join(SPACED_EQUAL, paramName, paramValue));
             }
         } else {
             System.out.println("No parameters found");
