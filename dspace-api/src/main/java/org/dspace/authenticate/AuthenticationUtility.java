@@ -39,10 +39,9 @@ public class AuthenticationUtility {
     private static final String[] COOKIE_DELIMETERS = new String[] {
         DOMAIN + SEMICOLON,    // 0
         PATH + SEMICOLON,      // 1
-        DOMAIN + SEMICOLON,    // 2
-        MAX_AGE + SEMICOLON,   // 3
-        SECURE + SEMICOLON,    // 4
-        HTTP_ONLY + SEMICOLON, // 5
+        MAX_AGE + SEMICOLON,   // 2
+        SECURE + SEMICOLON,    // 3
+        HTTP_ONLY + SEMICOLON, // 4
     };
 
     private AuthenticationUtility() {
