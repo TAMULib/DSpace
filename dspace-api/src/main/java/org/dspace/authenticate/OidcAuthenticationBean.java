@@ -23,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -107,33 +106,28 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
         List<Group> groups = new ArrayList<>();
 
-        final int requestResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#getSpecialGroups 108", request)
+        final int requestResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#getSpecialGroups", request)
             .apply("OIDC Get special groups");
 
+        Set<String> groupNames = new HashSet<>();
+
+        if (Objects.nonNull(request) && Objects.nonNull(request.getAttribute(OIDC_AUTH_SG_ATTRIBUTE)) && request.getAttribute(OIDC_AUTH_SG_ATTRIBUTE) instanceof Set gn) {
+            groupNames = gn;
+            LOG.debug("Special Groups (request special groups): {}", groupNames);
+        } else {
+            LOG.debug("Request special groups not defined");
+        }
+
+        if (Objects.nonNull(context) && Objects.nonNull(context.getSpecialGroups())) {
+            groups = context.getSpecialGroups();
+            LOG.debug("Special Groups (context special groups): {}", groups);
+        }
+
+        if (groups.isEmpty() && groupNames.isEmpty()) {
+            LOG.debug("No special groups mapped.");
+        }
+        
         try {
-            if (request == null || context.getCurrentUser() == null) {
-                LOG.warn("No request or current user");
-                return Collections.EMPTY_LIST;
-            }
-
-            Set<String> groupNames = new HashSet<>();
-
-            if (request.getAttribute(OIDC_AUTH_SG_ATTRIBUTE) != null) {
-                groupNames = (Set<String>) request.getAttribute(OIDC_AUTH_SG_ATTRIBUTE);
-                LOG.debug("Special Groups (request special groups): {}", groupNames);
-            } else {
-                LOG.debug("Request special groups not defined");
-            }
-
-            if (Objects.nonNull(context.getSpecialGroups())) {
-                groups = context.getSpecialGroups();
-                LOG.debug("Special Groups (context special groups): {}", groups);
-            }
-
-            if (groups.isEmpty() && groupNames.isEmpty()) {
-                LOG.debug("No special groups mapped.");
-            }
-
             String loginGroupName = DSpaceServicesFactory.getInstance().getConfigurationService()
                 .getProperty("authentication-oidc.login.specialgroup");
 
@@ -172,8 +166,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             // ignoring database error
         }
 
-        final int groupResults = AuthenticationUtility.printGroups("OidcAuthenticationBean#getSpecialGroups 161", groups)
-            .apply("Special groups");
+        final int groupResults = AuthenticationUtility.printGroups("OidcAuthenticationBean#getSpecialGroups", groups)
+            .apply("Special groups:");
 
         LOG.debug("Results (request): {}", requestResults);
         LOG.debug("Results (group): {}", groupResults);
@@ -190,7 +184,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public int authenticate(Context context, String username, String password, String realm, HttpServletRequest request)
         throws SQLException {
 
-        final int preAuthenticateResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#authenticate 179", request)
+        final int preAuthenticateResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#authenticate", request)
             .apply("OIDC authentication");
 
         if (request == null) {
@@ -260,7 +254,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             request.setAttribute(OIDC_AUTHENTICATED, true);
         }
 
-        final int postAuthenticateResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#authenticate 249", request)
+        final int postAuthenticateResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#authenticate", request)
             .apply("OIDC authentication complete");
 
         LOG.debug("Results (pre): {}", preAuthenticateResults);
