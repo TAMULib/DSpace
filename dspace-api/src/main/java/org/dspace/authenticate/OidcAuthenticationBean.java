@@ -40,12 +40,14 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authenticate.oidc.OidcClient;
 import org.dspace.authenticate.oidc.model.OidcTokenResponseDTO;
 import org.dspace.core.Context;
+import org.dspace.core.LogHelper;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
 import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -129,7 +131,19 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             }
 
             if (groups.isEmpty() && groupNames.isEmpty()) {
-                LOG.debug("No special groups found.");
+                LOG.debug("No special groups mapped.");
+            }
+
+            String loginGroupName = DSpaceServicesFactory.getInstance().getConfigurationService()
+                .getProperty("authentication-oidc.login.specialgroup");
+
+            if (Objects.nonNull(loginGroupName) && !loginGroupName.isEmpty()) {
+                groupNames.add(loginGroupName);
+            } else {
+                LOG.warn(LogHelper.getHeader(context,
+                    "oidc_specialgroup",
+                    "Group defined in modules/authentication-oidc.cfg login" +
+                        ".specialgroup does not exist"));
             }
 
             for (String groupName : groupNames) {
