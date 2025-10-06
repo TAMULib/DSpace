@@ -163,8 +163,6 @@ public class WebSecurityConfiguration {
 
         // Add a filter before our login endpoints to do the authentication based on the data in the HTTP request.
         // This login endpoint only responds to POST as it is used for PasswordAuthentication
-        // http.addFilterBefore(statelessLoginFilter(authenticationManager, "/api/authn/login"), LogoutFilter.class);
-
         http.addFilterBefore(PASSWORD.getLoginFilter(authenticationManager, restAuthenticationService, "/api/authn/login"), LogoutFilter.class);
 
         Iterator<AuthenticationMethod> authenticationMethodIterator = authenticationService.authenticationMethodIterator();
