@@ -1,5 +1,12 @@
 package org.dspace.app.rest.security;
 
+import static org.dspace.authenticate.OidcAuthentication.OIDC_AUTH_METHOD_NAME;
+import static org.dspace.authenticate.OrcidAuthentication.ORCID_AUTH_METHOD_NAME;
+import static org.dspace.authenticate.SamlAuthentication.SAML_AUTH_METHOD_NAME;
+import static org.dspace.authenticate.ShibAuthentication.SHIBBOLETH_AUTH_METHOD_NAME;
+import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -18,47 +25,47 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Enumeration factory for stateless authentication filters with details.
  */
-public enum StatelessAuthDetailsFactory { // use constants
-    PASSWORD ("password", "POST",
+public enum StatelessAuthDetailsFactory {
+    PASSWORD ("password", POST.name(),
         request -> new StatelessLoginFilter<>(
             request.getUrl(),
             request.getHttpMethod(),
             request.getAuthenticationManager(),
             request.getRestAuthenticationService())),
-    OIDC ("oidc", "GET",
+    OIDC (OIDC_AUTH_METHOD_NAME, GET.name(),
         request -> new OidcLoginFilter(
             request.getUrl(),
             request.getHttpMethod(),
             request.getAuthenticationManager(),
             request.getRestAuthenticationService())),
-    ORCID  ("orcid", "GET",
+    ORCID (ORCID_AUTH_METHOD_NAME, GET.name(),
         request -> new OrcidLoginFilter(
             request.getUrl(),
             request.getHttpMethod(),
             request.getAuthenticationManager(),
             request.getRestAuthenticationService())),
-    SAML ("saml", "GET",
+    SAML (SAML_AUTH_METHOD_NAME, GET.name(),
         request -> new SamlLoginFilter(
             request.getUrl(),
             request.getHttpMethod(),
             request.getAuthenticationManager(),
             request.getRestAuthenticationService())),
-    SHIBBOLETH ("shibboleth", "GET", 
+    SHIBBOLETH (SHIBBOLETH_AUTH_METHOD_NAME, GET.name(), 
         request -> new ShibbolethLoginFilter(
             request.getUrl(),
             request.getHttpMethod(),
             request.getAuthenticationManager(),
             request.getRestAuthenticationService())),
-    STATELESS ("stateless", "POST",
+    STATELESS ("stateless", POST.name(),
         request -> new StatelessLoginFilter<>(
             request.getUrl(),
             request.getHttpMethod(),
             request.getAuthenticationManager(),
             request.getRestAuthenticationService()));
 
-    // ip, x509, ldap
+    // not supporting ip, x509, ldap
 
-    // basic, form, cert, digest
+    // not specyfing basic, form, cert, digest
 
     private final String name;
     private final String method;
