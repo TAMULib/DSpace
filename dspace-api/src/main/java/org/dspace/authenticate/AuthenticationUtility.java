@@ -57,9 +57,11 @@ public class AuthenticationUtility {
      */
     public static Function<String, Integer> printRequest(String location, HttpServletRequest request) {
         // complete type Map
-        Map<String, Object> details = new HashMap<>();
+        final Map<String, Object> details = new HashMap<>();
 
-        int results = printRequestDetails(request, details);
+        final int results = Objects.nonNull(request)
+            ? printRequestDetails(request, details)
+            : -1;
 
         return (String template) -> {
             System.out.println(template);
