@@ -1,10 +1,15 @@
 package org.dspace.authenticate;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import org.dspace.eperson.Group;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -51,17 +56,30 @@ public class AuthenticationUtility {
      * @param request HttpServletRequest to print
      * @return function to call with a template to print about request details
      */
-    public static Function<String, Integer> print(String location, HttpServletRequest request) {
+    public static Function<String, Integer> printRequest(String location, HttpServletRequest request) {
         // complete type Map
         Map<String, Object> details = new HashMap<>();
 
         int results = printRequestDetails(request, details);
 
         return (String template) -> {
-            System.out.println(template); // Java 21 interpolation with details
+            System.out.println(template);
             System.out.println(details);
 
             return results;
+        };
+    }
+
+    public static Function<String, Integer> printGroups(String location, List<Group> groups) {
+        final List<String> groupNames = Objects.nonNull(groups)
+            ? groups.stream().map(Group::getName).collect(Collectors.toList())
+            : new ArrayList<>();
+
+        return (String template) -> {
+            System.out.println(template);
+            System.out.println(String.join(COMMA, groupNames));
+
+            return 0;
         };
     }
 

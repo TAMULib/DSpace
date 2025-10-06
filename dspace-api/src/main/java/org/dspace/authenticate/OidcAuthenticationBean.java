@@ -105,9 +105,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
         List<Group> groups = new ArrayList<>();
 
-        int results = AuthenticationUtility.print("OidcAuthenticationBean#getSpecialGroups", request)
+        final int requestResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#getSpecialGroups 108", request)
             .apply("OIDC Get special groups");
-        LOG.debug("Results: {}", results);
 
         try {
             if (request == null || context.getCurrentUser() == null) {
@@ -159,6 +158,12 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             // ignoring database error
         }
 
+        final int groupResults = AuthenticationUtility.printGroups("OidcAuthenticationBean#getSpecialGroups 161", groups)
+            .apply("Special groups");
+
+        LOG.debug("Results (request): {}", requestResults);
+        LOG.debug("Results (group): {}", groupResults);
+
         return groups;
     }
 
@@ -171,9 +176,8 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     public int authenticate(Context context, String username, String password, String realm, HttpServletRequest request)
         throws SQLException {
 
-        int results = AuthenticationUtility.print("OidcAuthenticationBean#authenticate", request)
-            .apply("Authenticate OIDC");
-        LOG.debug("Results: {}", results);
+        final int preAuthenticateResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#authenticate 179", request)
+            .apply("OIDC authentication");
 
         if (request == null) {
             LOG.warn("Unable to authenticate using OIDC because the request object is null.");
@@ -186,11 +190,18 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             return NO_SUCH_USER;
         }
 
-        request.setAttribute(OIDC_AUTH_ATTRIBUTE, true);
-
         OidcTokenResponseDTO accessToken = getOidcAccessToken(code);
         if (accessToken == null) {
             LOG.warn("No access token retrieved by code");
+            return NO_SUCH_USER;
+        }
+
+        Map<String, Object> userInfo = getOidcUserInfo(accessToken.getAccessToken());
+        LOG.debug("User info: {}", userInfo);
+
+        String email = getAttributeAsString(userInfo, getEmailAttribute());
+        if (StringUtils.isBlank(email)) {
+            LOG.warn("No email found in the user info attributes");
             return NO_SUCH_USER;
         }
 
@@ -203,43 +214,45 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             .get("payload");
         LOG.debug("ID claims: {}", claims);
 
-        Map<String, Object> userInfo = getOidcUserInfo(accessToken.getAccessToken());
-        LOG.debug("User info: {}", userInfo);
-
         Map<String, Map<String, String[]>> groupMappings = getGroupMappings();
         LOG.debug("Group mappings: {}", groupMappings);
 
         Set<String> groups = determineGroups(groupMappings, claims);
         LOG.debug("Groups: {}", groups);
 
+        request.setAttribute(OIDC_AUTH_ATTRIBUTE, true);
         request.setAttribute(OIDC_AUTH_SG_ATTRIBUTE, groups);
 
-        String email = getAttributeAsString(userInfo, getEmailAttribute());
-        if (StringUtils.isBlank(email)) {
-            LOG.warn("No email found in the user info attributes");
-            return NO_SUCH_USER;
-        }
+        // was success from OIDC
+        int result = SUCCESS;
 
         EPerson ePerson = ePersonService.findByEmail(context, email);
         if (ePerson != null) {
             request.setAttribute(OIDC_AUTHENTICATED, true);
-            return ePerson.canLogIn() ? logInEPerson(context, ePerson) : BAD_ARGS;
+            result = ePerson.canLogIn() ? logInEPerson(context, ePerson) : BAD_ARGS;
+        } else {
+            if (canSelfRegister()) {
+                result = registerNewEPerson(context, userInfo, email);
+            } else {
+                LOG.warn("Self registration is currently disabled for OIDC, and no ePerson could be found for email: {}",
+                    email);
+                result = NO_SUCH_USER;
+            }
         }
 
-        // if self registration is disabled, warn about this failure to find a matching eperson
-        if (canSelfRegister()) {
-            int result = registerNewEPerson(context, userInfo, email);
-            if (result == SUCCESS) {
-                // It is important to set this attribute so the new user
-                // can be granted permissions of the special group in the first login
-                request.setAttribute(OIDC_AUTHENTICATED, true);
-            }
-            return result;
-        } else {
-            LOG.warn("Self registration is currently disabled for OIDC, and no ePerson could be found for email: {}",
-                email);
-            return NO_SUCH_USER;
+        if (result == SUCCESS) {
+            // It is important to set this attribute so the new user
+            // can be granted permissions of the special group in the first login
+            request.setAttribute(OIDC_AUTHENTICATED, true);
         }
+
+        final int postAuthenticateResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#authenticate 249", request)
+            .apply("OIDC authentication complete");
+
+        LOG.debug("Results (pre): {}", preAuthenticateResults);
+        LOG.debug("Results (post): {}", postAuthenticateResults);
+
+        return result;
     }
 
     @Override
