@@ -72,12 +72,16 @@ public class ShibAuthentication implements AuthenticationMethod {
 
     public static final String SHIBBOLETH_AUTH_METHOD_NAME = "shibboleth";
 
+    public static final String SHIBBOLETH_AUTH_ATTRIBUTE = "shibboleth-authentication";
+
     public static final String SHIBBOLETH_AUTH_SG_ATTRIBUTE = "shibboleth-sg";
 
     /**
      * log4j category
      */
     private static final Logger log = LogManager.getLogger(ShibAuthentication.class);
+
+    private static final String SHIBBOLETH_AUTHENTICATED = "shib.authenticated";
 
     /**
      * Additional metadata mappings
@@ -236,10 +240,11 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             // Step 4: Log the user in.
             context.setCurrentUser(eperson);
-            request.setAttribute("shib.authenticated", true);
+            request.setAttribute(SHIBBOLETH_AUTHENTICATED, true);
             AuthenticateServiceFactory.getInstance().getAuthenticationService().initEPerson(context, request, eperson);
 
             log.info(eperson.getEmail() + " has been authenticated via shibboleth.");
+
             return AuthenticationMethod.SUCCESS;
 
         } catch (Throwable t) {

@@ -44,9 +44,13 @@ public class SamlAuthentication implements AuthenticationMethod {
 
     public static final String SAML_AUTH_METHOD_NAME = "saml";
 
+    public static final String PASSWORD_AUTH_ATTRIBUTE = "saml-authentication";
+
     public static final String SAML_AUTH_SG_ATTRIBUTE = "saml-sg";
 
     private static final Logger log = LogManager.getLogger(SamlAuthentication.class);
+
+    private static final String SAML_AUTHENTICATED = "saml.authenticated";
 
     // Additional metadata mappings.
     protected Map<String, String> metadataHeaderMap = null;
@@ -161,7 +165,7 @@ public class SamlAuthentication implements AuthenticationMethod {
 
             context.setCurrentUser(eperson);
 
-            request.setAttribute("saml.authenticated", true);
+            request.setAttribute(SAML_AUTHENTICATED, true);
 
             AuthenticateServiceFactory.getInstance().getAuthenticationService().initEPerson(context, request, eperson);
 
@@ -639,7 +643,7 @@ public class SamlAuthentication implements AuthenticationMethod {
     public boolean isUsed(final Context context, final HttpServletRequest request) {
         if (request != null &&
             context.getCurrentUser() != null &&
-            request.getAttribute("saml.authenticated") != null
+            request.getAttribute(SAML_AUTHENTICATED) != null
         ) {
             return true;
         }

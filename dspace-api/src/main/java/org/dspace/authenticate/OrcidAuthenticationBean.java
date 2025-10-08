@@ -63,6 +63,8 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
 
     private final static String LOGIN_PAGE_URL_FORMAT = "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s";
 
+    private static final String ORCID_AUTHENTICATED = "orcid.authenticated";
+
     @Autowired
     private OrcidClient orcidClient;
 
@@ -104,7 +106,13 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
 
         request.setAttribute(ORCID_AUTH_ATTRIBUTE, true);
 
-        return authenticateWithOrcid(context, code, request);
+        int result = authenticateWithOrcid(context, code, request);
+
+        if (result == SUCCESS) {
+            request.setAttribute(ORCID_AUTHENTICATED, true);
+        }
+
+        return result;
     }
 
     @Override
@@ -131,7 +139,7 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public boolean isUsed(Context context, HttpServletRequest request) {
-        return request.getAttribute(ORCID_AUTH_ATTRIBUTE) != null;
+        return request.getAttribute(ORCID_AUTHENTICATED) != null;
     }
 
     @Override

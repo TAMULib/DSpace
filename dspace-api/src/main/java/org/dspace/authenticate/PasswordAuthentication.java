@@ -62,8 +62,6 @@ public class PasswordAuthentication
 
     private EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
 
-
-
     /**
      * Look to see if this email address is allowed to register.
      * <p>

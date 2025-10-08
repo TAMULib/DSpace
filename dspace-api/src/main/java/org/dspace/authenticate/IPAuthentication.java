@@ -50,6 +50,10 @@ public class IPAuthentication implements AuthenticationMethod {
 
     public static final String IP_AUTH_METHOD_NAME = "ip";
 
+    public static final String IP_AUTH_ATTRIBUTE = "ip-authentication";
+
+    public static final String IP_AUTH_SG_ATTRIBUTE = "ip-sg";
+
     /**
      * Our logger
      */

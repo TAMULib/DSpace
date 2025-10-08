@@ -54,6 +54,7 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(Context context, HttpServletRequest request) {
+        System.out.println("SpecialGroupClaimProvider#getValue getSpecialGroups");
         List<Group> groups = new ArrayList<>();
         try {
             groups = authenticationService.getSpecialGroups(context, request);
@@ -62,6 +63,8 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
             return null;
         }
 
+        System.out.println("SpecialGroupClaimProvider#getValue getSpecialGroups group size: " + groups + (groups != null ? groups.size() : ""));
+        System.out.println("SpecialGroupClaimProvider#getValue getSpecialGroups checking request attributes");
         // check for group names in request attributes
         Enumeration<String> attNames = request.getAttributeNames();
 

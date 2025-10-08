@@ -73,8 +73,14 @@ public class LDAPAuthentication implements AuthenticationMethod {
 
     public static final String LDAP_AUTH_METHOD_NAME = "ldap";
 
+    public static final String LDAP_AUTH_ATTRIBUTE = "ldap-authentication";
+
+    public static final String LDAP_AUTH_SG_ATTRIBUTE = "ldap-sg";
+
     private static final Logger log
             = org.apache.logging.log4j.LogManager.getLogger(LDAPAuthentication.class);
+
+    private static final String LDAP_AUTHENTICATED = "ldap.authenticated";
 
     protected AuthenticationService authenticationService
             = AuthenticateServiceFactory.getInstance().getAuthenticationService();
@@ -84,9 +90,6 @@ public class LDAPAuthentication implements AuthenticationMethod {
             = EPersonServiceFactory.getInstance().getGroupService();
     protected ConfigurationService configurationService
             = DSpaceServicesFactory.getInstance().getConfigurationService();
-
-    private static final String LDAP_AUTHENTICATED = "ldap.authenticated";
-
 
     /**
      * Let a real auth method return true if it wants.

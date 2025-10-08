@@ -36,8 +36,6 @@ public class OidcAuthentication implements AuthenticationMethod {
 
     private final ServiceManager serviceManager = new DSpace().getServiceManager();
 
-    private static final String OIDC_AUTHENTICATED = "oidc.authenticated";
-
     @Override
     public boolean canSelfRegister(Context context, HttpServletRequest request, String username) throws SQLException {
         return getOidcAuthentication().canSelfRegister(context, request, username);
@@ -85,12 +83,7 @@ public class OidcAuthentication implements AuthenticationMethod {
 
     @Override
     public boolean isUsed(final Context context, final HttpServletRequest request) {
-        if (request != null &&
-                context.getCurrentUser() != null &&
-                request.getAttribute(OIDC_AUTHENTICATED) != null) {
-            return true;
-        }
-        return false;
+        return getOidcAuthentication().isUsed(context, request);
     }
 
     @Override

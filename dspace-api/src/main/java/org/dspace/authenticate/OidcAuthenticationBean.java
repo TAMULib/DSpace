@@ -220,12 +220,11 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         request.setAttribute(OIDC_AUTH_ATTRIBUTE, true);
         request.setAttribute(OIDC_AUTH_SG_ATTRIBUTE, groups);
 
-        int result = SUCCESS;
+        int result = BAD_ARGS;
 
         EPerson ePerson = ePersonService.findByEmail(context, email);
-        if (ePerson != null) {
-            request.setAttribute(OIDC_AUTHENTICATED, true);
-            result = ePerson.canLogIn() ? logInEPerson(context, ePerson) : BAD_ARGS;
+        if (Objects.nonNull(ePerson) && ePerson.canLogIn()) {
+            result = logInEPerson(context, ePerson);
         } else {
             if (canSelfRegister()) {
                 result = registerNewEPerson(context, userInfo, email);
@@ -524,10 +523,9 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public boolean isUsed(final Context context, final HttpServletRequest request) {
-        if (request != null) System.out.println("OidcAuthenticationBean#isUsed: (request attribute oidc)" + request.getAttribute(OIDC_AUTHENTICATED));
         if (request != null &&
-            context.getCurrentUser() != null &&
-            request.getAttribute(OIDC_AUTHENTICATED) != null) {
+                context.getCurrentUser() != null &&
+                request.getAttribute(OIDC_AUTHENTICATED) != null) {
             return true;
         }
         return false;
