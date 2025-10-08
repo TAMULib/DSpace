@@ -7,14 +7,11 @@
  */
 package org.dspace.app.rest.security;
 
+import static org.dspace.app.rest.security.StatelessAuthDetailsFactory.SHIBBOLETH;
+
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Set;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,8 +19,12 @@ import org.dspace.app.rest.security.details.ShibbolethWebAuthenticationDetails;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This class will filter Shibboleth requests to see if the user has been authenticated via Shibboleth.
@@ -50,15 +51,24 @@ import org.springframework.security.core.Authentication;
  * @author Tim Donohue
  * @see org.dspace.authenticate.ShibAuthentication
  */
-public class ShibbolethLoginFilter extends StatelessLoginFilter<Set<String>, ShibbolethWebAuthenticationDetails> {
+public class ShibbolethLoginFilter extends StatelessLoginFilter<ShibbolethWebAuthenticationDetails> {
 
     private static final Logger log = LogManager.getLogger(ShibbolethLoginFilter.class);
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-    public ShibbolethLoginFilter(String url, String httpMethod, AuthenticationManager authenticationManager,
-                                 RestAuthenticationService restAuthenticationService) {
-        super(url, httpMethod, authenticationManager, restAuthenticationService);
+    public ShibbolethLoginFilter(StatelessAuthRequest authRequest) {
+        super(authRequest);
+    }
+
+    @Override
+    protected String getAuthMethodName() {
+        return SHIBBOLETH.getAuthMethodName();
+    }
+
+    @Override
+    protected String getProviderName() {
+        return "Shibboleth";
     }
 
     @Override
@@ -67,10 +77,8 @@ public class ShibbolethLoginFilter extends StatelessLoginFilter<Set<String>, Shi
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
         super.successfulAuthentication(req, res, chain, auth);
-
         redirectAfterSuccess(req, res);
     }
-
 
     /**
      * After successful login, redirect to the DSpace URL specified by this Shibboleth request (in the "redirectUrl"

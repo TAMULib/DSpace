@@ -103,11 +103,9 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
         List<Group> groups = new ArrayList<>();
-
-        final int requestResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#getSpecialGroups", request)
-            .apply("OIDC Get special groups");
 
         Set<String> groupNames = new HashSet<>();
 
@@ -166,12 +164,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             // ignoring database error
         }
 
-        final int groupResults = AuthenticationUtility.printGroups("OidcAuthenticationBean#getSpecialGroups", groups)
-            .apply("Special groups:");
-
-        LOG.debug("Results (request): {}", requestResults);
-        LOG.debug("Results (group): {}", groupResults);
-
         return groups;
     }
 
@@ -183,9 +175,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     @Override
     public int authenticate(Context context, String username, String password, String realm, HttpServletRequest request)
         throws SQLException {
-
-        final int preAuthenticateResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#authenticate", request)
-            .apply("OIDC authentication");
 
         if (request == null) {
             LOG.warn("Unable to authenticate using OIDC because the request object is null.");
@@ -231,7 +220,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         request.setAttribute(OIDC_AUTH_ATTRIBUTE, true);
         request.setAttribute(OIDC_AUTH_SG_ATTRIBUTE, groups);
 
-        // was success from OIDC
         int result = SUCCESS;
 
         EPerson ePerson = ePersonService.findByEmail(context, email);
@@ -253,12 +241,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             // can be granted permissions of the special group in the first login
             request.setAttribute(OIDC_AUTHENTICATED, true);
         }
-
-        final int postAuthenticateResults = AuthenticationUtility.printRequest("OidcAuthenticationBean#authenticate", request)
-            .apply("OIDC authentication complete");
-
-        LOG.debug("Results (pre): {}", preAuthenticateResults);
-        LOG.debug("Results (post): {}", postAuthenticateResults);
 
         return result;
     }
@@ -542,9 +524,10 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public boolean isUsed(final Context context, final HttpServletRequest request) {
+        if (request != null) System.out.println("OidcAuthenticationBean#isUsed: (request attribute oidc)" + request.getAttribute(OIDC_AUTHENTICATED));
         if (request != null &&
-                context.getCurrentUser() != null &&
-                request.getAttribute(OIDC_AUTHENTICATED) != null) {
+            context.getCurrentUser() != null &&
+            request.getAttribute(OIDC_AUTHENTICATED) != null) {
             return true;
         }
         return false;

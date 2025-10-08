@@ -62,30 +62,32 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
             return null;
         }
 
-        if (groups.isEmpty()) {
-            Enumeration<String> attNames = request.getAttributeNames();
+        // check for group names in request attributes
+        Enumeration<String> attNames = request.getAttributeNames();
 
-            while (attNames.hasMoreElements()) {
-                String attName = attNames.nextElement();
-                if (attName.endsWith(SPECIAL_GROUPS)) {
-                    Set<String> groupNames = (Set<String>) request.getAttribute(attName);
-                    for (String groupName : groupNames) {
-                        if (groupName == null || groupName.isEmpty()) {
-                            continue;
-                        }
+        while (attNames.hasMoreElements()) {
+            String attName = attNames.nextElement();
+            if (attName.endsWith(SPECIAL_GROUPS)) {
 
-                        try {
-                            log.debug("Looking up special group {}", groupName);
-                            Group group = groupService.findByName(context, groupName);
-                            if (group == null) {
-                                log.warn("Group {} does not exist", groupName);
-                            } else {
-                                log.debug("Found special group {}", groupName);
-                                groups.add(group);
-                            }
-                        } catch (SQLException ex) {
-                            // ignoring database error
+                @SuppressWarnings("unchecked")
+                Set<String> groupNames = (Set<String>) request.getAttribute(attName);
+
+                for (String groupName : groupNames) {
+                    if (groupName == null || groupName.isEmpty()) {
+                        continue;
+                    }
+
+                    try {
+                        log.debug("Looking up special group {}", groupName);
+                        Group group = groupService.findByName(context, groupName);
+                        if (group == null) {
+                            log.warn("Group {} does not exist", groupName);
+                        } else {
+                            log.debug("Found special group {}", groupName);
+                            groups.add(group);
                         }
+                    } catch (SQLException ex) {
+                        // ignoring database error
                     }
                 }
             }

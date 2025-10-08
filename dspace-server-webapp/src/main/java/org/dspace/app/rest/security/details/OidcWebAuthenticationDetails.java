@@ -9,20 +9,12 @@ package org.dspace.app.rest.security.details;
 
 import static org.dspace.authenticate.OidcAuthentication.OIDC_AUTH_SG_ATTRIBUTE;
 
-import java.util.Set;
-
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * This holds the OIDC web authentication details and which request attribute
- * should have the details.
- * 
- * @note OIDC is the only authentication method that utilizes web authentication details.
- */
-public class OidcWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails<Set<String>> {
+public class OidcWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails {
 
-    public OidcWebAuthenticationDetails(HttpServletRequest request) {
-        super(request);
+    public OidcWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
+        super(request, authMethodName);
     }
 
     public String getKey() {

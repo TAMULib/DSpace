@@ -8,11 +8,16 @@
 package org.dspace.app.rest.security;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetails;
+import org.dspace.app.rest.utils.ContextUtil;
+import org.dspace.core.Context;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -24,7 +29,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * This class will filter /api/authn/login requests to try and authenticate them. Keep in mind, this filter runs *after*
+ * This abstract class provides the stateless base for authentication. Keep in mind, this filter runs *after*
  * {@link StatelessAuthenticationFilter} (which looks for authentication data in the request itself). So, in some scenarios
  * (e.g. after a Shibboleth login) the StatelessAuthenticationFilter does the actual authentication, and this Filter
  * just ensures the auth token (JWT) is sent back in an Authorization header.
@@ -32,41 +37,53 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Frederic Van Reet (frederic dot vanreet at atmire dot com)
  * @author Tom Desair (tom dot desair at atmire dot com)
  */
-public class StatelessLoginFilter<T, D extends SpecialGroupsWebAuthenticationDetails<T>> extends AbstractAuthenticationProcessingFilter {
+public abstract class StatelessLoginFilter<D extends SpecialGroupsWebAuthenticationDetails> extends AbstractAuthenticationProcessingFilter {
     private static final Logger log = LogManager.getLogger();
 
-    protected AuthenticationManager authenticationManager;
+    protected final String url;
 
-    protected RestAuthenticationService restAuthenticationService;
+    protected final AuthenticationManager authenticationManager;
 
-    @Override
-    public void afterPropertiesSet() {
-    }
+    protected final RestAuthenticationService restAuthenticationService;
 
     /**
      * Initialize a StatelessLoginFilter for the given URL and HTTP method. This login filter will ONLY attempt
      * authentication for requests that match this URL and method. The URL & method are defined in the configuration
      * in WebSecurityConfiguration.
      * @see org.dspace.app.rest.security.WebSecurityConfiguration
-     * @param url URL path to attempt to authenticate (e.g. "/api/authn/login")
-     * @param httpMethod HTTP method to attempt to authentication (e.g. "POST")
-     * @param authenticationManager Spring Security AuthenticationManager to use for authentication
-     * @param restAuthenticationService DSpace RestAuthenticationService to use for authentication
+     * @param authRequest StatelessAuthRequest with URL, HTTP method name,
+     *                    authentication method name, authentication manaher, and REST authentication service
      */
-    public StatelessLoginFilter(String url, String httpMethod, AuthenticationManager authenticationManager,
-                                RestAuthenticationService restAuthenticationService) {
+    public StatelessLoginFilter(StatelessAuthRequest authRequest) {
         // NOTE: attemptAuthentication() below will only be triggered by requests that match both this URL and method
-        super(new AntPathRequestMatcher(url, httpMethod));
-        this.authenticationManager = authenticationManager;
-        this.restAuthenticationService = restAuthenticationService;
+        super(new AntPathRequestMatcher(authRequest.getUrl(), authRequest.getHttpMethodName()));
+        this.url = authRequest.getUrl();
+        this.authenticationManager = authRequest.getAuthenticationManager();
+        this.restAuthenticationService = authRequest.getRestAuthenticationService();
     }
+
+    @Override
+    public void afterPropertiesSet() {
+
+    }
+
+    protected boolean addCookie() {
+        return true;
+    }
+
+    protected void addCredentials(HttpServletRequest request, DSpaceAuthentication authentication) {
+        // nothing todo here
+    }
+
+    protected abstract String getAuthMethodName();
+
+    protected abstract String getProviderName();
 
     /**
      * Attempt to authenticate the user by using Spring Security's AuthenticationManager.
      * The AuthenticationManager will delegate this task to one or more AuthenticationProvider classes.
      * <P>
-     * For DSpace, our custom AuthenticationProvider is {@link EPersonRestAuthenticationProvider}, so that
-     * is the authenticate() method which is called below.
+     * For DSpace, our custom AuthenticationProvider is {@link EPersonRestAuthenticationProvider}.
      *
      * @param req current request
      * @param res current response
@@ -77,24 +94,18 @@ public class StatelessLoginFilter<T, D extends SpecialGroupsWebAuthenticationDet
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
-
-        DSpaceAuthentication authentication = DSpaceAuthentication.create();
-
-        log.debug(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
-
-        String user = req.getParameter("user");
-        String password = req.getParameter("password");
-
-        if (user != null && user.length() > 0) {
-            authentication.withUsername(user);
-        }
-
-        if (password != null && password.length() > 0) {
-            authentication.withCredentials(password);
-        }
-
-        return ((DSpaceAuthentication) authenticationManager.authenticate(authentication))
+        DSpaceAuthentication authentication = DSpaceAuthentication.create()
             .withDetails(getWebAuthenticationDetails(req));
+
+        if (!isEnabled(authentication)) {
+            throw new ProviderNotFoundException(String.format("%s login is disabled.", getProviderName()));
+        }
+
+        addCredentials(req, authentication);
+
+        log.info(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
+
+        return authenticationManager.authenticate(authentication);
     }
 
     /**
@@ -120,10 +131,7 @@ public class StatelessLoginFilter<T, D extends SpecialGroupsWebAuthenticationDet
                                             Authentication auth) throws IOException, ServletException {
         DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
         log.debug(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));
-        // This is okay unless an inheriting implementation calls the super method and should not add a cookie.
-        // If need be, add an interface to specify whether a stateless login filter will add a cookie or not.
-        boolean addCookie = !getClass().getSimpleName().equals("StatelessLoginFilter");
-        restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, addCookie);
+        restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, addCookie());
     }
 
     /**
@@ -150,8 +158,19 @@ public class StatelessLoginFilter<T, D extends SpecialGroupsWebAuthenticationDet
     }
 
     @SuppressWarnings("unchecked")
-    protected T getWebAuthenticationDetails(HttpServletRequest req) {
+    protected Map<String, Object> getWebAuthenticationDetails(HttpServletRequest req) {
         return authenticationDetailsSource != null ? ((D) authenticationDetailsSource.buildDetails(req)).getDetails() : null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private boolean isEnabled(Authentication authentication) {
+        final String authMethodName = getAuthMethodName();
+        final Map<String, Object> details = (Map<String, Object>) authentication.getDetails();
+        final String detailsAuthName = (String) details.get("am");
+
+        return Objects.nonNull(authMethodName)
+            && Objects.nonNull(detailsAuthName)
+            && authMethodName.equals(detailsAuthName);
     }
 
 }

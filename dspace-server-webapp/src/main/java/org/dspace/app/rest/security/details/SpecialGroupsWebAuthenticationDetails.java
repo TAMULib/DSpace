@@ -7,32 +7,29 @@
  */
 package org.dspace.app.rest.security.details;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * This holds the special groups web authentication details and which request attribute should
- * have the details.
- * 
- * Override and type the web authentication details for authentication request typings.
- * 
- * @note All web authentications are currently being added after AuthenticationManager#authenticate
- * in StatelessLoginFilter#attemptAuthentication.
- */
-public abstract class SpecialGroupsWebAuthenticationDetails<T> extends WebAuthenticationDetails {
+public abstract class SpecialGroupsWebAuthenticationDetails extends WebAuthenticationDetails {
 
-    private final T details;
+    private final Map<String, Object> details;
 
-     @SuppressWarnings("unchecked")
-     public SpecialGroupsWebAuthenticationDetails(HttpServletRequest request) {
+    @SuppressWarnings("unchecked")
+    public SpecialGroupsWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
         super(request);
-        this.details = (T) request.getAttribute(this.getKey());
+        this.details = new HashMap<>();
+        this.details.put("sg", (Set<String>) request.getAttribute(this.getKey()));
+        this.details.put("am", authMethodName);
     }
 
     public abstract String getKey();
 
-    public T getDetails() {
+    public Map<String, Object> getDetails() {
         return details;
     }
 }

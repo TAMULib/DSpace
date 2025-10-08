@@ -11,10 +11,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
@@ -23,6 +19,11 @@ import org.dspace.core.Context;
 import org.dspace.eperson.Group;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This is a Filter class that'll fetch special groups from the {@link AuthenticationService} and set these in the
@@ -54,7 +55,6 @@ public class AnonymousAdditionalAuthorizationFilter extends BasicAuthenticationF
     protected void doFilterInternal(HttpServletRequest req,
                                     HttpServletResponse res,
                                     FilterChain chain) throws IOException, ServletException {
-
         Context context = ContextUtil.obtainContext(req);
         try {
             List<Group> groups = authenticationService.getSpecialGroups(context, req);
@@ -64,7 +64,7 @@ public class AnonymousAdditionalAuthorizationFilter extends BasicAuthenticationF
         } catch (SQLException e) {
             log.error("Something went wrong trying to fetch groups in IPAuthenticationFilter", e);
         }
+
         chain.doFilter(req, res);
     }
-
 }

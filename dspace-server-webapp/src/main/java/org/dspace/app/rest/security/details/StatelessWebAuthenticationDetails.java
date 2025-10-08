@@ -7,23 +7,12 @@
  */
 package org.dspace.app.rest.security.details;
 
-import java.util.Set;
-
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * This holds the stateless web authentication details and which request attribute
- * should have the details.
- *
- * Currently only a single key and only from the request attributes.
- *
- * @note All web authentications are currently being added after AuthenticationManager#authenticate
- *       in StatelessLoginFilter#attemptAuthentication.
- */
-public class StatelessWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails<Set<String>> {
+public class StatelessWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails {
 
-    public StatelessWebAuthenticationDetails(HttpServletRequest request) {
-        super(request);
+    public StatelessWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
+        super(request, authMethodName);
     }
 
     public String getKey() {

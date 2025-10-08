@@ -47,6 +47,12 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 public class PasswordAuthentication
     implements AuthenticationMethod {
 
+    public static final String PASSWORD_AUTH_METHOD_NAME = "password";
+
+    public static final String PASSWORD_AUTH_ATTRIBUTE = "password-authentication";
+
+    public static final String PASSWORD_AUTH_SG_ATTRIBUTE = "password-sg";
+
     /**
      * log4j category
      */
@@ -254,9 +260,8 @@ public class PasswordAuthentication
 
     @Override
     public String getName() {
-        return "password";
+        return PASSWORD_AUTH_METHOD_NAME;
     }
-
 
     @Override
     public boolean isUsed(final Context context, final HttpServletRequest request) {

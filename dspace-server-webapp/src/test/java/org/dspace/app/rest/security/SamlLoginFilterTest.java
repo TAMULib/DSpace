@@ -55,7 +55,13 @@ public class SamlLoginFilterTest extends AbstractDSpaceTest {
         authManager = createAuthenticationManager();
         restAuthService = createRestAuthenticationService();
         filterChain = Mockito.mock(FilterChain.class);
-        filter = new SamlLoginFilter("/api/authn/saml", HttpMethod.GET.name(), authManager, restAuthService);
+        filter = new SamlLoginFilter(
+            StatelessAuthRequest.create(
+                "/api/authn/saml", 
+                "saml", 
+                HttpMethod.GET.name(), 
+                authManager, 
+                restAuthService));
         request = createRequest("/api/authn/saml");
         response = createResponse();
     }

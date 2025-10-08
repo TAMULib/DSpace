@@ -7,18 +7,18 @@
  */
 package org.dspace.app.rest.security.details;
 
-import static org.dspace.authenticate.SamlAuthentication.SAML_AUTH_SG_ATTRIBUTE;
+import static org.dspace.authenticate.PasswordAuthentication.PASSWORD_AUTH_SG_ATTRIBUTE;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-public class SamlWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails {
+public class PasswordWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails {
 
-    public SamlWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
+    public PasswordWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
         super(request, authMethodName);
     }
 
     public String getKey() {
-        return SAML_AUTH_SG_ATTRIBUTE;
+        return PASSWORD_AUTH_SG_ATTRIBUTE;
     }
 
 }

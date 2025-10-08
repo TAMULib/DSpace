@@ -97,27 +97,28 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                        HttpServletRequest request,
                                        boolean implicitOnly) {
         // better is lowest, so start with the highest.
-        int bestRet = AuthenticationMethod.BAD_ARGS;
+        int results = AuthenticationMethod.BAD_ARGS;
 
         // return on first success, otherwise "best" outcome.
-        for (AuthenticationMethod aMethodStack : getAuthenticationMethodStack()) {
-            if (!implicitOnly || aMethodStack.isImplicit()) {
-                int ret = 0;
+        for (AuthenticationMethod method : getAuthenticationMethodStack()) {
+            if (!implicitOnly || method.isImplicit()) {
+                int result = 0;
                 try {
-                    ret = aMethodStack.authenticate(context, username, password, realm, request);
+                    result = method.authenticate(context, username, password, realm, request);
                 } catch (SQLException e) {
-                    ret = AuthenticationMethod.NO_SUCH_USER;
+                    result = AuthenticationMethod.NO_SUCH_USER;
                 }
-                if (ret == AuthenticationMethod.SUCCESS) {
+                if (result == AuthenticationMethod.SUCCESS) {
                     updateLastActiveDate(context);
-                    return ret;
+                    return result;
                 }
-                if (ret < bestRet) {
-                    bestRet = ret;
+                if (result < results) {
+                    results = result;
                 }
             }
         }
-        return bestRet;
+
+        return results;
     }
 
     @Override
@@ -173,25 +174,19 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public List<Group> getSpecialGroups(Context context,
-                                        HttpServletRequest request)
-        throws SQLException {
-        List<Group> result = new ArrayList<>();
-        int totalLen = 0;
+                                        HttpServletRequest request) throws SQLException {
+        final List<Group> groups = new ArrayList<>();
 
         for (AuthenticationMethod method : getAuthenticationMethodStack()) {
-
             if (method.areSpecialGroupsApplicable(context, request)) {
-
                 List<Group> gl = method.getSpecialGroups(context, request);
                 if (gl.size() > 0) {
-                    result.addAll(gl);
-                    totalLen += gl.size();
+                    groups.addAll(gl);
                 }
-
             }
         }
 
-        return result;
+        return groups;
     }
 
     @Override
@@ -205,6 +200,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         while (authenticationMethodIterator.hasNext()) {
             final AuthenticationMethod authenticationMethod = authenticationMethodIterator.next();
+            System.out.println("Auth method: " + authenticationMethod);
+            System.out.println("Auth method used: " + authenticationMethod.isUsed(context, request));
             if (authenticationMethod.isUsed(context, request)) {
                 return authenticationMethod.getName();
             }

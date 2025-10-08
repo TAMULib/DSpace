@@ -9,17 +9,20 @@ import org.springframework.security.authentication.AuthenticationManager;
 public class StatelessAuthRequest {
 
     private final String url;
-    private final String httpMethod;
+    private final String authMethodName;
+    private final String httpMethodName;
     private final AuthenticationManager authenticationManager;
     private final RestAuthenticationService restAuthenticationService;
 
     private StatelessAuthRequest(
             String url,
-            String httpMethod,
+            String authMethodName,
+            String httpMethodName,
             AuthenticationManager authenticationManager,
             RestAuthenticationService restAuthenticationService) {
         this.url = url;
-        this.httpMethod = httpMethod;
+        this.authMethodName = authMethodName;
+        this.httpMethodName = httpMethodName;
         this.authenticationManager = authenticationManager;
         this.restAuthenticationService = restAuthenticationService;
     }
@@ -28,8 +31,12 @@ public class StatelessAuthRequest {
         return url;
     }
 
-    public String getHttpMethod() {
-        return httpMethod;
+    public String getAuthMethodName() {
+        return authMethodName;
+    }
+
+    public String getHttpMethodName() {
+        return httpMethodName;
     }
 
     public AuthenticationManager getAuthenticationManager() {
@@ -42,13 +49,15 @@ public class StatelessAuthRequest {
 
     public static StatelessAuthRequest create(
             String url,
-            String httpMethod,
+            String authMethodName,
+            String httpMethodName,
             AuthenticationManager authenticationManager,
             RestAuthenticationService restAuthenticationService) {
 
         return new StatelessAuthRequest(
                 url,
-                httpMethod,
+                authMethodName,
+                httpMethodName,
                 authenticationManager,
                 restAuthenticationService);
     }

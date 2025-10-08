@@ -7,6 +7,7 @@
  */
 package org.dspace.app.rest.security;
 
+import static org.dspace.app.rest.security.StatelessAuthDetailsFactory.ORCID;
 import static org.dspace.authenticate.OrcidAuthentication.ORCID_AUTH_ATTRIBUTE;
 import static org.dspace.authenticate.OrcidAuthentication.ORCID_DEFAULT_REGISTRATION_URL;
 import static org.dspace.authenticate.OrcidAuthentication.ORCID_REGISTRATION_TOKEN_ATTRUBUTE;
@@ -14,7 +15,6 @@ import static org.dspace.authenticate.OrcidAuthentication.ORCID_REGISTRATION_TOK
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -27,7 +27,6 @@ import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.dspace.utils.DSpace;
 import org.dspace.web.ContextUtil;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -44,7 +43,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Luca Giamminonni (luca.giamminonni at 4science.it)
  */
 
-public class OrcidLoginFilter extends StatelessLoginFilter<Set<String>, OrcidWebAuthenticationDetails> {
+public class OrcidLoginFilter extends StatelessLoginFilter<OrcidWebAuthenticationDetails> {
 
     private static final Logger log = LogManager.getLogger(OrcidLoginFilter.class);
 
@@ -54,16 +53,24 @@ public class OrcidLoginFilter extends StatelessLoginFilter<Set<String>, OrcidWeb
                                                                       .getServiceByName("orcidAuthentication",
                                                                                         OrcidAuthenticationBean.class);
 
-    public OrcidLoginFilter(String url, String httpMethod, AuthenticationManager authenticationManager,
-                                     RestAuthenticationService restAuthenticationService) {
-        super(url, httpMethod, authenticationManager, restAuthenticationService);
+    public OrcidLoginFilter(StatelessAuthRequest authRequest) {
+        super(authRequest);
+    }
+
+    @Override
+    protected String getAuthMethodName() {
+        return ORCID.getAuthMethodName();
+    }
+
+    @Override
+    protected String getProviderName() {
+        return "Orcid";
     }
 
     @Override
     protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
         super.successfulAuthentication(req, res, chain, auth);
-
         redirectAfterSuccess(req, res);
     }
 
@@ -136,5 +143,4 @@ public class OrcidLoginFilter extends StatelessLoginFilter<Set<String>, OrcidWeb
                                "Invalid redirectURL! Must match server or ui hostname.");
         }
     }
-
 }

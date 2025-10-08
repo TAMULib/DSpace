@@ -39,6 +39,8 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(final Context context, final HttpServletRequest request) {
+        System.out.println("AuthenticationMethodClaimProvider#getValue context: " + context);
+        System.out.println("AuthenticationMethodClaimProvider#getValue context auth: " + context.getAuthenticationMethod());
         if (context.getAuthenticationMethod() != null) {
             return context.getAuthenticationMethod();
         }
