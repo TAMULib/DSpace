@@ -44,14 +44,23 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
         if (context.getAuthenticationMethod() != null) {
             return context.getAuthenticationMethod();
         }
-        return authenticationService.getAuthenticationMethod(context, request);
+        Object value = authenticationService.getAuthenticationMethod(context, request);
+
+        System.out.println("AuthenticationMethodClaimProvider#getValue value: " + value);
+
+        return value;
     }
 
     @Override
     public void parseClaim(final Context context, final HttpServletRequest request, final JWTClaimsSet jwtClaimsSet)
             throws SQLException {
         try {
-            context.setAuthenticationMethod(jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD));
+
+            String claim = jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD);
+
+            log.info("Parsed authentication method claim {}", claim);
+
+            context.setAuthenticationMethod(claim);
         } catch (ParseException e) {
             log.error(e::getMessage, e);
         }

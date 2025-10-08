@@ -93,9 +93,13 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
             }
         }
 
-        return groups.stream()
+        Object value = groups.stream()
             .map(group -> group.getID().toString())
             .collect(Collectors.toList());
+
+        System.out.println("SpecialGroupClaimProvider#getValue value: " + value);
+
+        return value;
     }
 
     @Override
@@ -107,7 +111,7 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
                 context.setSpecialGroup(UUID.fromString(groupId));
             }
 
-            log.debug("Parsed group ids claim {}", groupIds);
+            log.info("Parsed group ids claim {}", groupIds);
 
         } catch (ParseException e) {
             log.error("Error while trying to access specialgroups from ClaimSet", e);
