@@ -15,11 +15,11 @@ public class StatelessAuthRequest {
     private final RestAuthenticationService restAuthenticationService;
 
     private StatelessAuthRequest(
-            String url,
-            String authMethodName,
-            String httpMethodName,
-            AuthenticationManager authenticationManager,
-            RestAuthenticationService restAuthenticationService) {
+            final String url,
+            final String authMethodName,
+            final String httpMethodName,
+            final AuthenticationManager authenticationManager,
+            final RestAuthenticationService restAuthenticationService) {
         this.url = url;
         this.authMethodName = authMethodName;
         this.httpMethodName = httpMethodName;
@@ -27,32 +27,32 @@ public class StatelessAuthRequest {
         this.restAuthenticationService = restAuthenticationService;
     }
 
-    public String getUrl() {
+    String getUrl() {
         return url;
     }
 
-    public String getAuthMethodName() {
+    String getAuthMethodName() {
         return authMethodName;
     }
 
-    public String getHttpMethodName() {
+    String getHttpMethodName() {
         return httpMethodName;
     }
 
-    public AuthenticationManager getAuthenticationManager() {
+    AuthenticationManager getAuthenticationManager() {
         return authenticationManager;
     }
 
-    public RestAuthenticationService getRestAuthenticationService() {
+    RestAuthenticationService getRestAuthenticationService() {
         return restAuthenticationService;
     }
 
     public static StatelessAuthRequest create(
-            String url,
-            String authMethodName,
-            String httpMethodName,
-            AuthenticationManager authenticationManager,
-            RestAuthenticationService restAuthenticationService) {
+            final String url,
+            final String authMethodName,
+            final String httpMethodName,
+            final AuthenticationManager authenticationManager,
+            final RestAuthenticationService restAuthenticationService) {
 
         return new StatelessAuthRequest(
                 url,
