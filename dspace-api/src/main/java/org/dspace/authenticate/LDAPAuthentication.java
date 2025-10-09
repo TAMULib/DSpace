@@ -18,6 +18,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
@@ -152,12 +153,12 @@ public class LDAPAuthentication implements AuthenticationMethod {
         try {
             // without a logged in user, this method should return an empty list
             if (context.getCurrentUser() == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
             // if the logged in user does not have a netid, it's not an LDAP user
             // and this method should return an empty list
             if (context.getCurrentUser().getNetid() == null) {
-                return Collections.EMPTY_LIST;
+                return Collections.emptyList();
             }
             if (!context.getCurrentUser().getNetid().equals("")) {
                 String groupName = configurationService.getProperty("authentication-ldap.login.specialgroup");
@@ -168,7 +169,7 @@ public class LDAPAuthentication implements AuthenticationMethod {
                         log.warn(LogHelper.getHeader(context,
                                                       "ldap_specialgroup",
                                                       "Group defined in login.specialgroup does not exist"));
-                        return Collections.EMPTY_LIST;
+                        return Collections.emptyList();
                     } else {
 
                         Set<String> groups = new HashSet<>();
@@ -182,7 +183,8 @@ public class LDAPAuthentication implements AuthenticationMethod {
         } catch (SQLException ex) {
             // The user is not an LDAP user, so we don't need to worry about them
         }
-        return Collections.EMPTY_LIST;
+
+        return Collections.emptyList();
     }
 
     /**
@@ -825,16 +827,6 @@ public class LDAPAuthentication implements AuthenticationMethod {
             log.debug(LogHelper.getHeader(context, "assignGroupsBasedOnLdapDn could not find group",
                     dspaceGroupName));
         }
-    }
-
-    @Override
-    public boolean isUsed(final Context context, final HttpServletRequest request) {
-        if (request != null &&
-                context.getCurrentUser() != null &&
-                request.getAttribute(LDAP_AUTHENTICATED) != null) {
-            return true;
-        }
-        return false;
     }
 
     @Override

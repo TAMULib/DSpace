@@ -8,9 +8,11 @@
 package org.dspace.authenticate;
 
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -183,7 +185,11 @@ public class SamlAuthentication implements AuthenticationMethod {
 
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        return List.of();
+        final List<Group> groups = Collections.emptyList();
+
+        System.out.println("============================ SamlAuthentication#getSpecialGroups return " + groups + " ============================");
+
+        return groups;
     }
 
     @Override
@@ -635,18 +641,6 @@ public class SamlAuthentication implements AuthenticationMethod {
         }
 
         return metadataField != null;
-    }
-
-    @Override
-    public boolean isUsed(final Context context, final HttpServletRequest request) {
-        if (request != null &&
-            context.getCurrentUser() != null &&
-            request.getAttribute(SAML_AUTHENTICATED) != null
-        ) {
-            return true;
-        }
-
-        return false;
     }
 
     @Override

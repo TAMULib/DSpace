@@ -10,9 +10,7 @@ package org.dspace.app.rest.security.jwt;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -24,8 +22,6 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.core.Context;
 import org.dspace.eperson.Group;
-import org.dspace.eperson.factory.EPersonServiceFactory;
-import org.dspace.eperson.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -40,8 +36,6 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
 
     private static final Logger log = LogManager.getLogger();
 
-    protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
-
     public static final String SPECIAL_GROUPS = "sg";
 
     @Autowired
@@ -54,55 +48,16 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(Context context, HttpServletRequest request) {
-        System.out.println("SpecialGroupClaimProvider#getValue getSpecialGroups");
-        final List<Group> groups = new ArrayList<>();
+        List<Group> groups = new ArrayList<>();
         try {
-            groups.addAll(authenticationService.getSpecialGroups(context, request));
+            groups = authenticationService.getSpecialGroups(context, request);
         } catch (SQLException e) {
             log.error("SQLException while retrieving special groups", e);
+            return null;
         }
-
-        System.out.println("SpecialGroupClaimProvider#getValue getSpecialGroups group size: " + groups + (groups != null ? groups.size() : ""));
-        System.out.println("SpecialGroupClaimProvider#getValue getSpecialGroups checking request attributes");
-
-        // check for group names in request attributes
-        Enumeration<String> attNames = request.getAttributeNames();
-
-        while (attNames.hasMoreElements()) {
-            String attName = attNames.nextElement();
-            if (attName.endsWith(SPECIAL_GROUPS)) {
-
-                @SuppressWarnings("unchecked")
-                Set<String> groupNames = (Set<String>) request.getAttribute(attName);
-
-                for (String groupName : groupNames) {
-                    if (groupName == null || groupName.isEmpty()) {
-                        continue;
-                    }
-
-                    try {
-                        log.debug("Looking up special group {}", groupName);
-                        Group group = groupService.findByName(context, groupName);
-                        if (group == null) {
-                            log.warn("Group {} does not exist", groupName);
-                        } else {
-                            log.debug("Found special group {}", groupName);
-                            groups.add(group);
-                        }
-                    } catch (SQLException ex) {
-                        // ignoring database error
-                    }
-                }
-            }
-        }
-
-        Object value = groups.stream()
-            .map(group -> group.getID().toString())
-            .collect(Collectors.toList());
-
-        System.out.println("SpecialGroupClaimProvider#getValue value: " + value);
-
-        return value;
+        List<String> groupIds = groups.stream().map(group -> group.getID().toString()).collect(Collectors.toList());
+        System.out.println("============================ SpecialGroupClaimProvider#getValue return " + groupIds + " ============================");
+        return groupIds;
     }
 
     @Override
@@ -114,8 +69,7 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
                 context.setSpecialGroup(UUID.fromString(groupId));
             }
 
-            log.info("Parsed group ids claim {}", groupIds);
-
+            System.out.println("============================ SpecialGroupMethodClaimProvider#parseClaim " + groupIds + " ============================");
         } catch (ParseException e) {
             log.error("Error while trying to access specialgroups from ClaimSet", e);
         }

@@ -19,10 +19,10 @@ import static org.dspace.authenticate.OidcAuthentication.OIDC_AUTH_SG_ATTRIBUTE;
 
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -103,68 +103,14 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        List<Group> groups = new ArrayList<>();
+        final boolean hasSpecialGroups = Objects.nonNull(request)
+            && Objects.nonNull(context.getCurrentUser())
+            && Objects.nonNull(context.getSpecialGroups());
 
-        Set<String> groupNames = new HashSet<>();
-
-        if (Objects.nonNull(request) && Objects.nonNull(request.getAttribute(OIDC_AUTH_SG_ATTRIBUTE)) && request.getAttribute(OIDC_AUTH_SG_ATTRIBUTE) instanceof Set gn) {
-            groupNames = gn;
-            LOG.debug("Special Groups (request special groups): {}", groupNames);
-        } else {
-            LOG.debug("Request special groups not defined");
-        }
-
-        if (Objects.nonNull(context) && Objects.nonNull(context.getSpecialGroups())) {
-            groups = context.getSpecialGroups();
-            LOG.debug("Special Groups (context special groups): {}", groups);
-        }
-
-        if (groups.isEmpty() && groupNames.isEmpty()) {
-            LOG.debug("No special groups mapped.");
-        }
-        
-        try {
-            String loginGroupName = DSpaceServicesFactory.getInstance().getConfigurationService()
-                .getProperty("authentication-oidc.login.specialgroup");
-
-            if (Objects.nonNull(loginGroupName) && !loginGroupName.isEmpty()) {
-                groupNames.add(loginGroupName);
-            } else {
-                LOG.warn(LogHelper.getHeader(context,
-                    "oidc_specialgroup",
-                    "Group defined in modules/authentication-oidc.cfg login" +
-                        ".specialgroup does not exist"));
-            }
-
-            for (String groupName : groupNames) {
-                if (groupName != null && !groupName.isEmpty()) {
-                    boolean inGroups = false;
-                    for (Group group : groups) {
-                        if (groupName.equals(group.getName())) {
-                            inGroups = true;
-                            break;
-                        }
-                    }
-                    if (inGroups) {
-                        continue;
-                    }
-                }
-                LOG.debug("Looking up special group {}", groupName);
-                Group group = groupService.findByName(context, groupName);
-                if (group == null) {
-                    LOG.warn("Group {} does not exist", groupName);
-                } else {
-                    LOG.debug("Found special group {}", groupName);
-                    groups.add(group);
-                }
-            }
-        } catch (SQLException ex) {
-            // ignoring database error
-        }
-
-        return groups;
+        return hasSpecialGroups ?
+            context.getSpecialGroups() :
+            Collections.emptyList();
     }
 
     @Override
@@ -214,11 +160,11 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
         Map<String, Map<String, String[]>> groupMappings = getGroupMappings();
         LOG.debug("Group mappings: {}", groupMappings);
 
-        Set<String> groups = determineGroups(groupMappings, claims);
-        LOG.debug("Groups: {}", groups);
+        Set<String> groupNames = determineGroups(groupMappings, claims);
+        LOG.debug("Groups: {}", groupNames);
 
         request.setAttribute(OIDC_AUTH_ATTRIBUTE, true);
-        request.setAttribute(OIDC_AUTH_SG_ATTRIBUTE, groups);
+        request.setAttribute(OIDC_AUTH_SG_ATTRIBUTE, groupNames);
 
         int result = BAD_ARGS;
 
@@ -239,6 +185,37 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             // It is important to set this attribute so the new user
             // can be granted permissions of the special group in the first login
             request.setAttribute(OIDC_AUTHENTICATED, true);
+
+            // set groups on context
+            try {
+
+                String loginGroupName = DSpaceServicesFactory.getInstance().getConfigurationService()
+                    .getProperty("authentication-oidc.login.specialgroup");
+
+                if (Objects.nonNull(loginGroupName) && !loginGroupName.isEmpty()) {
+                    groupNames.add(loginGroupName);
+                } else {
+                    LOG.warn(LogHelper.getHeader(context,
+                        "oidc_specialgroup",
+                        "Group defined in modules/authentication-oidc.cfg login" +
+                            ".specialgroup does not exist"));
+                }
+
+                for (String groupName : groupNames) {
+                    LOG.debug("Looking up special group {}", groupName);
+                    Group group = groupService.findByName(context, groupName);
+                    if (group == null) {
+                        LOG.warn("Group {} does not exist", groupName);
+                    } else {
+                        LOG.debug("Found special group {}", groupName);
+                        // context.setSpecialGroup is actually add special group id
+                        // context.getSpecialGroups is synthetic and looks up ids
+                        context.setSpecialGroup(group.getID());
+                    }
+                }
+            } catch (SQLException ex) {
+                // ignoring database error
+            }
         }
 
         return result;
@@ -523,12 +500,9 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public boolean isUsed(final Context context, final HttpServletRequest request) {
-        if (request != null &&
-                context.getCurrentUser() != null &&
-                request.getAttribute(OIDC_AUTHENTICATED) != null) {
-            return true;
-        }
-        return false;
+        return Objects.nonNull(request)
+            && Objects.nonNull(context.getCurrentUser())
+            && Objects.nonNull(request.getAttribute(OIDC_AUTHENTICATED));
     }
 
     @Override

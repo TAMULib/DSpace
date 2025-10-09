@@ -170,7 +170,7 @@ public class IPAuthentication implements AuthenticationMethod {
         if (request == null) {
             return Collections.EMPTY_LIST;
         }
-        final List<Group> groups = new ArrayList<Group>();
+        final List<Group> groups = new ArrayList<>();
 
         // Get the user's IP address
         String addr = clientInfoService.getClientIp(request);
@@ -255,7 +255,8 @@ public class IPAuthentication implements AuthenticationMethod {
                                           ));
         }
 
-        request.setAttribute(IP_AUTH_SG_ATTRIBUTE, new HashSet<>(groups.stream().map(Group::getName).collect(Collectors.toSet())));
+        System.out.println("============================ IPAuthentication#getSpecialGroups return " + groups + " ============================");
+        // request.setAttribute(IP_AUTH_SG_ATTRIBUTE, new HashSet<>(groups.stream().map(Group::getName).collect(Collectors.toSet())));
 
         return groups;
     }

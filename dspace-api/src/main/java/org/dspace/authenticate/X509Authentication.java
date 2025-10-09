@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Objects;
 import java.util.StringTokenizer;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -599,16 +600,6 @@ public class X509Authentication implements AuthenticationMethod {
     @Override
     public String getName() {
         return X509_AUTH_METHOD_NAME;
-    }
-
-    @Override
-    public boolean isUsed(final Context context, final HttpServletRequest request) {
-        if (request != null &&
-                context.getCurrentUser() != null &&
-                request.getAttribute(X509_AUTHENTICATED) != null) {
-            return true;
-        }
-        return false;
     }
 
     @Override

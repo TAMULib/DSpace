@@ -14,7 +14,6 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.rest.security.StatelessLoginFilterFactory;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,38 +39,19 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(final Context context, final HttpServletRequest request) {
-        // System.out.println("AuthenticationMethodClaimProvider#getValue context: " + context);
-        System.out.println("AuthenticationMethodClaimProvider#getValue context auth: " + context.getAuthenticationMethod());
-        // if (context.getAuthenticationMethod() != null) {
-        //     return context.getAuthenticationMethod();
-        // }
-
-        Object value = authenticationService.getAuthenticationMethod(context, request);
-        System.out.println("AuthenticationMethodClaimProvider#getValue auth service value: " + value);
-        // if (value != null) {
-        //     return value;
-        // }
-
-
-        final String servletPath = request.getServletPath();
-
-        String factoryAuthName = StatelessLoginFilterFactory.getAuthMethodNameByServletPath(servletPath);
-
-        System.out.println("AuthenticationMethodClaimProvider#getValue factory auth name: " + factoryAuthName);
-
-        return factoryAuthName;
+        String authenticationMethod = context.getAuthenticationMethod() != null
+            ? context.getAuthenticationMethod()
+            : authenticationService.getAuthenticationMethod(context, request);
+        System.out.println("============================ AuthenticationMethodClaimProvider#getValue return " + authenticationMethod + " ============================");
+        return authenticationMethod;
     }
 
     @Override
     public void parseClaim(final Context context, final HttpServletRequest request, final JWTClaimsSet jwtClaimsSet)
             throws SQLException {
         try {
-
-            String claim = jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD);
-
-            log.info("Parsed authentication method claim {}", claim);
-
-            context.setAuthenticationMethod(claim);
+            System.out.println("============================ AuthenticationMethodClaimProvider#parseClaim " + jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD) + " ============================");
+            context.setAuthenticationMethod(jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD));
         } catch (ParseException e) {
             log.error(e::getMessage, e);
         }

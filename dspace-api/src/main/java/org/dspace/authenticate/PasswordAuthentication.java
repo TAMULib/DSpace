@@ -8,11 +8,10 @@
 package org.dspace.authenticate;
 
 import java.sql.SQLException;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -142,15 +141,15 @@ public class PasswordAuthentication implements AuthenticationMethod {
      */
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) {
+        final List<Group> groups = new ArrayList<>();
         // Prevents anonymous users from being added to this group, and the second check
         // ensures they are password users
         try {
-            if (context.getCurrentUser() != null
-                && StringUtils.isNotBlank(
-                EPersonServiceFactory.getInstance().getEPersonService().getPasswordHash(context.getCurrentUser())
-                                     .toString())) {
+            System.out.println("++++++++ Get special group for password auth ++++++++");
+            if (context.getCurrentUser() != null && StringUtils.isNotBlank(ePersonService.getPasswordHash(context.getCurrentUser()).toString())) {
                 String groupName = DSpaceServicesFactory.getInstance().getConfigurationService()
                                                         .getProperty("authentication-password.login.specialgroup");
+                System.out.println("++++++++ Password auth special group: " + groupName + " ++++++++");
                 if ((groupName != null) && !groupName.trim().isEmpty()) {
                     Group specialGroup = EPersonServiceFactory.getInstance().getGroupService()
                                                               .findByName(context, groupName);
@@ -160,19 +159,20 @@ public class PasswordAuthentication implements AuthenticationMethod {
                                                       "password_specialgroup",
                                                       "Group defined in modules/authentication-password.cfg login" +
                                                           ".specialgroup does not exist"));
-                        return Collections.EMPTY_LIST;
                     } else {
-                        Set<String> groups = new HashSet<>();
-                        groups.add(specialGroup.getName());
-                        request.setAttribute(PASSWORD_AUTH_SG_ATTRIBUTE, groups);
-                        return Arrays.asList(specialGroup);
+                        System.out.println("++++++++ Adding special group " + specialGroup.getName() + " for password auth ++++++++");
+                        groups.add(specialGroup);
                     }
                 }
             }
         } catch (Exception e) {
             log.error(LogHelper.getHeader(context, "getSpecialGroups", ""), e);
         }
-        return Collections.EMPTY_LIST;
+
+        request.setAttribute(PASSWORD_AUTH_SG_ATTRIBUTE, groups);
+        System.out.println("============================ PasswordAuthentication#getSpecialGroups return " + groups + " ============================");
+
+        return groups;
     }
 
     /**
@@ -209,8 +209,7 @@ public class PasswordAuthentication implements AuthenticationMethod {
         if (username != null && password != null) {
             EPerson eperson = null;
             log.info(LogHelper.getHeader(context, "authenticate", "attempting password auth of user=" + username));
-            eperson = EPersonServiceFactory.getInstance().getEPersonService()
-                                           .findByEmail(context, username.toLowerCase());
+            eperson = ePersonService.findByEmail(context, username.toLowerCase());
 
             if (eperson == null) {
                 // lookup failed.
@@ -224,8 +223,7 @@ public class PasswordAuthentication implements AuthenticationMethod {
                                               "rejecting PasswordAuthentication because " + username + " requires " +
                                                   "certificate."));
                 return CERT_REQUIRED;
-            } else if (EPersonServiceFactory.getInstance().getEPersonService()
-                                            .checkPassword(context, eperson, password)) {
+            } else if (ePersonService.checkPassword(context, eperson, password)) {
                 // login is ok if password matches:
                 context.setCurrentUser(eperson);
                 if (request != null) {
@@ -261,16 +259,6 @@ public class PasswordAuthentication implements AuthenticationMethod {
     @Override
     public String getName() {
         return PASSWORD_AUTH_METHOD_NAME;
-    }
-
-    @Override
-    public boolean isUsed(final Context context, final HttpServletRequest request) {
-        if (request != null &&
-                context.getCurrentUser() != null &&
-                request.getAttribute(PASSWORD_AUTHENTICATED) != null) {
-            return true;
-        }
-        return false;
     }
 
     @Override

@@ -73,7 +73,7 @@ public class ContextUtil {
 
         if (context == null) {
             try {
-                System.out.println("========== INITIALIZING CONTEXT ==========");
+                System.out.println("============================ ContextUtil#obtainContext INITIALIZING ============================");
                 context = ContextUtil.initializeContext();
             } catch (SQLException e) {
                 log.error("Unable to initialize context", e);
@@ -82,12 +82,16 @@ public class ContextUtil {
 
             // Store the context in the request
             request.setAttribute(DSPACE_CONTEXT, context);
+        } else {
+            System.out.println("============================ ContextUtil#obtainContext REQUEST CONTEXT OBTAINED ============================");
         }
         // this need to be verified each time that the context is extracted from the request
         // as some call happen before that the login process is completed and user settings can
         // change the locale
         Locale currentLocale = getLocale(context, request);
         context.setCurrentLocale(currentLocale);
+
+        System.out.println("============================ ContextUtil#obtainContext return " + context + " ============================");
         return context;
     }
 

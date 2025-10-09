@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import jakarta.servlet.FilterChain;
@@ -147,15 +146,14 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                     }
                 }
 
-                Set<UUID> groups = context.getSpecialGroupUuids();
                 Map<String, Object> details = new HashMap<>();
-                details.put("sg", groups);
+                details.put("sg", context.getSpecialGroupUuids());
                 details.put("am", context.getAuthenticationMethod());
                 System.out.println("StatelessAuthenticationFilter details (context): " + details);
 
                 return DSpaceAuthentication.create()
                     .forEPerson(eperson)
-                    .withDetails(details)
+                    // .withDetails(details)
                     .withGrantedAuthorities(authorities)
                     .withAuthenticatedTrue();
             }
@@ -192,15 +190,14 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
 
             List<GrantedAuthority> authorities = authenticationProvider.getGrantedAuthorities(context);
 
-            Set<UUID> groups = context.getSpecialGroupUuids();
             Map<String, Object> details = new HashMap<>();
-            details.put("sg", groups);
+            details.put("sg", context.getSpecialGroupUuids());
             details.put("am", context.getAuthenticationMethod());
             System.out.println("StatelessAuthenticationFilter#getOnBehalfOfAuthentication details (context): " + details);
 
             return DSpaceAuthentication.create()
                 .forEPerson(onBehalfOfEPerson)
-                .withDetails(details)
+                // .withDetails(details)
                 .withGrantedAuthorities(authorities)
                 .withAuthenticatedTrue();
         } else {

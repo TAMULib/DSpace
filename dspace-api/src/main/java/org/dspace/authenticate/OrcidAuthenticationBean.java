@@ -20,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -139,7 +140,9 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public boolean isUsed(Context context, HttpServletRequest request) {
-        return request.getAttribute(ORCID_AUTHENTICATED) != null;
+        return Objects.nonNull(request)
+            && Objects.nonNull(context.getCurrentUser())
+            && Objects.nonNull(request.getAttribute(ORCID_AUTHENTICATED));
     }
 
     @Override
@@ -169,7 +172,10 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
 
     @Override
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
-        return Collections.emptyList();
+        final List<Group> groups = Collections.emptyList();
+
+        System.out.println("============================ OrcidAuthenticationBean#getSpecialGroups return " + groups + " ============================");
+        return groups;
     }
 
     @Override

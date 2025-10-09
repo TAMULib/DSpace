@@ -9,6 +9,7 @@ package org.dspace.authenticate;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -241,7 +242,11 @@ public interface AuthenticationMethod {
      * @param request   The current request
      * @return whether the authentication method is being used.
      */
-    public boolean isUsed(Context context, HttpServletRequest request);
+    public default boolean isUsed(Context context, HttpServletRequest request) {
+        return Objects.nonNull(request)
+            && Objects.nonNull(context.getCurrentUser())
+            && Objects.nonNull(request.getAttribute(getName()));
+    }
 
     /**
      * Check if the given current password is valid to change the password of the
