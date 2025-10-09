@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessAuthDetailsFactory.SHIBBOLETH;
+import static org.dspace.app.rest.security.StatelessLoginFilterFactory.SHIBBOLETH;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.rest.security.details.ShibbolethWebAuthenticationDetails;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
@@ -51,7 +50,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Tim Donohue
  * @see org.dspace.authenticate.ShibAuthentication
  */
-public class ShibbolethLoginFilter extends StatelessLoginFilter<ShibbolethWebAuthenticationDetails> {
+public class ShibbolethLoginFilter extends StatelessLoginFilter {
 
     private static final Logger log = LogManager.getLogger(ShibbolethLoginFilter.class);
 
@@ -64,11 +63,6 @@ public class ShibbolethLoginFilter extends StatelessLoginFilter<ShibbolethWebAut
     @Override
     protected String getAuthMethodName() {
         return SHIBBOLETH.getAuthMethodName();
-    }
-
-    @Override
-    protected String getProviderName() {
-        return "Shibboleth";
     }
 
     @Override

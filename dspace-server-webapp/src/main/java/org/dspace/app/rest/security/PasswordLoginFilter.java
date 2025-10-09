@@ -7,11 +7,9 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessAuthDetailsFactory.PASSWORD;
+import static org.dspace.app.rest.security.StatelessLoginFilterFactory.PASSWORD;
 
 import java.util.Objects;
-
-import org.dspace.app.rest.security.details.PasswordWebAuthenticationDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -21,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * @author Frederic Van Reet (frederic dot vanreet at atmire dot com)
  * @author Tom Desair (tom dot desair at atmire dot com)
  */
-public class PasswordLoginFilter extends StatelessLoginFilter<PasswordWebAuthenticationDetails> {
+public class PasswordLoginFilter extends StatelessLoginFilter {
 
     /**
      * Initialize a PasswordLoginFilter for the given URL and HTTP method. This login filter will ONLY attempt
@@ -57,11 +55,6 @@ public class PasswordLoginFilter extends StatelessLoginFilter<PasswordWebAuthent
     @Override
     protected String getAuthMethodName() {
         return PASSWORD.getAuthMethodName();
-    }
-
-    @Override
-    protected String getProviderName() {
-        return "Password";
     }
 
 }

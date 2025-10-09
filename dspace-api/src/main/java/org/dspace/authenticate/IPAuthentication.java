@@ -11,9 +11,11 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -49,10 +51,8 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 public class IPAuthentication implements AuthenticationMethod {
 
     public static final String IP_AUTH_METHOD_NAME = "ip";
-
-    public static final String IP_AUTH_ATTRIBUTE = "ip-authentication";
-
-    public static final String IP_AUTH_SG_ATTRIBUTE = "ip-sg";
+    public static final String IP_AUTH_ATTRIBUTE = IP_AUTH_METHOD_NAME + "-authentication";
+    public static final String IP_AUTH_SG_ATTRIBUTE = IP_AUTH_METHOD_NAME + "-sg";
 
     /**
      * Our logger
@@ -170,7 +170,7 @@ public class IPAuthentication implements AuthenticationMethod {
         if (request == null) {
             return Collections.EMPTY_LIST;
         }
-        List<Group> groups = new ArrayList<Group>();
+        final List<Group> groups = new ArrayList<Group>();
 
         // Get the user's IP address
         String addr = clientInfoService.getClientIp(request);
@@ -254,6 +254,8 @@ public class IPAuthentication implements AuthenticationMethod {
                                            + " (by IP=" + addr + ")"
                                           ));
         }
+
+        request.setAttribute(IP_AUTH_SG_ATTRIBUTE, new HashSet<>(groups.stream().map(Group::getName).collect(Collectors.toSet())));
 
         return groups;
     }

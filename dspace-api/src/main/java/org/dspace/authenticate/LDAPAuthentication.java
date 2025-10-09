@@ -14,10 +14,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
 import javax.naming.directory.Attribute;
@@ -72,15 +75,13 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 public class LDAPAuthentication implements AuthenticationMethod {
 
     public static final String LDAP_AUTH_METHOD_NAME = "ldap";
-
-    public static final String LDAP_AUTH_ATTRIBUTE = "ldap-authentication";
-
-    public static final String LDAP_AUTH_SG_ATTRIBUTE = "ldap-sg";
+    public static final String LDAP_AUTH_ATTRIBUTE = LDAP_AUTH_METHOD_NAME + "-authentication";
+    public static final String LDAP_AUTH_SG_ATTRIBUTE = LDAP_AUTH_METHOD_NAME + "-sg";
 
     private static final Logger log
             = org.apache.logging.log4j.LogManager.getLogger(LDAPAuthentication.class);
 
-    private static final String LDAP_AUTHENTICATED = "ldap.authenticated";
+    private static final String LDAP_AUTHENTICATED = LDAP_AUTH_METHOD_NAME + ".authenticated";
 
     protected AuthenticationService authenticationService
             = AuthenticateServiceFactory.getInstance().getAuthenticationService();
@@ -169,6 +170,11 @@ public class LDAPAuthentication implements AuthenticationMethod {
                                                       "Group defined in login.specialgroup does not exist"));
                         return Collections.EMPTY_LIST;
                     } else {
+
+                        Set<String> groups = new HashSet<>();
+                        groups.add(ldapGroup.getName());
+                        request.setAttribute(LDAP_AUTH_SG_ATTRIBUTE, groups);
+
                         return Arrays.asList(ldapGroup);
                     }
                 }

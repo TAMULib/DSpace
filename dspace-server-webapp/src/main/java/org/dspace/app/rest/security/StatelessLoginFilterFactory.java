@@ -24,15 +24,19 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * Enumeration factory for stateless authentication filters with details.
- */
-public enum StatelessAuthDetailsFactory {
+public enum StatelessLoginFilterFactory {
     OIDC (OIDC_AUTH_METHOD_NAME, GET.name(), "/api/authn/oidc", request -> new OidcLoginFilter(request)),
     ORCID (ORCID_AUTH_METHOD_NAME, GET.name(), "/api/authn/orcid", request -> new OrcidLoginFilter(request)),
     PASSWORD (PASSWORD_AUTH_METHOD_NAME, POST.name(), "/api/authn/login", request -> new PasswordLoginFilter(request)),
     SAML (SAML_AUTH_METHOD_NAME, GET.name(), "/api/authn/saml", request -> new SamlLoginFilter(request)),
     SHIBBOLETH (SHIBBOLETH_AUTH_METHOD_NAME, GET.name(), "/api/authn/shibboleth", request -> new ShibbolethLoginFilter(request));
+
+    // move somewhere
+    public static final String OIDC_URL = "/api/authn/oidc";
+    public static final String ORCID_URL = "/api/authn/orcid";
+    public static final String PASSWORD_URL = "/api/authn/login";
+    public static final String SAML_URL = "/api/authn/saml";
+    public static final String SHIBBOLETH_URL = "/api/authn/shibboleth";
 
     // not supporting ip, x509, ldap
 
@@ -41,10 +45,10 @@ public enum StatelessAuthDetailsFactory {
     private final String authMethodName;
     private final String httpMethodName;
     private final String url;
-    private final Function<StatelessAuthRequest, StatelessLoginFilter<?>> filter;
+    private final Function<StatelessAuthRequest, StatelessLoginFilter> filter;
 
     private static final
-    Map<String, Function<StatelessAuthRequest, StatelessLoginFilter<?>>> frames
+    Map<String, Function<StatelessAuthRequest, StatelessLoginFilter>> frames
         = new HashMap<>();
 
     private static final
@@ -56,7 +60,7 @@ public enum StatelessAuthDetailsFactory {
         = new HashMap<>();
 
     static {
-        for (StatelessAuthDetailsFactory factory : values()) {
+        for (StatelessLoginFilterFactory factory : values()) {
             frames.put(factory.authMethodName, factory.filter);
             mapping.put(factory.url, factory.authMethodName);
             observetory.put(factory.authMethodName, request -> {
@@ -72,11 +76,11 @@ public enum StatelessAuthDetailsFactory {
         }
     }
 
-    StatelessAuthDetailsFactory(
+    StatelessLoginFilterFactory(
         String authMethodName,
         String httpMethodName,
         String url,
-        Function<StatelessAuthRequest, StatelessLoginFilter<?>> filter
+        Function<StatelessAuthRequest, StatelessLoginFilter> filter
     ) {
         this.authMethodName = authMethodName;
         this.httpMethodName = httpMethodName;
@@ -84,12 +88,12 @@ public enum StatelessAuthDetailsFactory {
         this.filter = filter;
     }
 
-    public StatelessLoginFilter<?> getLoginFilter(
+    public StatelessLoginFilter getLoginFilter(
         AuthenticationManager authenticationManager,
         RestAuthenticationService restAuthenticationService,
         String url
     ) {
-        final StatelessLoginFilter<?> filter = frames.get(authMethodName)
+        final StatelessLoginFilter filter = frames.get(authMethodName)
             .apply(StatelessAuthRequest.create(
                 url,
                 authMethodName,
@@ -123,7 +127,7 @@ public enum StatelessAuthDetailsFactory {
         return url;
     }
 
-    public static String getAuthMethodNameByUrl(String url) {
+    public static String getAuthMethodNameByServletPath(String url) {
         return mapping.get(url);
     }
 

@@ -96,10 +96,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                        String realm,
                                        HttpServletRequest request,
                                        boolean implicitOnly) {
-        // better is lowest, so start with the highest.
         int results = AuthenticationMethod.BAD_ARGS;
 
-        // return on first success, otherwise "best" outcome.
         for (AuthenticationMethod method : getAuthenticationMethodStack()) {
             if (!implicitOnly || method.isImplicit()) {
                 int result = 0;
@@ -110,6 +108,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 }
                 if (result == AuthenticationMethod.SUCCESS) {
                     updateLastActiveDate(context);
+
                     return result;
                 }
                 if (result < results) {
@@ -178,6 +177,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         final List<Group> groups = new ArrayList<>();
 
         for (AuthenticationMethod method : getAuthenticationMethodStack()) {
+            // ip authentication only on applicable as context getAuthenticationMethod is always null
             if (method.areSpecialGroupsApplicable(context, request)) {
                 List<Group> gl = method.getSpecialGroups(context, request);
                 if (gl.size() > 0) {
@@ -200,12 +200,15 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         while (authenticationMethodIterator.hasNext()) {
             final AuthenticationMethod authenticationMethod = authenticationMethodIterator.next();
-            System.out.println("Auth method: " + authenticationMethod);
-            System.out.println("Auth method used: " + authenticationMethod.isUsed(context, request));
+
             if (authenticationMethod.isUsed(context, request)) {
+                System.out.println("Auth method: " + authenticationMethod);
+                System.out.println("Auth method " + authenticationMethod + " " + authenticationMethod.isUsed(context, request));
                 return authenticationMethod.getName();
             }
         }
+
+        System.out.println("Auth method null");
 
         return null;
     }

@@ -2,10 +2,6 @@ package org.dspace.app.rest.security;
 
 import org.springframework.security.authentication.AuthenticationManager;
 
-/**
- * Everything required to process an HttpServletRequest through
- * StatelessLoginFilter.
- */
 public class StatelessAuthRequest {
 
     private final String url;

@@ -10,7 +10,9 @@ package org.dspace.app.rest.security.jwt;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
@@ -78,9 +80,17 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
             DSpaceAuthentication authentication, boolean addCookie) throws IOException {
         try {
             Context context = ContextUtil.obtainContext(request);
-            
-            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser context: " + context);
-            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser context auth: " + context.getAuthenticationMethod());
+
+            Map<String, Object> details = (Map<String, Object>) authentication.getDetails();
+
+            context.setAuthenticationMethod((String) details.get("am"));
+
+            System.out.println("\n\n\nJWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (authentication) " + details + "\n\n\n");
+            // set auth method and special groups on context
+
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (context): " + context);
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (context) auth method name: " + context.getAuthenticationMethod());
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (context) special groups uuids: " + context.getSpecialGroupUuids());
             context.setCurrentUser(ePersonService.findByEmail(context, authentication.getName()));
 
             String token = loginJWTTokenHandler.createTokenForEPerson(context, request,

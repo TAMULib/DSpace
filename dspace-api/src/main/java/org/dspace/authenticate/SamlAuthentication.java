@@ -43,14 +43,12 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 public class SamlAuthentication implements AuthenticationMethod {
 
     public static final String SAML_AUTH_METHOD_NAME = "saml";
-
-    public static final String PASSWORD_AUTH_ATTRIBUTE = "saml-authentication";
-
-    public static final String SAML_AUTH_SG_ATTRIBUTE = "saml-sg";
+    public static final String PASSWORD_AUTH_ATTRIBUTE = SAML_AUTH_METHOD_NAME + "-authentication";
+    public static final String SAML_AUTH_SG_ATTRIBUTE = SAML_AUTH_METHOD_NAME + "-sg";
 
     private static final Logger log = LogManager.getLogger(SamlAuthentication.class);
 
-    private static final String SAML_AUTHENTICATED = "saml.authenticated";
+    private static final String SAML_AUTHENTICATED = SAML_AUTH_METHOD_NAME + ".authenticated";
 
     // Additional metadata mappings.
     protected Map<String, String> metadataHeaderMap = null;

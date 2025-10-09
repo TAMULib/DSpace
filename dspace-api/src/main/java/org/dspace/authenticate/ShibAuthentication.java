@@ -71,17 +71,15 @@ import org.dspace.services.factory.DSpaceServicesFactory;
 public class ShibAuthentication implements AuthenticationMethod {
 
     public static final String SHIBBOLETH_AUTH_METHOD_NAME = "shibboleth";
-
-    public static final String SHIBBOLETH_AUTH_ATTRIBUTE = "shibboleth-authentication";
-
-    public static final String SHIBBOLETH_AUTH_SG_ATTRIBUTE = "shibboleth-sg";
+    public static final String SHIBBOLETH_AUTH_ATTRIBUTE = SHIBBOLETH_AUTH_METHOD_NAME + "-authentication";
+    public static final String SHIBBOLETH_AUTH_SG_ATTRIBUTE = SHIBBOLETH_AUTH_METHOD_NAME + "-sg";
 
     /**
      * log4j category
      */
     private static final Logger log = LogManager.getLogger(ShibAuthentication.class);
 
-    private static final String SHIBBOLETH_AUTHENTICATED = "shib.authenticated";
+    private static final String SHIBBOLETH_AUTHENTICATED = SHIBBOLETH_AUTH_METHOD_NAME + ".authenticated";
 
     /**
      * Additional metadata mappings
@@ -302,6 +300,8 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             if (context.getSpecialGroups().size() > 0 ) {
                 log.debug("Returning cached special groups.");
+
+                request.setAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE, new HashSet<>(context.getSpecialGroups()));
                 return context.getSpecialGroups();
             }
 
@@ -394,6 +394,8 @@ public class ShibAuthentication implements AuthenticationMethod {
 
 
             log.info("Added current EPerson to special groups: " + groups);
+
+            request.setAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE, groups);
 
             return new ArrayList<>(groups);
 
@@ -1259,7 +1261,7 @@ public class ShibAuthentication implements AuthenticationMethod {
     public boolean isUsed(final Context context, final HttpServletRequest request) {
         if (request != null &&
                 context.getCurrentUser() != null &&
-                request.getAttribute("shib.authenticated") != null) {
+                request.getAttribute(SHIBBOLETH_AUTHENTICATED) != null) {
             return true;
         }
         return false;

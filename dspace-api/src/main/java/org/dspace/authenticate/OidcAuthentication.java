@@ -29,10 +29,8 @@ import org.dspace.utils.DSpace;
 public class OidcAuthentication implements AuthenticationMethod {
 
     public static final String OIDC_AUTH_METHOD_NAME = "oidc";
-
-    public static final String OIDC_AUTH_ATTRIBUTE = "oidc-authentication";
-
-    public static final String OIDC_AUTH_SG_ATTRIBUTE = "oidc-sg";
+    public static final String OIDC_AUTH_ATTRIBUTE = OIDC_AUTH_METHOD_NAME + "-authentication";
+    public static final String OIDC_AUTH_SG_ATTRIBUTE = OIDC_AUTH_METHOD_NAME + "-sg";
 
     private final ServiceManager serviceManager = new DSpace().getServiceManager();
 

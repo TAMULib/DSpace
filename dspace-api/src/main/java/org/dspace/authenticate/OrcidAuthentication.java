@@ -28,12 +28,9 @@ import org.dspace.utils.DSpace;
 public class OrcidAuthentication implements AuthenticationMethod {
 
     public static final String ORCID_AUTH_METHOD_NAME = "orcid";
-
-    public static final String ORCID_AUTH_ATTRIBUTE = "orcid-authentication";
-
-    public static final String ORCID_REGISTRATION_TOKEN_ATTRUBUTE = "orcid-registration-token";
-
-    public static final String ORCID_AUTH_SG_ATTRIBUTE = "orcid-sg";
+    public static final String ORCID_AUTH_ATTRIBUTE = ORCID_AUTH_METHOD_NAME + "-authentication";
+    public static final String ORCID_AUTH_SG_ATTRIBUTE = ORCID_AUTH_METHOD_NAME + "-sg";
+    public static final String ORCID_REGISTRATION_TOKEN_ATTRUBUTE = ORCID_AUTH_METHOD_NAME + "-registration-token";
 
     public static final String ORCID_DEFAULT_REGISTRATION_URL = "/external-login/{0}";
 

@@ -10,7 +10,9 @@ package org.dspace.authenticate;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,21 +46,18 @@ import org.dspace.services.factory.DSpaceServicesFactory;
  *
  * @author Larry Stone
  */
-public class PasswordAuthentication
-    implements AuthenticationMethod {
+public class PasswordAuthentication implements AuthenticationMethod {
 
     public static final String PASSWORD_AUTH_METHOD_NAME = "password";
-
-    public static final String PASSWORD_AUTH_ATTRIBUTE = "password-authentication";
-
-    public static final String PASSWORD_AUTH_SG_ATTRIBUTE = "password-sg";
+    public static final String PASSWORD_AUTH_ATTRIBUTE = PASSWORD_AUTH_METHOD_NAME + "-authentication";
+    public static final String PASSWORD_AUTH_SG_ATTRIBUTE = PASSWORD_AUTH_METHOD_NAME + "-sg";
 
     /**
      * log4j category
      */
     private static final Logger log = LogManager.getLogger();
 
-    private static final String PASSWORD_AUTHENTICATED = "password.authenticated";
+    private static final String PASSWORD_AUTHENTICATED = PASSWORD_AUTH_METHOD_NAME + ".authenticated";
 
     private EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
 
@@ -163,6 +162,9 @@ public class PasswordAuthentication
                                                           ".specialgroup does not exist"));
                         return Collections.EMPTY_LIST;
                     } else {
+                        Set<String> groups = new HashSet<>();
+                        groups.add(specialGroup.getName());
+                        request.setAttribute(PASSWORD_AUTH_SG_ATTRIBUTE, groups);
                         return Arrays.asList(specialGroup);
                     }
                 }

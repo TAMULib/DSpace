@@ -9,10 +9,11 @@ package org.dspace.app.rest.security;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -146,17 +147,17 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                     }
                 }
 
-                // Get special groups from the context
-                Set<String> groups = context.getSpecialGroups()
-                    .stream()
-                    .map(group -> group.getName())
-                    .collect(Collectors.toSet());
+                Set<UUID> groups = context.getSpecialGroupUuids();
+                Map<String, Object> details = new HashMap<>();
+                details.put("sg", groups);
+                details.put("am", context.getAuthenticationMethod());
+                System.out.println("StatelessAuthenticationFilter details (context): " + details);
 
                 return DSpaceAuthentication.create()
-                    .forEPerson(eperson) // EPerson being authenticated
-                    .withDetails(groups) // Special groups EPerson will be member of
-                    .withGrantedAuthorities(authorities) // Granted authorities
-                    .withAuthenticatedTrue(); // Authenticaed
+                    .forEPerson(eperson)
+                    .withDetails(details)
+                    .withGrantedAuthorities(authorities)
+                    .withAuthenticatedTrue();
             }
         } else {
             if (request.getHeader(ON_BEHALF_OF_REQUEST_PARAM) != null) {
@@ -191,14 +192,15 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
 
             List<GrantedAuthority> authorities = authenticationProvider.getGrantedAuthorities(context);
 
-            Set<String> groups = context.getSpecialGroups()
-                .stream()
-                .map(group -> group.getName())
-                .collect(Collectors.toSet());
+            Set<UUID> groups = context.getSpecialGroupUuids();
+            Map<String, Object> details = new HashMap<>();
+            details.put("sg", groups);
+            details.put("am", context.getAuthenticationMethod());
+            System.out.println("StatelessAuthenticationFilter#getOnBehalfOfAuthentication details (context): " + details);
 
             return DSpaceAuthentication.create()
                 .forEPerson(onBehalfOfEPerson)
-                .withDetails(groups)
+                .withDetails(details)
                 .withGrantedAuthorities(authorities)
                 .withAuthenticatedTrue();
         } else {

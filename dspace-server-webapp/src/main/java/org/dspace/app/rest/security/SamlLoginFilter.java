@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessAuthDetailsFactory.SAML;
+import static org.dspace.app.rest.security.StatelessLoginFilterFactory.SAML;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,7 +15,6 @@ import java.util.stream.Stream;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.rest.security.details.SamlWebAuthenticationDetails;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
@@ -56,7 +55,7 @@ import jakarta.servlet.http.HttpServletResponse;
  *
  * @author Ray Lee
  */
-public class SamlLoginFilter extends StatelessLoginFilter<SamlWebAuthenticationDetails> {
+public class SamlLoginFilter extends StatelessLoginFilter {
 
     private static final Logger log = LogManager.getLogger(SamlLoginFilter.class);
 
@@ -69,11 +68,6 @@ public class SamlLoginFilter extends StatelessLoginFilter<SamlWebAuthenticationD
     @Override
     protected String getAuthMethodName() {
         return SAML.getAuthMethodName();
-    }
-
-    @Override
-    protected String getProviderName() {
-        return "SAML";
     }
 
     @Override

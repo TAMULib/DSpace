@@ -23,7 +23,7 @@ public abstract class SpecialGroupsWebAuthenticationDetails extends WebAuthentic
     public SpecialGroupsWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
         super(request);
         this.details = new HashMap<>();
-        this.details.put("sg", (Set<String>) request.getAttribute(this.getKey()));
+        this.details.put(this.getKey(), (Set<String>) request.getAttribute(this.getKey()));
         this.details.put("am", authMethodName);
     }
 

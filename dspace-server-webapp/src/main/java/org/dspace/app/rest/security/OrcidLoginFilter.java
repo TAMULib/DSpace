@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessAuthDetailsFactory.ORCID;
+import static org.dspace.app.rest.security.StatelessLoginFilterFactory.ORCID;
 import static org.dspace.authenticate.OrcidAuthentication.ORCID_AUTH_ATTRIBUTE;
 import static org.dspace.authenticate.OrcidAuthentication.ORCID_DEFAULT_REGISTRATION_URL;
 import static org.dspace.authenticate.OrcidAuthentication.ORCID_REGISTRATION_TOKEN_ATTRUBUTE;
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.dspace.app.rest.security.details.OrcidWebAuthenticationDetails;
 import org.dspace.authenticate.OrcidAuthenticationBean;
 import org.dspace.core.Context;
 import org.dspace.core.Utils;
@@ -43,7 +42,7 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Luca Giamminonni (luca.giamminonni at 4science.it)
  */
 
-public class OrcidLoginFilter extends StatelessLoginFilter<OrcidWebAuthenticationDetails> {
+public class OrcidLoginFilter extends StatelessLoginFilter {
 
     private static final Logger log = LogManager.getLogger(OrcidLoginFilter.class);
 
@@ -60,11 +59,6 @@ public class OrcidLoginFilter extends StatelessLoginFilter<OrcidWebAuthenticatio
     @Override
     protected String getAuthMethodName() {
         return ORCID.getAuthMethodName();
-    }
-
-    @Override
-    protected String getProviderName() {
-        return "Orcid";
     }
 
     @Override

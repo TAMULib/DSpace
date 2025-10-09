@@ -14,8 +14,6 @@ import java.util.Objects;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetails;
-import org.dspace.app.rest.utils.ContextUtil;
-import org.dspace.core.Context;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -37,10 +35,9 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Frederic Van Reet (frederic dot vanreet at atmire dot com)
  * @author Tom Desair (tom dot desair at atmire dot com)
  */
-public abstract class StatelessLoginFilter<D extends SpecialGroupsWebAuthenticationDetails> extends AbstractAuthenticationProcessingFilter {
-    private static final Logger log = LogManager.getLogger();
+public abstract class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
 
-    protected final String url;
+    private static final Logger log = LogManager.getLogger();
 
     protected final AuthenticationManager authenticationManager;
 
@@ -55,9 +52,7 @@ public abstract class StatelessLoginFilter<D extends SpecialGroupsWebAuthenticat
      *                    authentication method name, authentication manaher, and REST authentication service
      */
     public StatelessLoginFilter(StatelessAuthRequest authRequest) {
-        // NOTE: attemptAuthentication() below will only be triggered by requests that match both this URL and method
         super(new AntPathRequestMatcher(authRequest.getUrl(), authRequest.getHttpMethodName()));
-        this.url = authRequest.getUrl();
         this.authenticationManager = authRequest.getAuthenticationManager();
         this.restAuthenticationService = authRequest.getRestAuthenticationService();
     }
@@ -67,17 +62,7 @@ public abstract class StatelessLoginFilter<D extends SpecialGroupsWebAuthenticat
 
     }
 
-    protected boolean addCookie() {
-        return true;
-    }
-
-    protected void addCredentials(HttpServletRequest request, DSpaceAuthentication authentication) {
-        // nothing todo here
-    }
-
-    protected abstract String getAuthMethodName();
-
-    protected abstract String getProviderName();
+    
 
     /**
      * Attempt to authenticate the user by using Spring Security's AuthenticationManager.
@@ -97,15 +82,16 @@ public abstract class StatelessLoginFilter<D extends SpecialGroupsWebAuthenticat
         DSpaceAuthentication authentication = DSpaceAuthentication.create()
             .withDetails(getWebAuthenticationDetails(req));
 
-        if (!isEnabled(authentication)) {
-            throw new ProviderNotFoundException(String.format("%s login is disabled.", getProviderName()));
+        if (!isEnabled(req, authentication)) {
+            throw new ProviderNotFoundException(String.format("%s authentication login method is disabled.", getAuthMethodName()));
         }
 
         addCredentials(req, authentication);
 
         log.info(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
 
-        return authenticationManager.authenticate(authentication);
+        return ((DSpaceAuthentication) authenticationManager.authenticate(authentication))
+            .withDetails(getWebAuthenticationDetails(req));
     }
 
     /**
@@ -129,8 +115,11 @@ public abstract class StatelessLoginFilter<D extends SpecialGroupsWebAuthenticat
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-        DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
+        DSpaceAuthentication dSpaceAuthentication = ((DSpaceAuthentication) auth)
+            .withDetails(getWebAuthenticationDetails(req));
+
         log.debug(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));
+
         restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, addCookie());
     }
 
@@ -153,24 +142,47 @@ public abstract class StatelessLoginFilter<D extends SpecialGroupsWebAuthenticat
 
         response.setHeader("WWW-Authenticate", authenticateHeaderValue);
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed!");
+
         log.error("Authentication failed (status:{})",
                   HttpServletResponse.SC_UNAUTHORIZED, failed);
     }
 
-    @SuppressWarnings("unchecked")
     protected Map<String, Object> getWebAuthenticationDetails(HttpServletRequest req) {
-        return authenticationDetailsSource != null ? ((D) authenticationDetailsSource.buildDetails(req)).getDetails() : null;
+        return authenticationDetailsSource != null ? ((SpecialGroupsWebAuthenticationDetails) authenticationDetailsSource.buildDetails(req)).getDetails() : null;
     }
 
-    @SuppressWarnings("unchecked")
-    private boolean isEnabled(Authentication authentication) {
+    protected boolean addCookie() {
+        return true;
+    }
+
+    protected void addCredentials(HttpServletRequest request, DSpaceAuthentication authentication) {
+        // nothing todo here
+    }
+
+    protected abstract String getAuthMethodName();
+
+    private boolean isEnabled(HttpServletRequest request, Authentication authentication) {
+
         final String authMethodName = getAuthMethodName();
+
+        @SuppressWarnings("unchecked")
         final Map<String, Object> details = (Map<String, Object>) authentication.getDetails();
-        final String detailsAuthName = (String) details.get("am");
+        final String detailsAuthMethodName = (String) details.get("am");
+
+        final String servletPath = request.getServletPath();
+        final String factoryAuthMethodName = StatelessLoginFilterFactory.getAuthMethodNameByServletPath(servletPath);
+
+        System.out.println("StatelessLoginFilter#isEnabled (authMethodName): " + authMethodName);
+        System.out.println("StatelessLoginFilter#isEnabled (detailsAuthMethodName): " + detailsAuthMethodName);
+        System.out.println("StatelessLoginFilter#isEnabled (factoryAuthMethodName): " + factoryAuthMethodName);
+
+        System.out.println("StatelessLoginFilter#isEnabled: " + authMethodName.equals(detailsAuthMethodName));
 
         return Objects.nonNull(authMethodName)
-            && Objects.nonNull(detailsAuthName)
-            && authMethodName.equals(detailsAuthName);
+            && Objects.nonNull(detailsAuthMethodName)
+            && Objects.nonNull(factoryAuthMethodName)
+            && authMethodName.equals(detailsAuthMethodName)
+            && detailsAuthMethodName.equals(factoryAuthMethodName);
     }
 
 }

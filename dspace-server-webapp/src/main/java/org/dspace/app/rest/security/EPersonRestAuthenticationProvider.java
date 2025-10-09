@@ -15,8 +15,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
@@ -168,18 +166,6 @@ public class EPersonRestAuthenticationProvider implements AuthenticationProvider
         if (ePerson != null && StringUtils.isNotBlank(ePerson.getEmail())) {
             //Pass the eperson ID to the request service
             requestService.setCurrentUserId(ePerson.getID());
-
-            try {
-                // Get special groups from the context
-                Set<String> groups = context.getSpecialGroups()
-                    .stream()
-                    .map(group -> group.getName())
-                    .collect(Collectors.toSet());
-
-                authentication.withDetails(groups);
-            } catch (SQLException e) {
-                log.warn("Failed to get special groups from the context.", e);
-            }
 
             // authenticate EPerson, set granted authorities and authenticated true
             authentication.forEPerson(ePerson)
