@@ -96,8 +96,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                        String realm,
                                        HttpServletRequest request,
                                        boolean implicitOnly) {
+        // better is lowest, so start with the highest.
         int results = AuthenticationMethod.BAD_ARGS;
-
+        // return on first success, otherwise "best" outcome.
         for (AuthenticationMethod method : getAuthenticationMethodStack()) {
             if (!implicitOnly || method.isImplicit()) {
                 int result = 0;

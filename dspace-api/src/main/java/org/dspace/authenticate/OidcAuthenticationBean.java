@@ -33,6 +33,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,12 +48,8 @@ import org.dspace.eperson.factory.EPersonServiceFactory;
 import org.dspace.eperson.service.EPersonService;
 import org.dspace.eperson.service.GroupService;
 import org.dspace.services.ConfigurationService;
-import org.dspace.services.factory.DSpaceServicesFactory;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * OpenID Connect Authentication for DSpace.
@@ -189,8 +187,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             // set groups on context
             try {
 
-                String loginGroupName = DSpaceServicesFactory.getInstance().getConfigurationService()
-                    .getProperty("authentication-oidc.login.specialgroup");
+                String loginGroupName = configurationService.getProperty("authentication-oidc.login.specialgroup");
 
                 if (Objects.nonNull(loginGroupName) && !loginGroupName.isEmpty()) {
                     groupNames.add(loginGroupName);
