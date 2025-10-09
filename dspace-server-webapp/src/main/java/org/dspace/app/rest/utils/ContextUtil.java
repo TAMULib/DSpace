@@ -80,30 +80,8 @@ public class ContextUtil {
                 return null;
             }
 
-            System.out.println("========== BEFORE CHANGE CONTEXT ==========");
-            System.out.println("========== " + context +" ==========");
-            System.out.println("========== " + context.getAuthenticationMethod() +" ==========");
-
             // Store the context in the request
             request.setAttribute(DSPACE_CONTEXT, context);
-
-
-            Context contextOnRequest = (Context) request.getAttribute(DSPACE_CONTEXT);
-            System.out.println("========== BEFORE CHANGE CONTEXT ON REQUEST ==========");
-            System.out.println("========== " + contextOnRequest +" ==========");
-            System.out.println("========== " + contextOnRequest.getAuthenticationMethod() +" ==========");
-
-
-            System.out.println("++++++++++ CHANGE CONTEXT +++++++++++++");
-            context.setAuthenticationMethod("stateless");
-
-            System.out.println("========== AFTER CHANGE CONTEXT ==========");
-            System.out.println("========== " + context +" ==========");
-            System.out.println("========== " + context.getAuthenticationMethod() +" ==========");
-
-            System.out.println("========== AFTER CHANGE CONTEXT ON REQUEST ==========");
-            System.out.println("========== " + contextOnRequest +" ==========");
-            System.out.println("========== " + contextOnRequest.getAuthenticationMethod() +" ==========");
         }
         // this need to be verified each time that the context is extracted from the request
         // as some call happen before that the login process is completed and user settings can

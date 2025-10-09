@@ -177,7 +177,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         final List<Group> groups = new ArrayList<>();
 
         for (AuthenticationMethod method : getAuthenticationMethodStack()) {
-            // ip authentication only on applicable as context getAuthenticationMethod is always null
             if (method.areSpecialGroupsApplicable(context, request)) {
                 List<Group> gl = method.getSpecialGroups(context, request);
                 if (gl.size() > 0) {

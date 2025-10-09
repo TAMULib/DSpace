@@ -101,7 +101,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
             log.error("Access is denied (status:{})", HttpServletResponse.SC_FORBIDDEN, e);
             return;
         }
-
+        // If we have a valid Authentication, save it to Spring Security
         if (authentication != null) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
