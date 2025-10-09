@@ -69,6 +69,7 @@ public interface AuthenticationMethod {
      */
     public static final int BAD_ARGS = 5;
 
+    static final String DOT_AUTHENTICATED = ".authenticated";
 
     /**
      * Predicate, whether to allow new EPerson to be created.
@@ -245,7 +246,7 @@ public interface AuthenticationMethod {
     public default boolean isUsed(Context context, HttpServletRequest request) {
         return Objects.nonNull(request)
             && Objects.nonNull(context.getCurrentUser())
-            && Objects.nonNull(request.getAttribute(getName()));
+            && Objects.nonNull(request.getAttribute(String.format("%s%s", getName(), DOT_AUTHENTICATED)));
     }
 
     /**

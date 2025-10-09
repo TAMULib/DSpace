@@ -64,7 +64,7 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
 
     private final static String LOGIN_PAGE_URL_FORMAT = "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s";
 
-    private static final String ORCID_AUTHENTICATED = ORCID_AUTH_METHOD_NAME + ".authenticated";
+    private static final String ORCID_AUTHENTICATED = ORCID_AUTH_METHOD_NAME + DOT_AUTHENTICATED;
 
     @Autowired
     private OrcidClient orcidClient;

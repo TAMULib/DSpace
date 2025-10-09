@@ -69,7 +69,7 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
 
     private static final String LOGIN_PAGE_URL_FORMAT = "%s?client_id=%s&response_type=code&scope=%s&redirect_uri=%s";
 
-    private static final String OIDC_AUTHENTICATED = OIDC_AUTH_METHOD_NAME + ".authenticated";
+    private static final String OIDC_AUTHENTICATED = OIDC_AUTH_METHOD_NAME + DOT_AUTHENTICATED;
 
     protected GroupService groupService = EPersonServiceFactory.getInstance().getGroupService();
 

@@ -12,14 +12,10 @@ import java.net.URLEncoder;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -80,7 +76,7 @@ public class ShibAuthentication implements AuthenticationMethod {
      */
     private static final Logger log = LogManager.getLogger(ShibAuthentication.class);
 
-    private static final String SHIBBOLETH_AUTHENTICATED = SHIBBOLETH_AUTH_METHOD_NAME + ".authenticated";
+    private static final String SHIBBOLETH_AUTHENTICATED = SHIBBOLETH_AUTH_METHOD_NAME + DOT_AUTHENTICATED;
 
     /**
      * Additional metadata mappings

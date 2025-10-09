@@ -12,7 +12,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -50,7 +49,7 @@ public class SamlAuthentication implements AuthenticationMethod {
 
     private static final Logger log = LogManager.getLogger(SamlAuthentication.class);
 
-    private static final String SAML_AUTHENTICATED = SAML_AUTH_METHOD_NAME + ".authenticated";
+    private static final String SAML_AUTHENTICATED = SAML_AUTH_METHOD_NAME + DOT_AUTHENTICATED;
 
     // Additional metadata mappings.
     protected Map<String, String> metadataHeaderMap = null;

@@ -9,9 +9,7 @@ package org.dspace.authenticate;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -56,7 +54,7 @@ public class PasswordAuthentication implements AuthenticationMethod {
      */
     private static final Logger log = LogManager.getLogger();
 
-    private static final String PASSWORD_AUTHENTICATED = PASSWORD_AUTH_METHOD_NAME + ".authenticated";
+    private static final String PASSWORD_AUTHENTICATED = PASSWORD_AUTH_METHOD_NAME + DOT_AUTHENTICATED;
 
     private EPersonService ePersonService = EPersonServiceFactory.getInstance().getEPersonService();
 
