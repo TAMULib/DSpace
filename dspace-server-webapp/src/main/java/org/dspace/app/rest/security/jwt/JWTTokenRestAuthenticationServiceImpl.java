@@ -10,9 +10,7 @@ package org.dspace.app.rest.security.jwt;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import com.nimbusds.jose.JOSEException;
 import jakarta.servlet.http.Cookie;
