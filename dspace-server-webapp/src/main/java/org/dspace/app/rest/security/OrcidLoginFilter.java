@@ -16,6 +16,10 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,11 +32,6 @@ import org.dspace.utils.DSpace;
 import org.dspace.web.ContextUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This class will filter ORCID requests and try and authenticate them.

@@ -143,11 +143,9 @@ public class PasswordAuthentication implements AuthenticationMethod {
         // Prevents anonymous users from being added to this group, and the second check
         // ensures they are password users
         try {
-            System.out.println("++++++++ Get special group for password auth ++++++++");
             if (context.getCurrentUser() != null && StringUtils.isNotBlank(ePersonService.getPasswordHash(context.getCurrentUser()).toString())) {
                 String groupName = DSpaceServicesFactory.getInstance().getConfigurationService()
                                                         .getProperty("authentication-password.login.specialgroup");
-                System.out.println("++++++++ Password auth special group: " + groupName + " ++++++++");
                 if ((groupName != null) && !groupName.trim().isEmpty()) {
                     Group specialGroup = EPersonServiceFactory.getInstance().getGroupService()
                                                               .findByName(context, groupName);
@@ -158,7 +156,6 @@ public class PasswordAuthentication implements AuthenticationMethod {
                                                       "Group defined in modules/authentication-password.cfg login" +
                                                           ".specialgroup does not exist"));
                     } else {
-                        System.out.println("++++++++ Adding special group " + specialGroup.getName() + " for password auth ++++++++");
                         groups.add(specialGroup);
                     }
                 }
@@ -167,8 +164,8 @@ public class PasswordAuthentication implements AuthenticationMethod {
             log.error(LogHelper.getHeader(context, "getSpecialGroups", ""), e);
         }
 
-        request.setAttribute(PASSWORD_AUTH_SG_ATTRIBUTE, groups);
         System.out.println("============================ PasswordAuthentication#getSpecialGroups return " + groups + " ============================");
+        request.setAttribute(PASSWORD_AUTH_SG_ATTRIBUTE, groups);
 
         return groups;
     }

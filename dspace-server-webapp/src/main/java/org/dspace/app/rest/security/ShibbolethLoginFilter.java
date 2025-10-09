@@ -12,6 +12,10 @@ import static org.dspace.app.rest.security.StatelessLoginFilterFactory.SHIBBOLET
 import java.io.IOException;
 import java.util.ArrayList;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -19,11 +23,6 @@ import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.core.Authentication;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * This class will filter Shibboleth requests to see if the user has been authenticated via Shibboleth.
@@ -51,7 +50,6 @@ import jakarta.servlet.http.HttpServletResponse;
  * @see org.dspace.authenticate.ShibAuthentication
  */
 public class ShibbolethLoginFilter extends StatelessLoginFilter {
-
     private static final Logger log = LogManager.getLogger(ShibbolethLoginFilter.class);
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();

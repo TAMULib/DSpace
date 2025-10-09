@@ -87,7 +87,6 @@ public class ContextUtil {
         // change the locale
         Locale currentLocale = getLocale(context, request);
         context.setCurrentLocale(currentLocale);
-
         return context;
     }
 

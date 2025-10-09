@@ -168,7 +168,7 @@ public class IPAuthentication implements AuthenticationMethod {
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request)
         throws SQLException {
         if (request == null) {
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         final List<Group> groups = new ArrayList<>();
 
@@ -256,7 +256,7 @@ public class IPAuthentication implements AuthenticationMethod {
         }
 
         System.out.println("============================ IPAuthentication#getSpecialGroups return " + groups + " ============================");
-        // request.setAttribute(IP_AUTH_SG_ATTRIBUTE, new HashSet<>(groups.stream().map(Group::getName).collect(Collectors.toSet())));
+        request.setAttribute(IP_AUTH_SG_ATTRIBUTE, new HashSet<>(groups.stream().map(Group::getName).collect(Collectors.toSet())));
 
         return groups;
     }

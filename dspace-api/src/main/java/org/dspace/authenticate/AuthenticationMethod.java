@@ -168,8 +168,6 @@ public interface AuthenticationMethod {
      *                 otherwise
      */
     public default boolean areSpecialGroupsApplicable(Context context, HttpServletRequest request) {
-        System.out.println("areSpecialGroupsApplicable " + getName() + " == " + context.getAuthenticationMethod());
-
         return getName().equals(context.getAuthenticationMethod());
     }
 

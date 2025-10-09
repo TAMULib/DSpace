@@ -16,6 +16,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -293,19 +294,15 @@ public class ShibAuthentication implements AuthenticationMethod {
             // User has successfully authenticated via shibboleth.
             if (request != null && context.getCurrentUser() != null) {
 
-                // if already on request, return what is on the request
+                final List<Group> contextGroups = context.getSpecialGroups();
 
-                // if (((List<Group>) request.getAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE)) != null) {
-                //     return (List<Group>) request.getAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE);
-                // }
+                // if request rentry and shibboleth is being used, return the cached special groups
+                // isUsed true after request has authenticated attribue
+                if (Objects.nonNull(contextGroups) && isUsed(context, request)) {
+                    log.debug("Returning cached special groups.");
 
-                // this is a synthetic getter
-
-                // if (context.getSpecialGroups().size() > 0 ) {
-                //     log.debug("Returning cached special groups.");
-
-                //     return context.getSpecialGroups();
-                // }
+                    return contextGroups;
+                }
 
                 log.debug("Starting to determine special groups");
                 String[] defaultRoles = configurationService.getArrayProperty("authentication-shibboleth.default-roles");

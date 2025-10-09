@@ -13,17 +13,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.core.Authentication;
-
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * A filter that examines requests to see if the user has been authenticated via SAML.
@@ -56,7 +55,6 @@ import jakarta.servlet.http.HttpServletResponse;
  * @author Ray Lee
  */
 public class SamlLoginFilter extends StatelessLoginFilter {
-
     private static final Logger log = LogManager.getLogger(SamlLoginFilter.class);
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();

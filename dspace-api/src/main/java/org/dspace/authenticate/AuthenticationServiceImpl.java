@@ -201,13 +201,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             final AuthenticationMethod authenticationMethod = authenticationMethodIterator.next();
 
             if (authenticationMethod.isUsed(context, request)) {
-                System.out.println("Auth method: " + authenticationMethod);
-                System.out.println("Auth method " + authenticationMethod + " " + authenticationMethod.isUsed(context, request));
                 return authenticationMethod.getName();
             }
         }
-
-        System.out.println("Auth method null");
 
         return null;
     }
