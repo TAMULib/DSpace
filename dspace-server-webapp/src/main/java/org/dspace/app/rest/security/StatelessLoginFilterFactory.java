@@ -1,5 +1,10 @@
 package org.dspace.app.rest.security;
 
+import static org.dspace.app.rest.security.WebSecurityConfiguration.OIDC_URL;
+import static org.dspace.app.rest.security.WebSecurityConfiguration.ORCID_URL;
+import static org.dspace.app.rest.security.WebSecurityConfiguration.PASSWORD_URL;
+import static org.dspace.app.rest.security.WebSecurityConfiguration.SAML_URL;
+import static org.dspace.app.rest.security.WebSecurityConfiguration.SHIBBOLETH_URL;
 import static org.dspace.authenticate.OidcAuthentication.OIDC_AUTH_METHOD_NAME;
 import static org.dspace.authenticate.OrcidAuthentication.ORCID_AUTH_METHOD_NAME;
 import static org.dspace.authenticate.PasswordAuthentication.PASSWORD_AUTH_METHOD_NAME;
@@ -24,31 +29,23 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Stateless login filter factory.
+ */
 public enum StatelessLoginFilterFactory {
-    OIDC (OIDC_AUTH_METHOD_NAME, GET.name(), "/api/authn/oidc", request -> new OidcLoginFilter(request)),
-    ORCID (ORCID_AUTH_METHOD_NAME, GET.name(), "/api/authn/orcid", request -> new OrcidLoginFilter(request)),
-    PASSWORD (PASSWORD_AUTH_METHOD_NAME, POST.name(), "/api/authn/login", request -> new PasswordLoginFilter(request)),
-    SAML (SAML_AUTH_METHOD_NAME, GET.name(), "/api/authn/saml", request -> new SamlLoginFilter(request)),
-    SHIBBOLETH (SHIBBOLETH_AUTH_METHOD_NAME, GET.name(), "/api/authn/shibboleth", request -> new ShibbolethLoginFilter(request));
-
-    // move somewhere
-    public static final String OIDC_URL = "/api/authn/oidc";
-    public static final String ORCID_URL = "/api/authn/orcid";
-    public static final String PASSWORD_URL = "/api/authn/login";
-    public static final String SAML_URL = "/api/authn/saml";
-    public static final String SHIBBOLETH_URL = "/api/authn/shibboleth";
-
-    // not supporting ip, x509, ldap
-
-    // not specyfing basic, form, cert, digest
+    OIDC (OIDC_AUTH_METHOD_NAME, GET.name(), OIDC_URL, request -> new OidcLoginFilter(request)),
+    ORCID (ORCID_AUTH_METHOD_NAME, GET.name(), ORCID_URL, request -> new OrcidLoginFilter(request)),
+    PASSWORD (PASSWORD_AUTH_METHOD_NAME, POST.name(), PASSWORD_URL, request -> new PasswordLoginFilter(request)),
+    SAML (SAML_AUTH_METHOD_NAME, GET.name(), SAML_URL, request -> new SamlLoginFilter(request)),
+    SHIBBOLETH (SHIBBOLETH_AUTH_METHOD_NAME, GET.name(), SHIBBOLETH_URL, request -> new ShibbolethLoginFilter(request));
 
     private final String authMethodName;
     private final String httpMethodName;
     private final String url;
-    private final Function<StatelessAuthRequest, StatelessLoginFilter> filter;
+    private final Function<StatelessAuthenticationRequest, StatelessLoginFilter> filter;
 
     private static final
-    Map<String, Function<StatelessAuthRequest, StatelessLoginFilter>> frames
+    Map<String, Function<StatelessAuthenticationRequest, StatelessLoginFilter>> frames
         = new HashMap<>();
 
     private static final
@@ -80,7 +77,7 @@ public enum StatelessLoginFilterFactory {
         String authMethodName,
         String httpMethodName,
         String url,
-        Function<StatelessAuthRequest, StatelessLoginFilter> filter
+        Function<StatelessAuthenticationRequest, StatelessLoginFilter> filter
     ) {
         this.authMethodName = authMethodName;
         this.httpMethodName = httpMethodName;
@@ -94,7 +91,7 @@ public enum StatelessLoginFilterFactory {
         String url
     ) {
         final StatelessLoginFilter filter = frames.get(authMethodName)
-            .apply(StatelessAuthRequest.create(
+            .apply(StatelessAuthenticationRequest.create(
                 url,
                 authMethodName,
                 httpMethodName,

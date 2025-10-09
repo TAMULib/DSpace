@@ -8,6 +8,7 @@
 package org.dspace.app.rest.security;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
@@ -17,7 +18,6 @@ import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetail
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
@@ -53,7 +53,7 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
      * @param authRequest StatelessAuthRequest with URL, HTTP method name,
      *                    authentication method name, authentication manaher, and REST authentication service
      */
-    public StatelessLoginFilter(StatelessAuthRequest authRequest) {
+    public StatelessLoginFilter(StatelessAuthenticationRequest authRequest) {
         super(new AntPathRequestMatcher(authRequest.getUrl(), authRequest.getHttpMethodName()));
         this.authenticationManager = authRequest.getAuthenticationManager();
         this.restAuthenticationService = authRequest.getRestAuthenticationService();
@@ -63,8 +63,6 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
     public void afterPropertiesSet() {
 
     }
-
-    
 
     /**
      * Attempt to authenticate the user by using Spring Security's AuthenticationManager.
@@ -84,7 +82,6 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
         Context context = ContextUtil.obtainContext(req);
 
         if (isEnabled(context, req)) {
-            // throw new ProviderNotFoundException(String.format("%s authentication login method is disabled.", getAuthMethodName()));
             context.setAuthenticationMethod(getAuthMethodName());
         }
 
@@ -152,8 +149,17 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
                   HttpServletResponse.SC_UNAUTHORIZED, failed);
     }
 
+    /**
+     * Return only details built from the source and empty immutable map otherwise.
+     * 
+     * @param req HttpServletRequest incoming request to check for details
+     * @return Map<String, Object> mutable details otherwise immutable map
+     * @see 
+     */
     protected Map<String, Object> getWebAuthenticationDetails(HttpServletRequest req) {
-        return authenticationDetailsSource != null ? ((SpecialGroupsWebAuthenticationDetails) authenticationDetailsSource.buildDetails(req)).getDetails() : null;
+        return authenticationDetailsSource != null
+            ? ((SpecialGroupsWebAuthenticationDetails) authenticationDetailsSource.buildDetails(req)).getDetails()
+            : Collections.emptyMap();
     }
 
     protected boolean addCookie() {
@@ -171,16 +177,11 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
         final String servletPath = request.getServletPath();
         final String factoryAuthMethodName = StatelessLoginFilterFactory.getAuthMethodNameByServletPath(servletPath);
 
-        System.out.println("StatelessLoginFilter#isEnabled (servletPath): " + servletPath);
-        System.out.println("StatelessLoginFilter#isEnabled (authMethodName): " + authMethodName);
-        System.out.println("StatelessLoginFilter#isEnabled (factoryAuthMethodName): " + factoryAuthMethodName);
-
-        System.out.println("StatelessLoginFilter#isEnabled: " + authMethodName.equals(factoryAuthMethodName));
-
-        return Objects.isNull(context.getCurrentUser()) // only enable if not already authenticated
+        // only enable if not already authenticated
+        return Objects.isNull(context.getCurrentUser())
             && Objects.nonNull(authMethodName)
             && Objects.nonNull(factoryAuthMethodName)
-            && authMethodName.equals(factoryAuthMethodName); // and request servlet path matches login filter auth method
+            && authMethodName.equals(factoryAuthMethodName);
     }
 
 }

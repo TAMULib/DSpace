@@ -61,7 +61,7 @@ public class SamlLoginFilter extends StatelessLoginFilter {
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-    public SamlLoginFilter(StatelessAuthRequest authRequest) {
+    public SamlLoginFilter(StatelessAuthenticationRequest authRequest) {
         super(authRequest);
     }
 

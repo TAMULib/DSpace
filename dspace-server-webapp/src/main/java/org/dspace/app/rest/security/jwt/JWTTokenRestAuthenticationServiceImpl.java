@@ -80,13 +80,6 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
         try {
             Context context = ContextUtil.obtainContext(request);
 
-            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (context) auth method name: " + context.getAuthenticationMethod());
-            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (context) current user: " + context.getCurrentUser());
-            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (context) special groups uuids: " + context.getSpecialGroupUuids());
-
-            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (authentication) name: " +  authentication.getName());
-
-            
             if (Objects.isNull(context.getCurrentUser()) && Objects.nonNull(authentication.getName())) {
                 context.setCurrentUser(ePersonService.findByEmail(context, authentication.getName()));
                 System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (ePersonService) findByEmail: " +  ePersonService.findByEmail(context, authentication.getName()));

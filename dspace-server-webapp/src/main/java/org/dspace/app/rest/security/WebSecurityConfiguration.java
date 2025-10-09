@@ -67,6 +67,13 @@ public class WebSecurityConfiguration {
     public static final String AUTHENTICATED_GRANT = "AUTHENTICATED";
     public static final String ANONYMOUS_GRANT = "ANONYMOUS";
 
+    // authentication endpoints
+    static final String OIDC_URL = "/api/authn/oidc";
+    static final String ORCID_URL = "/api/authn/orcid";
+    static final String PASSWORD_URL = "/api/authn/login";
+    static final String SAML_URL = "/api/authn/saml";
+    static final String SHIBBOLETH_URL = "/api/authn/shibboleth";
+
     @Autowired
     private EPersonRestAuthenticationProvider ePersonRestAuthenticationProvider;
 

@@ -299,15 +299,15 @@ public class ShibAuthentication implements AuthenticationMethod {
 
                 // if already on request, return what is on the request
 
-                if (((List<Group>) request.getAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE)) != null) {
-                    return (List<Group>) request.getAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE);
-                }
+                // if (((List<Group>) request.getAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE)) != null) {
+                //     return (List<Group>) request.getAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE);
+                // }
 
                 // this is a synthetic getter
+
                 // if (context.getSpecialGroups().size() > 0 ) {
                 //     log.debug("Returning cached special groups.");
 
-                //     request.setAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE, new HashSet<>(context.getSpecialGroups()));
                 //     return context.getSpecialGroups();
                 // }
 

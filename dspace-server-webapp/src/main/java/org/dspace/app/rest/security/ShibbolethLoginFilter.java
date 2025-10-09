@@ -56,7 +56,7 @@ public class ShibbolethLoginFilter extends StatelessLoginFilter {
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-    public ShibbolethLoginFilter(StatelessAuthRequest authRequest) {
+    public ShibbolethLoginFilter(StatelessAuthenticationRequest authRequest) {
         super(authRequest);
     }
 

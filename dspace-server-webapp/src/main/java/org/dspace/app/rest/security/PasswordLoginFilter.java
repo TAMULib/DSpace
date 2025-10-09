@@ -29,7 +29,7 @@ public class PasswordLoginFilter extends StatelessLoginFilter {
      * @param authRequest StatelessAuthRequest with URL, HTTP method name,
      *                    authentication method name, authentication manaher, and REST authentication service
      */
-    public PasswordLoginFilter(StatelessAuthRequest authRequest) {
+    public PasswordLoginFilter(StatelessAuthenticationRequest authRequest) {
         super(authRequest);
     }
 

@@ -52,7 +52,7 @@ public class OrcidLoginFilter extends StatelessLoginFilter {
                                                                       .getServiceByName("orcidAuthentication",
                                                                                         OrcidAuthenticationBean.class);
 
-    public OrcidLoginFilter(StatelessAuthRequest authRequest) {
+    public OrcidLoginFilter(StatelessAuthenticationRequest authRequest) {
         super(authRequest);
     }
 

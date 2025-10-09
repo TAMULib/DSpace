@@ -2,7 +2,7 @@ package org.dspace.app.rest.security;
 
 import org.springframework.security.authentication.AuthenticationManager;
 
-public class StatelessAuthRequest {
+public class StatelessAuthenticationRequest {
 
     private final String url;
     private final String authMethodName;
@@ -10,7 +10,7 @@ public class StatelessAuthRequest {
     private final AuthenticationManager authenticationManager;
     private final RestAuthenticationService restAuthenticationService;
 
-    private StatelessAuthRequest(
+    private StatelessAuthenticationRequest(
             final String url,
             final String authMethodName,
             final String httpMethodName,
@@ -43,14 +43,14 @@ public class StatelessAuthRequest {
         return restAuthenticationService;
     }
 
-    public static StatelessAuthRequest create(
+    public static StatelessAuthenticationRequest create(
             final String url,
             final String authMethodName,
             final String httpMethodName,
             final AuthenticationManager authenticationManager,
             final RestAuthenticationService restAuthenticationService) {
 
-        return new StatelessAuthRequest(
+        return new StatelessAuthenticationRequest(
                 url,
                 authMethodName,
                 httpMethodName,

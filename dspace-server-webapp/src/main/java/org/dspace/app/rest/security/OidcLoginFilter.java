@@ -39,7 +39,7 @@ public class OidcLoginFilter extends StatelessLoginFilter {
     private final ConfigurationService configurationService = DSpaceServicesFactory.getInstance()
         .getConfigurationService();
 
-    public OidcLoginFilter(StatelessAuthRequest authRequest) {
+    public OidcLoginFilter(StatelessAuthenticationRequest authRequest) {
         super(authRequest);
     }
 
