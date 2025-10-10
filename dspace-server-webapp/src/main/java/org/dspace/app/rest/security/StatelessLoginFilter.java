@@ -21,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetails;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
-import org.springframework.core.log.LogMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
