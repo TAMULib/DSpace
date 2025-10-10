@@ -84,8 +84,8 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
             context.setAuthenticationMethod(getAuthMethodName());
         }
 
-        DSpaceAuthentication authentication = DSpaceAuthentication.create();
-            // .withDetails(getWebAuthenticationDetails(req));
+        DSpaceAuthentication authentication = DSpaceAuthentication.create()
+            .withDetails(getWebAuthenticationDetails(req));
 
         addCredentials(req, authentication);
 
@@ -93,7 +93,6 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
         System.out.println(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
 
         return ((DSpaceAuthentication) authenticationManager.authenticate(authentication));
-            // .withDetails(getWebAuthenticationDetails(req));
     }
 
     /**
@@ -117,8 +116,8 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-        DSpaceAuthentication dSpaceAuthentication = ((DSpaceAuthentication) auth);
-            // .withDetails(getWebAuthenticationDetails(req));
+        DSpaceAuthentication dSpaceAuthentication = ((DSpaceAuthentication) auth)
+            .withDetails(getWebAuthenticationDetails(req));
 
         log.debug(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));
         System.out.println(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));

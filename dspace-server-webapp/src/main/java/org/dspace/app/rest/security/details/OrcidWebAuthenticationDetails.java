@@ -7,18 +7,12 @@
  */
 package org.dspace.app.rest.security.details;
 
-import static org.dspace.authenticate.OrcidAuthentication.ORCID_AUTH_SG_ATTRIBUTE;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 public class OrcidWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails {
 
     public OrcidWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
         super(request, authMethodName);
-    }
-
-    public String getKey() {
-        return ORCID_AUTH_SG_ATTRIBUTE;
     }
 
 }

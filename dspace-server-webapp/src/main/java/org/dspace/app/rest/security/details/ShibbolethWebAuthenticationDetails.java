@@ -7,18 +7,12 @@
  */
 package org.dspace.app.rest.security.details;
 
-import static org.dspace.authenticate.ShibAuthentication.SHIBBOLETH_AUTH_SG_ATTRIBUTE;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 public class ShibbolethWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails {
 
     public ShibbolethWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
         super(request, authMethodName);
-    }
-
-    public String getKey() {
-        return SHIBBOLETH_AUTH_SG_ATTRIBUTE;
     }
 
 }

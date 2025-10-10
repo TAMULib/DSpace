@@ -7,18 +7,12 @@
  */
 package org.dspace.app.rest.security.details;
 
-import static org.dspace.authenticate.OidcAuthentication.OIDC_AUTH_SG_ATTRIBUTE;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 public class OidcWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails {
 
     public OidcWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
         super(request, authMethodName);
-    }
-
-    public String getKey() {
-        return OIDC_AUTH_SG_ATTRIBUTE;
     }
 
 }

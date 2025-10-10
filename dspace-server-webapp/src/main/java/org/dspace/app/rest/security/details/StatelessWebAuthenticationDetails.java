@@ -13,10 +13,8 @@ public class StatelessWebAuthenticationDetails extends SpecialGroupsWebAuthentic
 
     public StatelessWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
         super(request, authMethodName);
-    }
-
-    public String getKey() {
-        return "stateless-sg";
+        this.details.put(authMethodName + "-authentication", request.getAttribute(authMethodName + "-authentication"));
+        this.details.put(authMethodName + ".authenticated", request.getAttribute(authMethodName + ".authenticated"));
     }
 
 }

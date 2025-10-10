@@ -7,18 +7,12 @@
  */
 package org.dspace.app.rest.security.details;
 
-import static org.dspace.authenticate.PasswordAuthentication.PASSWORD_AUTH_SG_ATTRIBUTE;
-
 import jakarta.servlet.http.HttpServletRequest;
 
 public class PasswordWebAuthenticationDetails extends SpecialGroupsWebAuthenticationDetails {
 
     public PasswordWebAuthenticationDetails(HttpServletRequest request, String authMethodName) {
         super(request, authMethodName);
-    }
-
-    public String getKey() {
-        return PASSWORD_AUTH_SG_ATTRIBUTE;
     }
 
 }
