@@ -174,7 +174,7 @@ public class OrcidAuthenticationBean implements AuthenticationMethod {
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
         final List<Group> groups = Collections.emptyList();
 
-        System.out.println("============================ OrcidAuthenticationBean#getSpecialGroups return " + groups + " ============================");
+        System.out.println("OrcidAuthenticationBean#getSpecialGroups return " + groups);
         return groups;
     }
 

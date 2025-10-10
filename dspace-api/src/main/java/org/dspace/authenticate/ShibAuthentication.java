@@ -398,7 +398,7 @@ public class ShibAuthentication implements AuthenticationMethod {
             log.error("Unable to validate any special groups this user may belong too because of an exception.", t);
         }
 
-        System.out.println("============================ SamlAuthentication#getSpecialGroups return " + groups + " ============================");
+        System.out.println("SamlAuthentication#getSpecialGroups return " + groups);
 
         return groups;
     }

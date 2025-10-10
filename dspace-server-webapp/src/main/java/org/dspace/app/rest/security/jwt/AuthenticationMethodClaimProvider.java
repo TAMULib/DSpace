@@ -42,7 +42,7 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
         String authenticationMethod = context.getAuthenticationMethod() != null
             ? context.getAuthenticationMethod()
             : authenticationService.getAuthenticationMethod(context, request);
-        System.out.println("============================ AuthenticationMethodClaimProvider#getValue return " + authenticationMethod + " ============================");
+        System.out.println("AuthenticationMethodClaimProvider#getValue return " + authenticationMethod);
         return authenticationMethod;
     }
 
@@ -50,7 +50,7 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
     public void parseClaim(final Context context, final HttpServletRequest request, final JWTClaimsSet jwtClaimsSet)
             throws SQLException {
         try {
-            System.out.println("============================ AuthenticationMethodClaimProvider#parseClaim " + jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD) + " ============================");
+            System.out.println("AuthenticationMethodClaimProvider#parseClaim " + jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD));
             context.setAuthenticationMethod(jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD));
         } catch (ParseException e) {
             log.error(e::getMessage, e);

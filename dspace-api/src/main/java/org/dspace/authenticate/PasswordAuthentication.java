@@ -164,7 +164,7 @@ public class PasswordAuthentication implements AuthenticationMethod {
             log.error(LogHelper.getHeader(context, "getSpecialGroups", ""), e);
         }
 
-        System.out.println("============================ PasswordAuthentication#getSpecialGroups return " + groups + " ============================");
+        System.out.println("PasswordAuthentication#getSpecialGroups return " + groups);
         request.setAttribute(PASSWORD_AUTH_SG_ATTRIBUTE, groups);
 
         return groups;

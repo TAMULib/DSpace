@@ -186,7 +186,7 @@ public class SamlAuthentication implements AuthenticationMethod {
     public List<Group> getSpecialGroups(Context context, HttpServletRequest request) throws SQLException {
         final List<Group> groups = Collections.emptyList();
 
-        System.out.println("============================ SamlAuthentication#getSpecialGroups return " + groups + " ============================");
+        System.out.println("SamlAuthentication#getSpecialGroups return " + groups);
 
         return groups;
     }

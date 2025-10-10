@@ -255,7 +255,7 @@ public class IPAuthentication implements AuthenticationMethod {
                                           ));
         }
 
-        System.out.println("============================ IPAuthentication#getSpecialGroups return " + groups + " ============================");
+        System.out.println("IPAuthentication#getSpecialGroups return " + groups);
         request.setAttribute(IP_AUTH_SG_ATTRIBUTE, new HashSet<>(groups.stream().map(Group::getName).collect(Collectors.toSet())));
 
         return groups;
