@@ -24,6 +24,7 @@ import org.dspace.core.Context;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
@@ -78,12 +79,17 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
+
+        // this will be defined from stateless authorization filter when using authorization token and not require any further authentication
+        System.out.println("StatelessLoginFilter#attemptAuthentication: (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
+
         Context context = ContextUtil.obtainContext(req);
 
         if (isEnabled(context, req)) {
             context.setAuthenticationMethod(getAuthMethodName());
         }
 
+        // new authentication regardless of implicit and stateless authentication
         DSpaceAuthentication authentication = DSpaceAuthentication.create()
             .withDetails(getWebAuthenticationDetails(req));
 
@@ -150,11 +156,10 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
     }
 
     /**
-     * Return only details built from the source and empty immutable map otherwise.
+     * Return details built from the source. Empty immutable map otherwise.
      * 
      * @param req HttpServletRequest incoming request to check for details
      * @return Map<String, Object> mutable details otherwise immutable map
-     * @see 
      */
     protected Map<String, Object> getWebAuthenticationDetails(HttpServletRequest req) {
         return authenticationDetailsSource != null
