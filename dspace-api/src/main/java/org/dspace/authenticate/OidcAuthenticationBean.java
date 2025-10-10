@@ -106,9 +106,13 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
             && Objects.nonNull(context.getCurrentUser())
             && Objects.nonNull(context.getSpecialGroups());
 
-        return hasSpecialGroups ?
+        List<Group> groups = hasSpecialGroups ?
             context.getSpecialGroups() :
             Collections.emptyList();
+
+        System.out.println("OidcAuthenticationBean#getSpecialGroups return " + groups);
+
+        return groups;
     }
 
     @Override

@@ -293,17 +293,6 @@ public class ShibAuthentication implements AuthenticationMethod {
         try {
             // User has successfully authenticated via shibboleth.
             if (request != null && context.getCurrentUser() != null) {
-
-                final List<Group> contextGroups = context.getSpecialGroups();
-
-                // if request rentry and shibboleth is being used, return the cached special groups
-                // isUsed true after request has authenticated attribue
-                if (Objects.nonNull(contextGroups) && isUsed(context, request)) {
-                    log.debug("Returning cached special groups.");
-
-                    return contextGroups;
-                }
-
                 log.debug("Starting to determine special groups");
                 String[] defaultRoles = configurationService.getArrayProperty("authentication-shibboleth.default-roles");
                 String roleHeader = configurationService.getProperty("authentication-shibboleth.role-header");
@@ -390,15 +379,14 @@ public class ShibAuthentication implements AuthenticationMethod {
                 } // if affiliations
 
                 log.info("Added current EPerson to special groups: {}", groups);
-
-                request.setAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE, groups);
             }
 
         } catch (Throwable t) {
             log.error("Unable to validate any special groups this user may belong too because of an exception.", t);
         }
 
-        System.out.println("SamlAuthentication#getSpecialGroups return " + groups);
+        System.out.println("ShibAuthentication#getSpecialGroups return " + groups);
+        request.setAttribute(SHIBBOLETH_AUTH_SG_ATTRIBUTE, groups);
 
         return groups;
     }
