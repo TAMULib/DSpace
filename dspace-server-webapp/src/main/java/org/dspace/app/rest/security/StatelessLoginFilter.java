@@ -21,6 +21,7 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetails;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
+import org.springframework.core.log.LogMessage;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -55,6 +56,7 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
      */
     public StatelessLoginFilter(StatelessAuthenticationRequest authRequest) {
         super(new AntPathRequestMatcher(authRequest.getUrl(), authRequest.getHttpMethodName()));
+        // does requiresAuthentication match and not invoke attemptAuthentication?
         this.authenticationManager = authRequest.getAuthenticationManager();
         this.restAuthenticationService = authRequest.getRestAuthenticationService();
     }
@@ -79,8 +81,7 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
-
-        // this will be defined from stateless authorization filter when using authorization token and not require any further authentication
+        // this will be defined from stateless authentication filter when using authorization token and not require any further authentication
         System.out.println("StatelessLoginFilter#attemptAuthentication: (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
 
         Context context = ContextUtil.obtainContext(req);
@@ -122,6 +123,9 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
+        // security context holder strategy not utilized
+        // calling super would utilize the default
+
         DSpaceAuthentication dSpaceAuthentication = ((DSpaceAuthentication) auth)
             .withDetails(getWebAuthenticationDetails(req));
 
@@ -153,6 +157,15 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
 
         log.error("Authentication failed (status:{})",
                   HttpServletResponse.SC_UNAUTHORIZED, failed);
+    }
+
+    @Override
+    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
+        boolean requiresAuthentication = super.requiresAuthentication(request, response);
+
+        System.out.println(String.format("%s requires authentication: %s", getClass().getSimpleName(), requiresAuthentication));
+
+        return requiresAuthentication;
     }
 
     /**
