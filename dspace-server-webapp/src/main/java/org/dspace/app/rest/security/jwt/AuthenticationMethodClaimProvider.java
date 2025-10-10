@@ -43,6 +43,7 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
             ? context.getAuthenticationMethod()
             : authenticationService.getAuthenticationMethod(context, request);
         System.out.println("AuthenticationMethodClaimProvider#getValue return " + authenticationMethod);
+
         return authenticationMethod;
     }
 

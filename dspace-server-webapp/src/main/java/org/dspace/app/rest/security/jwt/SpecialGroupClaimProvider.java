@@ -69,7 +69,7 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
                 context.setSpecialGroup(UUID.fromString(groupId));
             }
 
-            System.out.println("SpecialGroupMethodClaimProvider#parseClaim " + groupIds);
+            System.out.println("SpecialGroupClaimProvider#parseClaim " + groupIds);
         } catch (ParseException e) {
             log.error("Error while trying to access specialgroups from ClaimSet", e);
         }
