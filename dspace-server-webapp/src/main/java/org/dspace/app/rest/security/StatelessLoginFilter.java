@@ -90,6 +90,7 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
         addCredentials(req, authentication);
 
         log.info(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
+        System.out.println(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
 
         return ((DSpaceAuthentication) authenticationManager.authenticate(authentication));
             // .withDetails(getWebAuthenticationDetails(req));
@@ -120,6 +121,7 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
             // .withDetails(getWebAuthenticationDetails(req));
 
         log.debug(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));
+        System.out.println(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));
 
         restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, addCookie());
     }

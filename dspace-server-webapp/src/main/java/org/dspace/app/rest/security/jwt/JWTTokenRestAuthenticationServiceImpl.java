@@ -84,7 +84,8 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
                 context.setCurrentUser(ePersonService.findByEmail(context, authentication.getName()));
                 System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (ePersonService) findByEmail: " +  ePersonService.findByEmail(context, authentication.getName()));
             } else {
-                System.out.println("Unable to obtain eperson");
+                // why is authentication name null here
+                System.out.println("Unable to obtain eperson: " + authentication.getName());
             }
 
             String token = loginJWTTokenHandler.createTokenForEPerson(context, request,
