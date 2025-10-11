@@ -15,7 +15,6 @@ import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.SHIBBOLETH;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -170,8 +169,6 @@ public class WebSecurityConfiguration {
 
         Iterator<AuthenticationMethod> authenticationMethodIterator = authenticationService.authenticationMethodIterator();
 
-        Class<? extends Filter> firstLoginFilter = null;
-
         log.info("Authentication stack");
         while (authenticationMethodIterator.hasNext()) {
             AuthenticationMethod method = authenticationMethodIterator.next();
@@ -196,9 +193,6 @@ public class WebSecurityConfiguration {
                 // which then redirects to this endpoint to forward the authentication data to DSpace.
                 http.addFilterBefore(SHIBBOLETH.getLoginFilter(authenticationManager, restAuthenticationService, SHIBBOLETH.getUrl()),
                     LogoutFilter.class);
-                if (Objects.isNull(firstLoginFilter)) {
-                    firstLoginFilter = ShibbolethLoginFilter.class;
-                }
             }
             if (method.getName().equals(ORCID.getAuthMethodName())) {
                 log.info("Orcid authentication is enabled. Adding Orcid login filter to security filter chain.");
@@ -207,9 +201,6 @@ public class WebSecurityConfiguration {
                 // redirects to this endpoint to forward the authentication data to DSpace.
                 http.addFilterBefore(ORCID.getLoginFilter(authenticationManager, restAuthenticationService, ORCID.getUrl()),
                     LogoutFilter.class);
-                if (Objects.isNull(firstLoginFilter)) {
-                    firstLoginFilter = OrcidLoginFilter.class;
-                }
             }
             if (method.getName().equals(OIDC.getAuthMethodName())) {
                 log.info("OIDC authentication is enabled. Adding OIDC login filter to security filter chain.");
@@ -218,9 +209,6 @@ public class WebSecurityConfiguration {
                 // redirects to this endpoint to forward the authentication data to DSpace.
                 http.addFilterBefore(OIDC.getLoginFilter(authenticationManager, restAuthenticationService, OIDC.getUrl()),
                     LogoutFilter.class);
-                if (Objects.isNull(firstLoginFilter)) {
-                    firstLoginFilter = OidcLoginFilter.class;
-                }
             }
             if (method.getName().equals(SAML.getAuthMethodName())) {
                 log.info("SAML authentication is enabled. Adding SAML login filter to security filter chain.");
@@ -229,21 +217,14 @@ public class WebSecurityConfiguration {
                 // forwards to this endpoint to pass the authentication data to DSpace.
                 http.addFilterBefore(SAML.getLoginFilter(authenticationManager, restAuthenticationService, SAML.getUrl()),
                     LogoutFilter.class);
-                if (Objects.isNull(firstLoginFilter)) {
-                    firstLoginFilter = SamlLoginFilter.class;
-                }
             }
         }
 
         // Add a custom Token based authentication filter based on the token previously given to the client
         // before each URL
-        StatelessAuthenticationFilter statelessAuthFilter = new StatelessAuthenticationFilter(authenticationManager, restAuthenticationService,
-            ePersonRestAuthenticationProvider, requestService);
-        if (Objects.nonNull(firstLoginFilter)) {
-            http.addFilterBefore(statelessAuthFilter, firstLoginFilter);
-        } else {
-            http.addFilterBefore(statelessAuthFilter, LogoutFilter.class);
-        }
+        http.addFilterBefore(new StatelessAuthenticationFilter(authenticationManager, restAuthenticationService,
+            ePersonRestAuthenticationProvider, requestService), 
+            PasswordLoginFilter.class);
 
         // Add a filter before any request to handle DSpace IP-based authorization/authentication
         // (e.g. anonymous users may be added to special DSpace groups if they are in a given IP range)
