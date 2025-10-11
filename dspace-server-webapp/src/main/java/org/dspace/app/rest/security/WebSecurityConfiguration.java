@@ -7,11 +7,11 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.OIDC;
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.ORCID;
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.PASSWORD;
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.SAML;
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.SHIBBOLETH;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.OIDC;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.ORCID;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.PASSWORD;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.SAML;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.SHIBBOLETH;
 
 import java.util.Iterator;
 import java.util.List;

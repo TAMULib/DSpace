@@ -1,3 +1,10 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.app.rest.security;
 
 import static org.dspace.app.rest.security.WebSecurityConfiguration.OIDC_URL;
@@ -29,10 +36,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetails;
 
 import jakarta.servlet.http.HttpServletRequest;
 
-/**
- * Stateless login filter factory.
- */
-public enum StatelessLoginFilterFactory {
+public enum DSpaceLoginFilterFactory {
     OIDC (OIDC_AUTH_METHOD_NAME, GET.name(), OIDC_URL, request -> new OidcLoginFilter(request)),
     ORCID (ORCID_AUTH_METHOD_NAME, GET.name(), ORCID_URL, request -> new OrcidLoginFilter(request)),
     PASSWORD (PASSWORD_AUTH_METHOD_NAME, POST.name(), PASSWORD_URL, request -> new PasswordLoginFilter(request)),
@@ -42,10 +46,10 @@ public enum StatelessLoginFilterFactory {
     private final String authMethodName;
     private final String httpMethodName;
     private final String url;
-    private final Function<StatelessAuthenticationRequest, StatelessLoginFilter> filter;
+    private final Function<DSpaceAuthenticationRequest, DSpaceLoginFilter> filter;
 
     private static final
-    Map<String, Function<StatelessAuthenticationRequest, StatelessLoginFilter>> frames
+    Map<String, Function<DSpaceAuthenticationRequest, DSpaceLoginFilter>> frames
         = new HashMap<>();
 
     private static final
@@ -57,7 +61,7 @@ public enum StatelessLoginFilterFactory {
         = new HashMap<>();
 
     static {
-        for (StatelessLoginFilterFactory factory : values()) {
+        for (DSpaceLoginFilterFactory factory : values()) {
             frames.put(factory.authMethodName, factory.filter);
             mapping.put(factory.url, factory.authMethodName);
             observetory.put(factory.authMethodName, request -> {
@@ -73,11 +77,11 @@ public enum StatelessLoginFilterFactory {
         }
     }
 
-    StatelessLoginFilterFactory(
+    DSpaceLoginFilterFactory(
         String authMethodName,
         String httpMethodName,
         String url,
-        Function<StatelessAuthenticationRequest, StatelessLoginFilter> filter
+        Function<DSpaceAuthenticationRequest, DSpaceLoginFilter> filter
     ) {
         this.authMethodName = authMethodName;
         this.httpMethodName = httpMethodName;
@@ -85,13 +89,13 @@ public enum StatelessLoginFilterFactory {
         this.filter = filter;
     }
 
-    public StatelessLoginFilter getLoginFilter(
+    public DSpaceLoginFilter getLoginFilter(
         AuthenticationManager authenticationManager,
         RestAuthenticationService restAuthenticationService,
         String url
     ) {
-        final StatelessLoginFilter filter = frames.get(authMethodName)
-            .apply(StatelessAuthenticationRequest.create(
+        final DSpaceLoginFilter filter = frames.get(authMethodName)
+            .apply(DSpaceAuthenticationRequest.create(
                 url,
                 authMethodName,
                 httpMethodName,

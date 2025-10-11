@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.PASSWORD;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.PASSWORD;
 
 import java.util.Objects;
 
@@ -19,7 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
  * @author Frederic Van Reet (frederic dot vanreet at atmire dot com)
  * @author Tom Desair (tom dot desair at atmire dot com)
  */
-public class PasswordLoginFilter extends StatelessLoginFilter {
+public class PasswordLoginFilter extends DSpaceLoginFilter {
 
     /**
      * Initialize a PasswordLoginFilter for the given URL and HTTP method. This login filter will ONLY attempt
@@ -29,7 +29,7 @@ public class PasswordLoginFilter extends StatelessLoginFilter {
      * @param authRequest StatelessAuthRequest with URL, HTTP method name,
      *                    authentication method name, authentication manaher, and REST authentication service
      */
-    public PasswordLoginFilter(StatelessAuthenticationRequest authRequest) {
+    public PasswordLoginFilter(DSpaceAuthenticationRequest authRequest) {
         super(authRequest);
     }
 

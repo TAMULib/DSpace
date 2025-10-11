@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.SHIBBOLETH;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.SHIBBOLETH;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -49,12 +49,12 @@ import org.springframework.security.core.Authentication;
  * @author Tim Donohue
  * @see org.dspace.authenticate.ShibAuthentication
  */
-public class ShibbolethLoginFilter extends StatelessLoginFilter {
+public class ShibbolethLoginFilter extends DSpaceLoginFilter {
     private static final Logger log = LogManager.getLogger(ShibbolethLoginFilter.class);
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-    public ShibbolethLoginFilter(StatelessAuthenticationRequest authRequest) {
+    public ShibbolethLoginFilter(DSpaceAuthenticationRequest authRequest) {
         super(authRequest);
     }
 

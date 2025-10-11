@@ -106,9 +106,9 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
 
         if (Objects.nonNull(authentication) && authentication.isAuthenticated()) {
             SecurityContextHolder.getContext().setAuthentication(authentication);
-        } else {
-            chain.doFilter(req, res);
         }
+
+        chain.doFilter(req, res);
     }
 
     /**

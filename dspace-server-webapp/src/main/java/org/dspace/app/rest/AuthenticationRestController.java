@@ -165,7 +165,7 @@ public class AuthenticationRestController implements InitializingBean {
 
     /**
      * Check whether the login has succeeded or not. The actual login is performed by one of the enabled login filters
-     * (e.g. {@link org.dspace.app.rest.security.StatelessLoginFilter}).
+     * (e.g. {@link org.dspace.app.rest.security.DSpaceLoginFilter}).
      * See {@link org.dspace.app.rest.security.WebSecurityConfiguration} for enabled login filters.
      *
      * @param request current request
@@ -252,7 +252,7 @@ public class AuthenticationRestController implements InitializingBean {
      * If the request includes a valid EPerson, then it was successful.
      * If the request does not include a valid EPerson, then return the failedMessage.
      * <P>
-     * NOTE: This method assumes that a login filter (e.g. {@link org.dspace.app.rest.security.StatelessLoginFilter})
+     * NOTE: This method assumes that a login filter (e.g. {@link org.dspace.app.rest.security.DSpaceLoginFilter})
      * has already attempted the authentication and, if successful, added EPerson data to the current request.
      * @param request current request
      * @param failedMessage message to send if no EPerson found

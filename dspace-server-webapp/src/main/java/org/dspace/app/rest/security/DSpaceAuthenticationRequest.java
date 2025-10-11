@@ -1,8 +1,15 @@
+/**
+ * The contents of this file are subject to the license and copyright
+ * detailed in the LICENSE and NOTICE files at the root of the source
+ * tree and available online at
+ *
+ * http://www.dspace.org/license/
+ */
 package org.dspace.app.rest.security;
 
 import org.springframework.security.authentication.AuthenticationManager;
 
-public class StatelessAuthenticationRequest {
+public class DSpaceAuthenticationRequest {
 
     private final String url;
     private final String authMethodName;
@@ -10,7 +17,7 @@ public class StatelessAuthenticationRequest {
     private final AuthenticationManager authenticationManager;
     private final RestAuthenticationService restAuthenticationService;
 
-    private StatelessAuthenticationRequest(
+    private DSpaceAuthenticationRequest(
             final String url,
             final String authMethodName,
             final String httpMethodName,
@@ -43,14 +50,14 @@ public class StatelessAuthenticationRequest {
         return restAuthenticationService;
     }
 
-    public static StatelessAuthenticationRequest create(
+    public static DSpaceAuthenticationRequest create(
             final String url,
             final String authMethodName,
             final String httpMethodName,
             final AuthenticationManager authenticationManager,
             final RestAuthenticationService restAuthenticationService) {
 
-        return new StatelessAuthenticationRequest(
+        return new DSpaceAuthenticationRequest(
                 url,
                 authMethodName,
                 httpMethodName,

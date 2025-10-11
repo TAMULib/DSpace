@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.OIDC;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.OIDC;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,14 +31,14 @@ import org.springframework.security.core.Authentication;
  *
  * @author Pasquale Cavallo (pasquale.cavallo at 4science dot it)
  */
-public class OidcLoginFilter extends StatelessLoginFilter {
+public class OidcLoginFilter extends DSpaceLoginFilter {
 
     private static final Logger log = LogManager.getLogger(OidcLoginFilter.class);
 
     private final ConfigurationService configurationService = DSpaceServicesFactory.getInstance()
         .getConfigurationService();
 
-    public OidcLoginFilter(StatelessAuthenticationRequest authRequest) {
+    public OidcLoginFilter(DSpaceAuthenticationRequest authRequest) {
         super(authRequest);
     }
 

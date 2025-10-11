@@ -22,6 +22,7 @@ import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetail
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -29,7 +30,7 @@ import org.springframework.security.web.authentication.AbstractAuthenticationPro
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
- * This abstract class provides the stateless base for authentication. Keep in mind, this filter runs *after*
+ * This abstract class provides the base for authentication. Keep in mind, this filter runs *after*
  * {@link StatelessAuthenticationFilter} (which looks for authentication data in the request itself). So, in some scenarios
  * (e.g. after a Shibboleth login) the StatelessAuthenticationFilter does the actual authentication, and this Filter
  * just ensures the auth token (JWT) is sent back in an Authorization header.
@@ -37,7 +38,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  * @author Frederic Van Reet (frederic dot vanreet at atmire dot com)
  * @author Tom Desair (tom dot desair at atmire dot com)
  */
-public abstract class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter {
+public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final Logger log = LogManager.getLogger();
 
@@ -53,7 +54,7 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
      * @param authRequest StatelessAuthRequest with URL, HTTP method name,
      *                    authentication method name, authentication manaher, and REST authentication service
      */
-    public StatelessLoginFilter(StatelessAuthenticationRequest authRequest) {
+    public DSpaceLoginFilter(DSpaceAuthenticationRequest authRequest) {
         super(new AntPathRequestMatcher(authRequest.getUrl(), authRequest.getHttpMethodName()));
         this.authenticationManager = authRequest.getAuthenticationManager();
         this.restAuthenticationService = authRequest.getRestAuthenticationService();
@@ -79,7 +80,7 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
-        System.out.println("StatelessLoginFilter#attemptAuthentication: (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
+        System.out.println("DSpaceLoginFilter#attemptAuthentication: (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
 
         Context context = ContextUtil.obtainContext(req);
 
@@ -87,6 +88,8 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
             log.info(String.format("%s authentication enabled", getAuthMethodName()));
             System.out.println(String.format("%s authentication enabled", getAuthMethodName()));
             context.setAuthenticationMethod(getAuthMethodName());
+        } else {
+            throw new ProviderNotFoundException(String.format("%s not enabled for this request!", getAuthMethodName()));
         }
 
         DSpaceAuthentication authentication = DSpaceAuthentication.create()
@@ -180,7 +183,7 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
     private boolean isEnabled(Context context, HttpServletRequest request) {
         final String authMethodName = getAuthMethodName();
         final String servletPath = request.getServletPath();
-        final String factoryAuthMethodName = StatelessLoginFilterFactory.getAuthMethodNameByServletPath(servletPath);
+        final String factoryAuthMethodName = DSpaceLoginFilterFactory.getAuthMethodNameByServletPath(servletPath);
 
         return Objects.isNull(context.getCurrentUser())
             && Objects.nonNull(authMethodName)

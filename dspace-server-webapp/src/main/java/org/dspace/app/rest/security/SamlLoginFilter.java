@@ -7,7 +7,7 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.app.rest.security.StatelessLoginFilterFactory.SAML;
+import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.SAML;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,12 +54,12 @@ import org.springframework.security.core.Authentication;
  *
  * @author Ray Lee
  */
-public class SamlLoginFilter extends StatelessLoginFilter {
+public class SamlLoginFilter extends DSpaceLoginFilter {
     private static final Logger log = LogManager.getLogger(SamlLoginFilter.class);
 
     private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
-    public SamlLoginFilter(StatelessAuthenticationRequest authRequest) {
+    public SamlLoginFilter(DSpaceAuthenticationRequest authRequest) {
         super(authRequest);
     }
 
