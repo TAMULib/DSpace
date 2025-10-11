@@ -78,7 +78,7 @@ public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessing
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
-        System.out.println("DSpaceLoginFilter#attemptAuthentication (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
+        System.out.println(getClass().getSimpleName() + "#attemptAuthentication (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
 
         Context context = ContextUtil.obtainContext(req);
 

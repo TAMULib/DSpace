@@ -168,6 +168,9 @@ public interface AuthenticationMethod {
      *                 otherwise
      */
     public default boolean areSpecialGroupsApplicable(Context context, HttpServletRequest request) {
+        if (context.getAuthenticationMethod() == null) {
+            System.out.println("Unable to determine if special groups applicable. Authentication method on context is null!");
+        }
         return getName().equals(context.getAuthenticationMethod());
     }
 
