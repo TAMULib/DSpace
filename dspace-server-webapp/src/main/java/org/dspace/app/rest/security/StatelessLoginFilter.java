@@ -7,6 +7,8 @@
  */
 package org.dspace.app.rest.security;
 
+import static org.dspace.authenticate.AuthenticationMethod.DOT_AUTHENTICATED;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -21,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetails;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
+import org.dspace.eperson.EPerson;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -55,7 +58,6 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
      */
     public StatelessLoginFilter(StatelessAuthenticationRequest authRequest) {
         super(new AntPathRequestMatcher(authRequest.getUrl(), authRequest.getHttpMethodName()));
-        // does requiresAuthentication match and not invoke attemptAuthentication?
         this.authenticationManager = authRequest.getAuthenticationManager();
         this.restAuthenticationService = authRequest.getRestAuthenticationService();
     }
@@ -80,23 +82,23 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
-        // this will be defined from stateless authentication filter when using authorization token and not require any further authentication
         System.out.println("StatelessLoginFilter#attemptAuthentication: (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
 
         Context context = ContextUtil.obtainContext(req);
 
         if (isEnabled(context, req)) {
+            log.info(String.format("%s authentication enabled", getAuthMethodName()));
+            System.out.println(String.format("%s authentication enabled", getAuthMethodName()));
             context.setAuthenticationMethod(getAuthMethodName());
         }
 
-        // new authentication regardless of implicit and stateless authentication
         DSpaceAuthentication authentication = DSpaceAuthentication.create()
-            .withDetails(getWebAuthenticationDetails(req));
+                .withDetails(getWebAuthenticationDetails(req));
 
         addCredentials(req, authentication);
 
-        log.info(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
-        System.out.println(String.format("%s authentication attempt (new context): %s", getClass().getSimpleName(), authentication));
+        log.info(String.format("%s authentication attempt (new context): %s", getAuthMethodName(), authentication));
+        System.out.println(String.format("%s authentication attempt (new context): %s", getAuthMethodName(), authentication));
 
         return ((DSpaceAuthentication) authenticationManager.authenticate(authentication));
     }
@@ -122,14 +124,12 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-        // security context holder strategy not utilized
-        // calling super would utilize the default
 
         DSpaceAuthentication dSpaceAuthentication = ((DSpaceAuthentication) auth)
             .withDetails(getWebAuthenticationDetails(req));
 
-        log.debug(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));
-        System.out.println(String.format("%s authentication successful for EPerson %s", getClass().getSimpleName(), dSpaceAuthentication.getName()));
+        log.info(String.format("%s authentication successful for EPerson %s", getAuthMethodName(), dSpaceAuthentication.getName()));
+        System.out.println(String.format("%s authentication successful for EPerson %s", getAuthMethodName(), dSpaceAuthentication.getName()));
 
         restAuthenticationService.addAuthenticationDataForUser(req, res, dSpaceAuthentication, addCookie());
     }
@@ -162,9 +162,18 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
     protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
         boolean requiresAuthentication = super.requiresAuthentication(request, response);
 
-        System.out.println(String.format("%s requires authentication: %s", getClass().getSimpleName(), requiresAuthentication));
+        if (requiresAuthentication) {
+            log.info(String.format("%s requires authentication according to request pattern matcher", getClass().getSimpleName()));
+            System.out.println(String.format("%s requires authentication according to request pattern matcher", getClass().getSimpleName()));
+        }
 
-        return requiresAuthentication;
+        Authentication authentication = getAuthentication(request);
+        if (authentication.isAuthenticated()) {
+            log.info(String.format("%s authentication already established (existing context): %s", getAuthMethodName(), authentication));
+            System.out.println(String.format("%s authentication already established (existing context): %s", getAuthMethodName(), authentication));
+        }
+
+        return !authentication.isAuthenticated();
     }
 
     /**
@@ -183,6 +192,44 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
         return true;
     }
 
+    protected Authentication getAuthentication(HttpServletRequest request) {
+
+        final Context dspaceContext = ContextUtil.obtainContext(request);
+        final DSpaceAuthentication dspaceAuthentication = (DSpaceAuthentication) SecurityContextHolder.getContext().getAuthentication();
+
+        boolean securityContextHasAuthentication = Objects.nonNull(dspaceAuthentication);
+        boolean securityContextAuthenticationHasPrinciple = securityContextHasAuthentication && Objects.nonNull(dspaceAuthentication.getPrincipal());
+
+        final EPerson ePerson = dspaceContext.getCurrentUser();
+
+        boolean contextHasUser = Objects.nonNull(ePerson);
+        boolean contextUserHasEmail = contextHasUser && Objects.nonNull(ePerson.getEmail());
+
+        boolean contextUsernameMatchesAuthenticationPrinciple = securityContextAuthenticationHasPrinciple && contextUserHasEmail && dspaceAuthentication.getPrincipal().equals(ePerson.getEmail());
+
+        final Object isAlreadyAuthenticated = request.getAttribute(getAuthMethodName() + DOT_AUTHENTICATED);
+
+        boolean requestHasIsAlreadyAutheticated = Objects.nonNull(isAlreadyAuthenticated);
+
+        if (requestHasIsAlreadyAutheticated) {
+            System.out.println("isAlreadyAuthenticated: " + isAlreadyAuthenticated);
+            if (isAlreadyAuthenticated instanceof Boolean iaa) {
+                System.out.println("isABoolean: " + iaa);
+            }
+        }
+
+        return securityContextHasAuthentication
+            && securityContextAuthenticationHasPrinciple
+            && contextHasUser
+            && contextUserHasEmail
+            && contextUsernameMatchesAuthenticationPrinciple
+            && requestHasIsAlreadyAutheticated
+            && (boolean) isAlreadyAuthenticated
+            && dspaceAuthentication.isAuthenticated()
+                ? dspaceAuthentication
+                : DSpaceAuthentication.create();
+    }
+
     protected void addCredentials(HttpServletRequest request, DSpaceAuthentication authentication) {
         // nothing todo here
     }
@@ -194,7 +241,6 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
         final String servletPath = request.getServletPath();
         final String factoryAuthMethodName = StatelessLoginFilterFactory.getAuthMethodNameByServletPath(servletPath);
 
-        // only enable if not already authenticated
         return Objects.isNull(context.getCurrentUser())
             && Objects.nonNull(authMethodName)
             && Objects.nonNull(factoryAuthMethodName)

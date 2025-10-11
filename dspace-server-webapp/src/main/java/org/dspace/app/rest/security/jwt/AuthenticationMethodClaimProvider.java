@@ -9,6 +9,7 @@ package org.dspace.app.rest.security.jwt;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Objects;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,9 +40,11 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(final Context context, final HttpServletRequest request) {
-        String authenticationMethod = context.getAuthenticationMethod() != null
-            ? context.getAuthenticationMethod()
-            : authenticationService.getAuthenticationMethod(context, request);
+        String authenticationMethod = context.getAuthenticationMethod();
+        if (Objects.isNull(authenticationMethod)) {
+            System.out.println("AuthenticationMethodClaimProvider#getValue (context) authentication method is null. Get authentication method from authentication service.");
+            authenticationMethod = authenticationService.getAuthenticationMethod(context, request);
+        }
         System.out.println("AuthenticationMethodClaimProvider#getValue return " + authenticationMethod);
 
         return authenticationMethod;

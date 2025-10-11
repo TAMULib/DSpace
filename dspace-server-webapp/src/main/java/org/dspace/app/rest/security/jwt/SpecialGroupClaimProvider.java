@@ -9,8 +9,9 @@ package org.dspace.app.rest.security.jwt;
 
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -48,16 +49,23 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(Context context, HttpServletRequest request) {
-        List<Group> groups = new ArrayList<>();
         try {
-            groups = authenticationService.getSpecialGroups(context, request);
+            List<Group> groups =  context.getSpecialGroups();
+
+            if (Objects.isNull(groups)) {
+                System.out.println("SpecialGroupClaimProvider#getValue (context) special groups is null. Getting special groups from authentication service.");
+                groups = authenticationService.getSpecialGroups(context, request);
+            }
+
+             List<String> groupIds = groups.stream().map(group -> group.getID().toString()).collect(Collectors.toList());
+             System.out.println("SpecialGroupClaimProvider#getValue return " + groupIds);
+             return groupIds;
+
         } catch (SQLException e) {
             log.error("SQLException while retrieving special groups", e);
-            return null;
         }
-        List<String> groupIds = groups.stream().map(group -> group.getID().toString()).collect(Collectors.toList());
-        System.out.println("SpecialGroupClaimProvider#getValue return " + groupIds);
-        return groupIds;
+
+       return Collections.emptyList();
     }
 
     @Override

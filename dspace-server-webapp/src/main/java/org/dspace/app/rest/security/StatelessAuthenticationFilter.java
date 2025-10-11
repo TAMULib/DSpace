@@ -7,6 +7,8 @@
  */
 package org.dspace.app.rest.security;
 
+import static org.dspace.authenticate.AuthenticationMethod.DOT_AUTHENTICATED;
+
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -151,9 +153,11 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                 details.put("am", context.getAuthenticationMethod());
                 System.out.println("StatelessAuthenticationFilter details (context): " + details);
 
+                request.setAttribute(context.getAuthenticationMethod() + DOT_AUTHENTICATED, true);
+
                 return DSpaceAuthentication.create()
                     .forEPerson(eperson)
-                    // .withDetails(details)
+                    .withDetails(details)
                     .withGrantedAuthorities(authorities)
                     .withAuthenticatedTrue();
             }
@@ -197,7 +201,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
 
             return DSpaceAuthentication.create()
                 .forEPerson(onBehalfOfEPerson)
-                // .withDetails(details)
+                .withDetails(details)
                 .withGrantedAuthorities(authorities)
                 .withAuthenticatedTrue();
         } else {
