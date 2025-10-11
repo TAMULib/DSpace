@@ -39,6 +39,11 @@ public class PasswordLoginFilter extends DSpaceLoginFilter {
     }
 
     @Override
+    public boolean enableProvider() {
+        return false;
+    }
+
+    @Override
     public void addCredentials(HttpServletRequest request, DSpaceAuthentication authentication) {
         final String user = request.getParameter("user");
         final String password = request.getParameter("password");

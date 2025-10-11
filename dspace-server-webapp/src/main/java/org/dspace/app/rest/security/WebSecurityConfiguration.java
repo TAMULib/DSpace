@@ -162,6 +162,12 @@ public class WebSecurityConfiguration {
                 .logoutSuccessHandler(new HttpStatusReturningLogoutSuccessHandler(HttpStatus.NO_CONTENT))
             );
 
+        log.info("Password login filter required for stateless authentication. Adding password login filter to security filter chain.");
+        // Add a filter before our login endpoints to do the authentication based on the data in the HTTP request.
+        // This login endpoint only responds to POST as it is used for PasswordAuthentication
+        http.addFilterBefore(PASSWORD.getLoginFilter(authenticationManager, restAuthenticationService, PASSWORD.getUrl()),
+            LogoutFilter.class);
+
         Iterator<AuthenticationMethod> authenticationMethodIterator = authenticationService.authenticationMethodIterator();
 
         Class<? extends Filter> firstLoginFilter = null;
@@ -180,14 +186,7 @@ public class WebSecurityConfiguration {
             }
 
             if (method.getName().equals(PASSWORD.getAuthMethodName())) {
-                log.info("Password authentication is enabled. Adding password login filter to security filter chain.");
-                // Add a filter before our login endpoints to do the authentication based on the data in the HTTP request.
-                // This login endpoint only responds to POST as it is used for PasswordAuthentication
-                http.addFilterBefore(PASSWORD.getLoginFilter(authenticationManager, restAuthenticationService, PASSWORD.getUrl()),
-                    LogoutFilter.class);
-                if (Objects.isNull(firstLoginFilter)) {
-                    firstLoginFilter = PasswordLoginFilter.class;
-                }
+                log.info("Password authentication is enabled. Password/Stateless login filter already added to security filter chain.");
             }
 
             if (method.getName().equals(SHIBBOLETH.getAuthMethodName())) {

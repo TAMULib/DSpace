@@ -89,7 +89,9 @@ public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessing
             System.out.println(String.format("%s authentication enabled", getAuthMethodName()));
             context.setAuthenticationMethod(getAuthMethodName());
         } else {
-            throw new ProviderNotFoundException(String.format("%s not enabled for this request!", getAuthMethodName()));
+            if (enableProvider()) {
+                throw new ProviderNotFoundException(String.format("%s not enabled for this request!", getAuthMethodName()));
+            }
         }
 
         DSpaceAuthentication authentication = DSpaceAuthentication.create()
@@ -171,6 +173,10 @@ public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessing
     }
 
     protected boolean addCookie() {
+        return true;
+    }
+
+    protected boolean enableProvider() {
         return true;
     }
 
