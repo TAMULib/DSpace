@@ -137,6 +137,8 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                 //Pass the eperson ID to the request service
                 requestService.setCurrentUserId(eperson.getID());
 
+                request.setAttribute(context.getAuthenticationMethod() + DOT_AUTHENTICATED, true);
+
                 //Get the Spring authorities for this eperson
                 List<GrantedAuthority> authorities = authenticationProvider.getGrantedAuthorities(context);
                 String onBehalfOfParameterValue = request.getHeader(ON_BEHALF_OF_REQUEST_PARAM);
@@ -153,8 +155,6 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                 details.put("sg", context.getSpecialGroupUuids());
                 details.put("am", context.getAuthenticationMethod());
                 System.out.println("StatelessAuthenticationFilter details (context): " + details);
-
-                request.setAttribute(context.getAuthenticationMethod() + DOT_AUTHENTICATED, true);
 
                 return DSpaceAuthentication.create()
                     .forEPerson(eperson)

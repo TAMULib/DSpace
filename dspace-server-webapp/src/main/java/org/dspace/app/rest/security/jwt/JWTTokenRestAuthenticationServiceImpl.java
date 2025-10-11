@@ -80,18 +80,17 @@ public class JWTTokenRestAuthenticationServiceImpl implements RestAuthentication
         try {
             Context context = ContextUtil.obtainContext(request);
 
-            System.out.println("Authentication data for user:");
-            System.out.println("context: " + context);
-            System.out.println("context.getCurrentUser(): " + context.getCurrentUser());
-            System.out.println("authentication: " + authentication);
-            System.out.println("authentication.getName(): " + authentication.getName());
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser:");
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser context: " + context);
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser context.getCurrentUser(): " + context.getCurrentUser());
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser context.getSpecialGroupUuids(): " + context.getSpecialGroupUuids());
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser context.getAuthenticationMethod(): " + context.getAuthenticationMethod());
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser authentication: " + authentication);
+            System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser authentication.getName(): " + authentication.getName());
 
             if (Objects.isNull(context.getCurrentUser()) && Objects.nonNull(authentication.getName())) {
                 context.setCurrentUser(ePersonService.findByEmail(context, authentication.getName()));
                 System.out.println("JWTTokenRestAuthenticationServiceImpl#addAuthenticationDataForUser (ePersonService) findByEmail: " +  ePersonService.findByEmail(context, authentication.getName()));
-            } else {
-                // why is authentication name null here
-                System.out.println("Unable to obtain eperson: " + authentication.getName());
             }
 
             String token = loginJWTTokenHandler.createTokenForEPerson(context, request,

@@ -49,6 +49,20 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(Context context, HttpServletRequest request) {
+        System.out.println("SpecialGroupClaimProvider#getValue:");
+        System.out.println("SpecialGroupClaimProvider#getValue context: " + context);
+        if (Objects.nonNull(context)) {
+            System.out.println("SpecialGroupClaimProvider#getValue context.getCurrentUser(): " + context.getCurrentUser());
+            System.out.println("SpecialGroupClaimProvider#getValue context.getCurrentUser(): " + context.getSpecialGroupUuids());
+            System.out.println("SpecialGroupClaimProvider#getValue context.getCurrentUser(): " + context.getAuthenticationMethod());
+        }
+        System.out.println("SpecialGroupClaimProvider#getValue request: " + request);
+        if (Objects.nonNull(request)) {
+            request.getAttributeNames().asIterator().forEachRemaining(attribute -> {
+                System.out.println("SpecialGroupClaimProvider#getValue request attribute " + attribute + ": " + request.getAttribute(attribute));
+            });
+        }
+
         try {
             List<Group> groups =  context.getSpecialGroups();
 

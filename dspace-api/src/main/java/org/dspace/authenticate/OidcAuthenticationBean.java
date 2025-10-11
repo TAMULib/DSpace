@@ -209,8 +209,6 @@ public class OidcAuthenticationBean implements AuthenticationMethod {
                         LOG.warn("Group {} does not exist", groupName);
                     } else {
                         LOG.debug("Found special group {}", groupName);
-                        // context.setSpecialGroup is actually add special group id
-                        // context.getSpecialGroups is synthetic and looks up ids
                         context.setSpecialGroup(group.getID());
                     }
                 }

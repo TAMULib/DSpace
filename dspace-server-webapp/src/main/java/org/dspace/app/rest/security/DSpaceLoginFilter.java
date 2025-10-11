@@ -8,19 +8,20 @@
 package org.dspace.app.rest.security;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetails;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
+import org.dspace.core.Utils;
+import org.dspace.services.ConfigurationService;
+import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
@@ -29,40 +30,37 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.AbstractAuthenticationProcessingFilter;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+
 /**
- * This abstract class provides the base for authentication. Keep in mind, this filter runs *after*
- * {@link StatelessAuthenticationFilter} (which looks for authentication data in the request itself). So, in some scenarios
- * (e.g. after a Shibboleth login) the StatelessAuthenticationFilter does the actual authentication, and this Filter
- * just ensures the auth token (JWT) is sent back in an Authorization header.
- *
- * @author Frederic Van Reet (frederic dot vanreet at atmire dot com)
- * @author Tom Desair (tom dot desair at atmire dot com)
+ * Abstract class login filter handling common logic among login filters. 
  */
 public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final Logger log = LogManager.getLogger();
+
+    protected final ConfigurationService configurationService = DSpaceServicesFactory.getInstance()
+        .getConfigurationService();
 
     protected final AuthenticationManager authenticationManager;
 
     protected final RestAuthenticationService restAuthenticationService;
 
     /**
-     * Initialize a StatelessLoginFilter for the given URL and HTTP method. This login filter will ONLY attempt
+     * Initialize a DSpaceLoginFilter for the given URL and HTTP method. This login filter will ONLY attempt
      * authentication for requests that match this URL and method. The URL & method are defined in the configuration
      * in WebSecurityConfiguration.
      * @see org.dspace.app.rest.security.WebSecurityConfiguration
-     * @param authRequest StatelessAuthRequest with URL, HTTP method name,
+     * @param authRequest DSpaceAuthRequest with URL, HTTP method name,
      *                    authentication method name, authentication manaher, and REST authentication service
      */
     public DSpaceLoginFilter(DSpaceAuthenticationRequest authRequest) {
         super(new AntPathRequestMatcher(authRequest.getUrl(), authRequest.getHttpMethodName()));
         this.authenticationManager = authRequest.getAuthenticationManager();
         this.restAuthenticationService = authRequest.getRestAuthenticationService();
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-
     }
 
     /**
@@ -80,7 +78,7 @@ public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessing
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
-        System.out.println("DSpaceLoginFilter#attemptAuthentication: (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
+        System.out.println("DSpaceLoginFilter#attemptAuthentication (security context authentication): " + SecurityContextHolder.getContext().getAuthentication());
 
         Context context = ContextUtil.obtainContext(req);
 
@@ -95,7 +93,7 @@ public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessing
         }
 
         DSpaceAuthentication authentication = DSpaceAuthentication.create()
-                .withDetails(getWebAuthenticationDetails(req));
+            .withDetails(getWebAuthenticationDetails(req));
 
         addCredentials(req, authentication);
 
@@ -157,7 +155,7 @@ public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessing
         response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Authentication failed!");
 
         log.error("Authentication failed (status:{})",
-                  HttpServletResponse.SC_UNAUTHORIZED, failed);
+            HttpServletResponse.SC_UNAUTHORIZED, failed);
     }
 
     /**
@@ -182,6 +180,45 @@ public abstract class DSpaceLoginFilter extends AbstractAuthenticationProcessing
 
     protected void addCredentials(HttpServletRequest request, DSpaceAuthentication authentication) {
         // nothing todo here
+    }
+
+    /**
+     * After successful login, redirect to the DSpace URL specified by this Shibboleth request (in the "redirectUrl"
+     * request parameter). If that 'redirectUrl' is not valid or trusted for this DSpace site, then return a 400 error.
+     * @param request
+     * @param response
+     * @throws IOException
+     */
+    protected void redirectAfterSuccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        // Get redirect URL from request parameter
+        String redirectUrl = request.getParameter("redirectUrl");
+
+        // If redirectUrl unspecified, default to the configured UI
+        if (StringUtils.isEmpty(redirectUrl)) {
+            redirectUrl = configurationService.getProperty("dspace.ui.url");
+        }
+
+        // Validate that the redirectURL matches either the server or UI hostname. It *cannot* be an arbitrary URL.
+        String redirectHostName = Utils.getHostName(redirectUrl);
+        String serverHostName = Utils.getHostName(configurationService.getProperty("dspace.server.url"));
+
+        ArrayList<String> allowedHostNames = new ArrayList<>();
+        allowedHostNames.add(serverHostName);
+
+        String[] allowedUrls = configurationService.getArrayProperty("rest.cors.allowed-origins");
+        for (String url : allowedUrls) {
+            allowedHostNames.add(Utils.getHostName(url));
+        }
+
+        if (StringUtils.equalsAnyIgnoreCase(redirectHostName, allowedHostNames.toArray(new String[0]))) {
+            log.debug(getAuthMethodName() + " redirecting to " + redirectUrl);
+            response.sendRedirect(redirectUrl);
+        } else {
+            log.error("Invalid " + getAuthMethodName() + " redirectURL=" + redirectUrl +
+                ". URL doesn't match hostname of server or UI!");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST,
+                "Invalid redirectURL! Must match server or ui hostname.");
+        }
     }
 
     protected abstract String getAuthMethodName();

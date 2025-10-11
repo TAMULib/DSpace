@@ -40,6 +40,19 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(final Context context, final HttpServletRequest request) {
+        System.out.println("AuthenticationMethodClaimProvider#getValue:");
+        System.out.println("AuthenticationMethodClaimProvider#getValue context: " + context);
+        if (Objects.nonNull(context)) {
+            System.out.println("AuthenticationMethodClaimProvider#getValue context.getCurrentUser(): " + context.getCurrentUser());
+            System.out.println("AuthenticationMethodClaimProvider#getValue context.getSpecialGroupUuids(): " + context.getSpecialGroupUuids());
+            System.out.println("AuthenticationMethodClaimProvider#getValue context.getAuthenticationMethod(): " + context.getAuthenticationMethod());
+        }
+        System.out.println("AuthenticationMethodClaimProvider#getValue request: " + request);
+        if (Objects.nonNull(request)) {
+            request.getAttributeNames().asIterator().forEachRemaining(attribute -> {
+                System.out.println("AuthenticationMethodClaimProvider#getValue request attribute " + attribute + ": " + request.getAttribute(attribute));
+            });
+        }
         String authenticationMethod = context.getAuthenticationMethod();
         if (Objects.isNull(authenticationMethod)) {
             System.out.println("AuthenticationMethodClaimProvider#getValue (context) authentication method is null. Get authentication method from authentication service.");

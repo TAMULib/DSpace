@@ -67,7 +67,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     public List<AuthenticationMethod> getAuthenticationMethodStack() {
         return Arrays.asList((AuthenticationMethod[]) CoreServiceFactory.getInstance().getPluginService()
-                                                                        .getPluginSequence(AuthenticationMethod.class));
+            .getPluginSequence(AuthenticationMethod.class));
     }
 
     @Override
@@ -96,6 +96,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                        String realm,
                                        HttpServletRequest request,
                                        boolean implicitOnly) {
+
+        System.out.println("AuthenticationServiceImpl#authenticateInternal");
         // better is lowest, so start with the highest.
         int results = AuthenticationMethod.BAD_ARGS;
         // return on first success, otherwise "best" outcome.
@@ -103,6 +105,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
             if (!implicitOnly || method.isImplicit()) {
                 int result = 0;
                 try {
+                    System.out.println("AuthenticationServiceImpl#authenticateInternal authenticating with " + method.getName());
                     result = method.authenticate(context, username, password, realm, request);
                 } catch (SQLException e) {
                     result = AuthenticationMethod.NO_SUCH_USER;

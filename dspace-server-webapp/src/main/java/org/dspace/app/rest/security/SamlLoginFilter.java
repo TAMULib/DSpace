@@ -10,19 +10,13 @@ package org.dspace.app.rest.security;
 import static org.dspace.app.rest.security.DSpaceLoginFilterFactory.SAML;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.stream.Stream;
+
+import org.springframework.security.core.Authentication;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.dspace.core.Utils;
-import org.dspace.services.ConfigurationService;
-import org.dspace.services.factory.DSpaceServicesFactory;
-import org.springframework.security.core.Authentication;
 
 /**
  * A filter that examines requests to see if the user has been authenticated via SAML.
@@ -55,9 +49,6 @@ import org.springframework.security.core.Authentication;
  * @author Ray Lee
  */
 public class SamlLoginFilter extends DSpaceLoginFilter {
-    private static final Logger log = LogManager.getLogger(SamlLoginFilter.class);
-
-    private ConfigurationService configurationService = DSpaceServicesFactory.getInstance().getConfigurationService();
 
     public SamlLoginFilter(DSpaceAuthenticationRequest authRequest) {
         super(authRequest);
@@ -69,39 +60,14 @@ public class SamlLoginFilter extends DSpaceLoginFilter {
     }
 
     @Override
-    protected void successfulAuthentication(HttpServletRequest req, HttpServletResponse res, FilterChain chain,
-        Authentication auth) throws IOException, ServletException {
+    protected void successfulAuthentication(
+        HttpServletRequest req,
+        HttpServletResponse res,
+        FilterChain chain,
+        Authentication auth
+    ) throws IOException, ServletException {
         super.successfulAuthentication(req, res, chain, auth);
         redirectAfterSuccess(req, res);
     }
 
-    /**
-     * After successful login, redirect to the configured UI URL. If that URL is not allowed for
-     * this DSpace site, return a 400 error.
-     *
-     * @param request
-     * @param response
-     * @throws IOException
-     */
-    private void redirectAfterSuccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        String redirectUrl = configurationService.getProperty("dspace.ui.url");
-        String redirectHostName = Utils.getHostName(redirectUrl);
-        String serverUrl = configurationService.getProperty("dspace.server.url");
-
-        boolean isRedirectAllowed = Stream.concat(
-                Stream.of(serverUrl),
-                Arrays.stream(configurationService.getArrayProperty("rest.cors.allowed-origins")))
-            .map(url -> Utils.getHostName(url))
-            .anyMatch(hostName -> hostName.equalsIgnoreCase(redirectHostName));
-
-        if (isRedirectAllowed) {
-            log.debug("SAML redirecting to " + redirectUrl);
-
-            response.sendRedirect(redirectUrl);
-        } else {
-            log.error("SAML redirect URL {} is not allowed" + redirectUrl);
-
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST,"SAML redirect URL not allowed");
-        }
-    }
 }
