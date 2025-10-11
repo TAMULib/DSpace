@@ -7,8 +7,6 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.authenticate.AuthenticationMethod.DOT_AUTHENTICATED;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
@@ -23,7 +21,6 @@ import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.security.details.SpecialGroupsWebAuthenticationDetails;
 import org.dspace.app.rest.utils.ContextUtil;
 import org.dspace.core.Context;
-import org.dspace.eperson.EPerson;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -158,24 +155,6 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
                   HttpServletResponse.SC_UNAUTHORIZED, failed);
     }
 
-    @Override
-    protected boolean requiresAuthentication(HttpServletRequest request, HttpServletResponse response) {
-        boolean requiresAuthentication = super.requiresAuthentication(request, response);
-
-        if (requiresAuthentication) {
-            log.info(String.format("%s requires authentication according to request pattern matcher", getClass().getSimpleName()));
-            System.out.println(String.format("%s requires authentication according to request pattern matcher", getClass().getSimpleName()));
-        }
-
-        Authentication authentication = getAuthentication(request);
-        if (authentication.isAuthenticated()) {
-            log.info(String.format("%s authentication already established (existing context): %s", getAuthMethodName(), authentication));
-            System.out.println(String.format("%s authentication already established (existing context): %s", getAuthMethodName(), authentication));
-        }
-
-        return !authentication.isAuthenticated();
-    }
-
     /**
      * Return details built from the source. Empty immutable map otherwise.
      * 
@@ -190,44 +169,6 @@ public abstract class StatelessLoginFilter extends AbstractAuthenticationProcess
 
     protected boolean addCookie() {
         return true;
-    }
-
-    protected Authentication getAuthentication(HttpServletRequest request) {
-
-        final Context dspaceContext = ContextUtil.obtainContext(request);
-        final DSpaceAuthentication dspaceAuthentication = (DSpaceAuthentication) SecurityContextHolder.getContext().getAuthentication();
-
-        boolean securityContextHasAuthentication = Objects.nonNull(dspaceAuthentication);
-        boolean securityContextAuthenticationHasPrinciple = securityContextHasAuthentication && Objects.nonNull(dspaceAuthentication.getPrincipal());
-
-        final EPerson ePerson = dspaceContext.getCurrentUser();
-
-        boolean contextHasUser = Objects.nonNull(ePerson);
-        boolean contextUserHasEmail = contextHasUser && Objects.nonNull(ePerson.getEmail());
-
-        boolean contextUsernameMatchesAuthenticationPrinciple = securityContextAuthenticationHasPrinciple && contextUserHasEmail && dspaceAuthentication.getPrincipal().equals(ePerson.getEmail());
-
-        final Object isAlreadyAuthenticated = request.getAttribute(getAuthMethodName() + DOT_AUTHENTICATED);
-
-        boolean requestHasIsAlreadyAutheticated = Objects.nonNull(isAlreadyAuthenticated);
-
-        if (requestHasIsAlreadyAutheticated) {
-            System.out.println("isAlreadyAuthenticated: " + isAlreadyAuthenticated);
-            if (isAlreadyAuthenticated instanceof Boolean iaa) {
-                System.out.println("isABoolean: " + iaa);
-            }
-        }
-
-        return securityContextHasAuthentication
-            && securityContextAuthenticationHasPrinciple
-            && contextHasUser
-            && contextUserHasEmail
-            && contextUsernameMatchesAuthenticationPrinciple
-            && requestHasIsAlreadyAutheticated
-            && (boolean) isAlreadyAuthenticated
-            && dspaceAuthentication.isAuthenticated()
-                ? dspaceAuthentication
-                : DSpaceAuthentication.create();
     }
 
     protected void addCredentials(HttpServletRequest request, DSpaceAuthentication authentication) {

@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import jakarta.servlet.FilterChain;
@@ -102,12 +103,12 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
             log.error("Access is denied (status:{})", HttpServletResponse.SC_FORBIDDEN, e);
             return;
         }
-        // If we have a valid Authentication, save it to Spring Security
-        if (authentication != null) {
-            SecurityContextHolder.getContext().setAuthentication(authentication);
-        }
 
-        chain.doFilter(req, res);
+        if (Objects.nonNull(authentication) && authentication.isAuthenticated()) {
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+        } else {
+            chain.doFilter(req, res);
+        }
     }
 
     /**
