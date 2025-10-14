@@ -7,7 +7,12 @@
  */
 package org.dspace.app.rest.security;
 
+import jakarta.servlet.Filter;
+import java.util.Iterator;
+import java.util.List;
+
 import org.dspace.app.rest.exception.DSpaceAccessDeniedHandler;
+import org.dspace.authenticate.AuthenticationMethod;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.services.RequestService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +30,7 @@ import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.DefaultSecurityFilterChain;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
@@ -172,7 +178,27 @@ public class WebSecurityConfiguration {
             .addFilterBefore(new StatelessAuthenticationFilter(authenticationManager, restAuthenticationService,
                                                                ePersonRestAuthenticationProvider, requestService),
                              StatelessLoginFilter.class);
-        return http.build();
+        
+
+        
+        DefaultSecurityFilterChain securityFilterChain =  http.build();
+
+        List<Filter> filters = securityFilterChain.getFilters();
+        System.out.println("Security filter chain (" + filters.size() + "})");
+        for (Filter filter : filters) {
+            System.out.println("Security filter: " + filter.getClass().getSimpleName());
+        }
+
+        Iterator<AuthenticationMethod> authenticationMethodIterator = authenticationService.authenticationMethodIterator();
+
+        System.out.println("Authentication stack");
+        while (authenticationMethodIterator.hasNext()) {
+            AuthenticationMethod method = authenticationMethodIterator.next();
+            System.out.println("Authentication method: " + method.getName());
+
+        }
+
+        return securityFilterChain;
     }
 
     /**
