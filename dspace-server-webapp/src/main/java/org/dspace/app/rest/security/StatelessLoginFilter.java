@@ -8,13 +8,20 @@
 package org.dspace.app.rest.security;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.List;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.app.rest.utils.ContextUtil;
+import org.dspace.core.Context;
+import org.dspace.eperson.Group;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -78,6 +85,73 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 
         String user = req.getParameter("user");
         String password = req.getParameter("password");
+
+        Context context = ContextUtil.obtainContext(req);
+        final String servletPath = req.getServletPath();
+
+        System.out.println("SLF: Request servlet path: " + servletPath);
+        System.out.println("SLF: Checking if request is login request...");
+        String authMethod = null;
+
+        switch (servletPath) {
+            case "/api/authn/login": {
+                if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
+                    authMethod = "password";
+                    System.out.println("SLF: Password Authentication");
+                } else {
+                    authMethod = null; // this is stateless pass from previous filter
+                }
+            } break;
+            case "/api/authn/shibboleth":
+                authMethod = "shib"; // new ShibAuthentication().getName()
+                System.out.println("SLF: Shibboleth Authentication");
+                break;
+            case "/api/authn/orcid":
+                authMethod = "orcid"; // new OrcidAuthentication().getName()
+                System.out.println("SLF: Orcid Authentication");
+                break;
+            case "/api/authn/oidc":
+                authMethod = "oidc"; // new OidcAuthentication().getName()
+                System.out.println("SLF: OIDC Authentication");
+                break;
+            case "/api/authn/saml":
+                authMethod = "saml"; // new SamlAuthentication().getName()
+                System.out.println("SLF: SAML Authentication");
+                break;
+            default:
+                break;
+        }
+
+        if (StringUtils.isNotEmpty(authMethod)) {
+            System.out.println("SLF: Setting auth method " + authMethod + " on context from request URL matching login filter");
+            context.setAuthenticationMethod(authMethod);
+        } else {
+            System.out.println("SLF: Auth method not known yet. Checking request attribute am");
+            authMethod = (String) req.getAttribute("am");
+            
+            if (StringUtils.isNotEmpty(authMethod)) {
+                System.out.println("SLF: Setting auth method " + authMethod + " on context from request attribute am");
+                context.setAuthenticationMethod(authMethod);
+            } else {
+                System.out.println("SLF: Request attribute am not defined");
+            }
+        }
+
+        // System.out.println("SLF: Context: " + context);
+        // System.out.println("SLF: Context authentication method: " + context.getAuthenticationMethod());
+        // System.out.println("SLF: Context special groups: " + context.getSpecialGroupUuids());
+
+        try {
+            List<Group> specialGroups = restAuthenticationService.getAuthenticationService().getSpecialGroups(context, req);
+
+            System.out.println("SLF: Adding special groups to context:");
+            specialGroups.stream().forEach(sg -> {
+                System.out.println("SLF: \t" + sg.getName() + " (" + sg.getID() + ")");
+                context.setSpecialGroup(sg.getID());
+            });
+        } catch (SQLException e) {
+            // whatever dspace
+        }
 
         // Attempt to authenticate by passing user & password (if provided) to AuthenticationProvider class(es)
         // NOTE: This method will check if the user was already authenticated by StatelessAuthenticationFilter,
