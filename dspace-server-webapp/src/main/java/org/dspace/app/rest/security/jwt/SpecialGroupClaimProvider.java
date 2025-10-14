@@ -15,8 +15,10 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.nimbusds.jwt.JWTClaimsSet;
+
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.authenticate.service.AuthenticationService;
@@ -50,7 +52,70 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
     public Object getValue(Context context, HttpServletRequest request) {
         List<Group> groups = new ArrayList<>();
         try {
+
+            final String servletPath = request.getServletPath();
+
+            System.out.println("SGCP: Request servlet path: " + servletPath);
+            System.out.println("SGCP: Checking if request is login request...");
+            String authMethod = null;
+
+            switch (servletPath) {
+                case "/api/authn/login":
+                    String user = request.getParameter("user");
+                    String password = request.getParameter("password");
+
+                    if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
+                        authMethod = "password";
+                        System.out.println("SGCP: Password Authentication");
+                    } else {
+                        authMethod = null; // this is stateless pass from previous filter
+                    }
+                    break;
+                case "/api/authn/shibboleth":
+                    authMethod = "shib"; // new ShibAuthentication().getName()
+                    System.out.println("SGCP: Shibboleth Authentication");
+                    break;
+                case "/api/authn/orcid":
+                    authMethod = "orcid"; // new OrcidAuthentication().getName()
+                    System.out.println("SGCP: Orcid Authentication");
+                    break;
+                case "/api/authn/oidc":
+                    authMethod = "oidc"; // new OidcAuthentication().getName()
+                    System.out.println("SGCP: OIDC Authentication");
+                    break;
+                case "/api/authn/saml":
+                    authMethod = "saml"; // new SamlAuthentication().getName()
+                    System.out.println("SGCP: SAML Authentication");
+                    break;
+                default:
+                    break;
+            }
+
+            if (StringUtils.isNotEmpty(authMethod)) {
+                System.out.println("SGCP: Setting auth method " + authMethod + " on context from request URL matching login filter");
+                context.setAuthenticationMethod(authMethod);
+            } else {
+                System.out.println("SGCP: Auth method not known yet. Checking request attribute am");
+                authMethod = (String) request.getAttribute("am");
+                
+                if (StringUtils.isNotEmpty(authMethod)) {
+                    System.out.println("SGCP: Setting auth method " + authMethod + " on context from request attribute am");
+                    context.setAuthenticationMethod(authMethod);
+                } else {
+                    System.out.println("SGCP: Request attribute am not defined");
+                }
+            }
+
+            System.out.println("SGCP: Context: " + context);
+            System.out.println("SGCP: Context authentication method: " + context.getAuthenticationMethod());
+            System.out.println("SGCP: Context special groups: " + context.getSpecialGroupUuids());
+
             groups = authenticationService.getSpecialGroups(context, request);
+
+            System.out.println("SGCP: Special groups from authentication service: ");
+            groups.stream().forEach(sg -> {
+                System.out.println("SGCP: \t" + sg.getName() + " (" + sg.getID() + ")");
+            });
         } catch (SQLException e) {
             log.error("SQLException while retrieving special groups", e);
             return null;
