@@ -130,7 +130,6 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
             final String servletPath = request.getServletPath();
 
             System.out.println("SAF: Request servlet path: " + servletPath);
-            System.out.println("SAF: Checking if request is login request...");
             String authMethod = null;
 
             switch (servletPath) {
@@ -139,10 +138,10 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                     String password = request.getParameter("password");
 
                     if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
-                        authMethod = "password";
+                        authMethod = "password"; // new PasswordAuthentication().getName()
                         System.out.println("SLF: Password Authentication");
                     } else {
-                        authMethod = null; // this is stateless pass from previous filter
+                        authMethod = null;
                     }
                     break;
                 case "/api/authn/shibboleth":

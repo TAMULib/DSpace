@@ -90,16 +90,15 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
         final String servletPath = req.getServletPath();
 
         System.out.println("SLF: Request servlet path: " + servletPath);
-        System.out.println("SLF: Checking if request is login request...");
         String authMethod = null;
 
         switch (servletPath) {
             case "/api/authn/login": {
                 if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
-                    authMethod = "password";
+                    authMethod = "password"; // new PasswordAuthentication().getName()
                     System.out.println("SLF: Password Authentication");
                 } else {
-                    authMethod = null; // this is stateless pass from previous filter
+                    authMethod = null;
                 }
             } break;
             case "/api/authn/shibboleth":
