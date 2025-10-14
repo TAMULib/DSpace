@@ -16,6 +16,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
@@ -100,6 +102,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
         }
         // If we have a valid Authentication, save it to Spring Security
         if (authentication != null) {
+            System.out.println("SAF: Authentication success. Adding authentication to the security context.");
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(req, res);
@@ -124,9 +127,59 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
 
         if (restAuthenticationService.hasAuthenticationData(request)) {
             Context context = ContextUtil.obtainContext(request);
+            final String servletPath = request.getServletPath();
+
+            System.out.println("SAF: Request servlet path: " + servletPath);
+            System.out.println("SAF: Checking if request is login request...");
+            String authMethod = null;
+
+            switch (servletPath) {
+                case "/api/authn/login":
+                    String user = request.getParameter("user");
+                    String password = request.getParameter("password");
+
+                    if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
+                        authMethod = "password";
+                        System.out.println("SLF: Password Authentication");
+                    } else {
+                        authMethod = null; // this is stateless pass from previous filter
+                    }
+                    break;
+                case "/api/authn/shibboleth":
+                    authMethod = "shib"; // new ShibAuthentication().getName()
+                    System.out.println("SAF: Shibboleth Authentication");
+                    break;
+                case "/api/authn/orcid":
+                    authMethod = "orcid"; // new OrcidAuthentication().getName()
+                    System.out.println("SAF: Orcid Authentication");
+                    break;
+                case "/api/authn/oidc":
+                    authMethod = "oidc"; // new OidcAuthentication().getName()
+                    System.out.println("SAF: OIDC Authentication");
+                    break;
+                case "/api/authn/saml":
+                    authMethod = "saml"; // new SamlAuthentication().getName()
+                    System.out.println("SAF: SAML Authentication");
+                    break;
+                default:
+                    break;
+            }
+
+            if (StringUtils.isNotEmpty(authMethod)) {
+                System.out.println("SAF: Setting auth method " + authMethod + " on request attribute am");
+                request.setAttribute("am", authMethod);
+                System.out.println("SAF: Setting auth method " + authMethod + " on context");
+                context.setAuthenticationMethod(authMethod);
+            }
+
+            // System.out.println("SAF: Context: " + context);
+            // System.out.println("SAF: Context authentication method: " + context.getAuthenticationMethod());
+            // System.out.println("SAF: Context special groups: " + context.getSpecialGroupUuids());
+
             // parse the token.
             EPerson eperson = restAuthenticationService.getAuthenticatedEPerson(request, res, context);
             if (eperson != null) {
+                System.out.println("SAF: Found authentication data in request for EPerson " + eperson.getEmail());
                 log.debug("Found authentication data in request for EPerson {}", eperson::getEmail);
                 //Pass the eperson ID to the request service
                 requestService.setCurrentUserId(eperson.getID());
