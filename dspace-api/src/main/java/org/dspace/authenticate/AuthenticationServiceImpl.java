@@ -107,11 +107,13 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 try {
                     System.out.println("AuthenticationServiceImpl#authenticateInternal authenticating with " + method.getName());
                     result = method.authenticate(context, username, password, realm, request);
+                    System.out.println("AuthenticationServiceImpl#authenticateInternal authentication result " + result);
                 } catch (SQLException e) {
                     result = AuthenticationMethod.NO_SUCH_USER;
                 }
                 if (result == AuthenticationMethod.SUCCESS) {
                     updateLastActiveDate(context);
+                    updateSpecialGroups(context, request);
 
                     return result;
                 }
@@ -122,6 +124,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         return results;
+    }
+
+    // @Override
+    public void updateSpecialGroups(Context context, HttpServletRequest request) {
+        System.out.println("Updating special groups");
+        try {
+            List<Group> specialGroups = getSpecialGroups(context, request);
+
+            specialGroups.forEach(sg -> {
+                System.out.println("setting special group " + sg.getName() + "(" + sg.getID() + ")");
+                context.setSpecialGroup(sg.getID());
+            });
+
+
+        } catch (SQLException e) {
+
+        }
+
+        // check special group ids
+
+        // context.getSpecialGroups();
     }
 
     @Override
