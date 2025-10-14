@@ -15,6 +15,8 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
@@ -56,7 +58,14 @@ public class AnonymousAdditionalAuthorizationFilter extends BasicAuthenticationF
                                     FilterChain chain) throws IOException, ServletException {
         System.out.println("AnonymousAdditionalAuthorizationFilter#doFilterInternal");
         System.out.println("AnonymousAdditionalAuthorizationFilter#doFilterInternal obtaining context");
+
+        final String servletPath = req.getServletPath();
+        final String factoryAuthMethodName = DSpaceLoginFilterFactory.getAuthMethodNameByServletPath(servletPath);
+
         Context context = ContextUtil.obtainContext(req);
+        if (StringUtils.isNotEmpty(factoryAuthMethodName)) {
+            context.setAuthenticationMethod(factoryAuthMethodName);
+        }
         try {
             System.out.println("AnonymousAdditionalAuthorizationFilter#doFilterInternal get special groups");
             List<Group> groups = authenticationService.getSpecialGroups(context, req);
