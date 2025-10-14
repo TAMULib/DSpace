@@ -54,10 +54,14 @@ public class AnonymousAdditionalAuthorizationFilter extends BasicAuthenticationF
     protected void doFilterInternal(HttpServletRequest req,
                                     HttpServletResponse res,
                                     FilterChain chain) throws IOException, ServletException {
+        System.out.println("AnonymousAdditionalAuthorizationFilter#doFilterInternal");
+        System.out.println("AnonymousAdditionalAuthorizationFilter#doFilterInternal obtaining context");
         Context context = ContextUtil.obtainContext(req);
         try {
+            System.out.println("AnonymousAdditionalAuthorizationFilter#doFilterInternal get special groups");
             List<Group> groups = authenticationService.getSpecialGroups(context, req);
             for (Group group : groups) {
+                System.out.println("AnonymousAdditionalAuthorizationFilter#doFilterInternal adding group: " + group.getName());
                 context.setSpecialGroup(group.getID());
             }
         } catch (SQLException e) {

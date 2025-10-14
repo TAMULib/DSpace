@@ -178,14 +178,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public List<Group> getSpecialGroups(Context context,
                                         HttpServletRequest request) throws SQLException {
+        System.out.println("AuthenticationServiceImpl#getSpecialGroups");
         final List<Group> groups = new ArrayList<>();
 
+        System.out.println("AuthenticationServiceImpl#getSpecialGroups iterating over authentication stack");
         for (AuthenticationMethod method : getAuthenticationMethodStack()) {
+            System.out.println("AuthenticationServiceImpl#getSpecialGroups authentication method: " + method.getName());
             if (method.areSpecialGroupsApplicable(context, request)) {
+                System.out.println("AuthenticationServiceImpl#getSpecialGroups getting special groups for " + method.getName() + " authentication method");
                 List<Group> gl = method.getSpecialGroups(context, request);
                 if (gl.size() > 0) {
                     groups.addAll(gl);
                 }
+            } else {
+                System.out.println("AuthenticationServiceImpl#getSpecialGroups authentication method: " + method.getName() + " not applicable for special groups!");
             }
         }
 
