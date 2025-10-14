@@ -293,9 +293,15 @@ public class ShibAuthentication implements AuthenticationMethod {
                 return Collections.EMPTY_LIST;
             }
 
-            if (context.getSpecialGroups().size() > 0 ) {
+            final List<Group> specialGroups = context.getSpecialGroups();
+
+            if (specialGroups.size() > 0 ) {
+                System.out.println("SA Returning cached special groups:");
                 log.debug("Returning cached special groups.");
-                return context.getSpecialGroups();
+                specialGroups.stream().forEach(sg -> {
+                    System.out.println("SA: \t" + sg.getName() + " (" + sg.getID() + ")");
+                });
+                return specialGroups;
             }
 
             log.debug("Starting to determine special groups");
@@ -387,6 +393,11 @@ public class ShibAuthentication implements AuthenticationMethod {
 
 
             log.info("Added current EPerson to special groups: " + groups);
+
+            System.out.println("SA special groups");
+            groups.stream().forEach(sg -> {
+                System.out.println("SA: \t" + sg.getName() + " (" + sg.getID() + ")");
+            });
 
             return new ArrayList<>(groups);
 
