@@ -12,6 +12,8 @@ import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang3.StringUtils;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
@@ -166,7 +168,55 @@ public interface AuthenticationMethod {
      *                 otherwise
      */
     public default boolean areSpecialGroupsApplicable(Context context, HttpServletRequest request) {
+
+        if (context.getAuthenticationMethod() == null) {
+            final String servletPath = request.getServletPath();
+
+            threadRequestSystemOut(context, request, "AM: Request servlet path: " + servletPath);
+            String authMethod = null;
+
+            switch (servletPath) {
+                case "/api/authn/login":
+                    String user = request.getParameter("user");
+                    String password = request.getParameter("password");
+
+                    if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
+                        authMethod = "password"; // new PasswordAuthentication().getName()
+                        threadRequestSystemOut(context, request, "AM: Password Authentication");
+                    } else {
+                        authMethod = null;
+                    }
+                    break;
+                case "/api/authn/shibboleth":
+                    authMethod = "shib"; // new ShibAuthentication().getName()
+                    threadRequestSystemOut(context, request, "AM: Shibboleth Authentication");
+                    break;
+                case "/api/authn/orcid":
+                    authMethod = "orcid"; // new OrcidAuthentication().getName()
+                    threadRequestSystemOut(context, request, "AM: Orcid Authentication");
+                    break;
+                case "/api/authn/oidc":
+                    authMethod = "oidc"; // new OidcAuthentication().getName()
+                    threadRequestSystemOut(context, request, "AM: OIDC Authentication");
+                    break;
+                case "/api/authn/saml":
+                    authMethod = "saml"; // new SamlAuthentication().getName()
+                    threadRequestSystemOut(context, request, "AM: SAML Authentication");
+                    break;
+                default:
+                    break;
+            }
+
+            if (authMethod != null) {
+                context.setAuthenticationMethod(authMethod);
+            }
+        }
+
         return getName().equals(context.getAuthenticationMethod());
+    }
+
+    private void threadRequestSystemOut(Context context, HttpServletRequest request, String message) {
+        System.out.println("Context " + context.hashCode() + " - thread " + Thread.currentThread().getId() + " - request " + request.getRequestId() + ": " + message);
     }
 
     /**
