@@ -195,7 +195,7 @@ public class ShibAuthentication implements AuthenticationMethod {
         // Log all headers received if debugging is turned on. This is enormously
         // helpful when debugging shibboleth related problems.
         // if (log.isDebugEnabled()) {
-            System.out.println("SA#authenticate: Starting Shibboleth Authentication");
+            threadRequestSystemOut(request, "SA#authenticate: Starting Shibboleth Authentication");
 
             String message = "SA#authenticate: Received the following headers:\n";
             Enumeration<String> headerNames = request.getHeaderNames();
@@ -207,7 +207,7 @@ public class ShibAuthentication implements AuthenticationMethod {
                     message += "\t\t\t" + headerName + "='" + headerValue + "'\n";
                 }
             }
-            System.out.println(message);
+            threadRequestSystemOut(request, message);
         // }
 
         // Should we auto register new users.
@@ -291,31 +291,45 @@ public class ShibAuthentication implements AuthenticationMethod {
                 return Collections.EMPTY_LIST;
             }
 
+            threadRequestSystemOut(request, "SA#getSpecialGroups: Shibboleth Determining Role Attribution");
+
+            String message = "SA#getSpecialGroups: Received the following headers:\n";
+            Enumeration<String> headerNames = request.getHeaderNames();
+            while (headerNames.hasMoreElements()) {
+                String headerName = headerNames.nextElement();
+                Enumeration<String> headerValues = request.getHeaders(headerName);
+                while (headerValues.hasMoreElements()) {
+                    String headerValue = headerValues.nextElement();
+                    message += "\t\t\t" + headerName + "='" + headerValue + "'\n";
+                }
+            }
+            threadRequestSystemOut(request, message);
+
             final List<Group> specialGroups = context.getSpecialGroups();
 
             if (specialGroups.size() > 0 ) {
-                System.out.println("SA Returning cached special groups:");
+                threadRequestSystemOut(request, "SA Returning cached special groups:");
                 log.debug("Returning cached special groups.");
                 specialGroups.stream().forEach(sg -> {
-                    System.out.println("SA: \t" + sg.getName() + " (" + sg.getID() + ")");
+                    threadRequestSystemOut(request, "SA: \t" + sg.getName() + " (" + sg.getID() + ")");
                 });
                 return specialGroups;
             }
 
             log.debug("Starting to determine special groups");
             String[] defaultRoles = configurationService.getArrayProperty("authentication-shibboleth.default-roles");
-            System.out.println("SA default roles (authentication-shibboleth.default-roles): " + Arrays.toString(defaultRoles));
+            threadRequestSystemOut(request, "SA default roles (authentication-shibboleth.default-roles): " + Arrays.toString(defaultRoles));
 
             String roleHeader = configurationService.getProperty("authentication-shibboleth.role-header");
-            System.out.println("SA role header (authentication-shibboleth.role-header): " + roleHeader);
+            threadRequestSystemOut(request, "SA role header (authentication-shibboleth.role-header): " + roleHeader);
 
             boolean ignoreScope = configurationService
                 .getBooleanProperty("authentication-shibboleth.role-header.ignore-scope", true);
-            System.out.println("SA ignore scope (authentication-shibboleth.role-header.ignore-scope): " + ignoreScope);
+            threadRequestSystemOut(request, "SA ignore scope (authentication-shibboleth.role-header.ignore-scope): " + ignoreScope);
 
             boolean ignoreValue = configurationService
                 .getBooleanProperty("authentication-shibboleth.role-header.ignore-value", false);
-            System.out.println("SA ignore value (authentication-shibboleth.role-header.ignore-value): " + ignoreValue);
+            threadRequestSystemOut(request, "SA ignore value (authentication-shibboleth.role-header.ignore-value): " + ignoreValue);
 
             if (ignoreScope && ignoreValue) {
                 throw new IllegalStateException(
@@ -327,20 +341,20 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             // Get the Shib supplied affiliation or use the default affiliation
             List<String> affiliations = findMultipleAttributes(request, roleHeader);
-            System.out.println("SA affiliations (findMultipleAttributes): " + affiliations);
+            threadRequestSystemOut(request, "SA affiliations (findMultipleAttributes): " + affiliations);
             if (affiliations == null) {
-                System.out.println("SA affiliations not found");
+                threadRequestSystemOut(request, "SA affiliations not found");
                 if (defaultRoles != null) {
                     affiliations = Arrays.asList(defaultRoles);
-                    System.out.println("SA default roles");
-                    System.out.println("SA default roles as " + affiliations.size() + " affiliations");
+                    threadRequestSystemOut(request, "SA default roles");
+                    threadRequestSystemOut(request, "SA default roles as " + affiliations.size() + " affiliations");
                 }
                 log.debug(
                     "Failed to find Shibboleth role header, '" + roleHeader + "', falling back to the default roles: " +
                         "'" + StringUtils
                         .join(defaultRoles, ",") + "'");
             } else {
-                System.out.println("SA " + affiliations.size() + " found");
+                threadRequestSystemOut(request, "SA " + affiliations.size() + " found");
                 log.debug("Found Shibboleth role header: '" + roleHeader + "' = '" + affiliations + "'");
             }
 
@@ -348,7 +362,7 @@ public class ShibAuthentication implements AuthenticationMethod {
             Set<Group> groups = new HashSet<>();
             if (affiliations != null) {
                 for (String affiliation : affiliations) {
-                    System.out.println("SA \taffiliation" + affiliation);
+                    threadRequestSystemOut(request, "SA \taffiliation" + affiliation);
                     // If we ignore the affiliation's scope then strip the scope if it exists.
                     if (ignoreScope) {
                         int index = affiliation.indexOf('@');
@@ -367,16 +381,16 @@ public class ShibAuthentication implements AuthenticationMethod {
                     // Get the group names
                     String[] groupNames = configurationService
                         .getArrayProperty("authentication-shibboleth.role." + affiliation);
-                    System.out.println("SA group names (authentication-shibboleth.role. " + affiliation + "): " + Arrays.toString(groupNames));
+                    threadRequestSystemOut(request, "SA group names (authentication-shibboleth.role. " + affiliation + "): " + Arrays.toString(groupNames));
 
                     if (groupNames == null || groupNames.length == 0) {
                         groupNames = configurationService
                             .getArrayProperty("authentication-shibboleth.role." + affiliation.toLowerCase());
-                        System.out.println("SA group names (authentication-shibboleth.role. " + affiliation.toLowerCase() + "): " + Arrays.toString(groupNames));
+                        threadRequestSystemOut(request, "SA group names (authentication-shibboleth.role. " + affiliation.toLowerCase() + "): " + Arrays.toString(groupNames));
                     }
 
                     if (groupNames == null) {
-                        System.out.println(
+                        threadRequestSystemOut(request, 
                             "Unable to find role mapping for the value, '" + affiliation + "', there should be a " +
                                 "mapping in config/modules/authentication-shibboleth.cfg:  role." + affiliation + " =" +
                                 " <some group name>");
@@ -386,7 +400,7 @@ public class ShibAuthentication implements AuthenticationMethod {
                                 " <some group name>");
                         continue;
                     } else {
-                        System.out.println(
+                        threadRequestSystemOut(request, 
                             "Mapping role affiliation to DSpace group: '" + StringUtils.join(groupNames, ",") + "'");
                         log.debug(
                             "Mapping role affiliation to DSpace group: '" + StringUtils.join(groupNames, ",") + "'");
@@ -414,9 +428,9 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             log.info("Added current EPerson to special groups: " + groups);
 
-            System.out.println("SA " + groups.size() + " special groups found");
+            threadRequestSystemOut(request, "SA " + groups.size() + " special groups found");
             groups.stream().forEach(sg -> {
-                System.out.println("SA: \t" + sg.getName() + " (" + sg.getID() + ")");
+                threadRequestSystemOut(request, "SA: \t" + sg.getName() + " (" + sg.getID() + ")");
             });
 
             return new ArrayList<>(groups);
@@ -425,6 +439,10 @@ public class ShibAuthentication implements AuthenticationMethod {
             log.error("Unable to validate any special groups this user may belong too because of an exception.", t);
             return Collections.EMPTY_LIST;
         }
+    }
+
+    private void threadRequestSystemOut(HttpServletRequest request, String message) {
+        System.out.println("Thread " + Thread.currentThread().getId() + " request " + request.getRequestId() + ": " + message);
     }
 
 
@@ -1124,7 +1142,7 @@ public class ShibAuthentication implements AuthenticationMethod {
      * @return The value of the attribute or header requested, or null if none found.
      */
     protected String findAttribute(HttpServletRequest request, String name) {
-        System.out.println("SA \tfind attribute " + name);
+        threadRequestSystemOut(request, "SA \tfind attribute " + name);
         if (name == null) {
             return null;
         }
@@ -1137,7 +1155,7 @@ public class ShibAuthentication implements AuthenticationMethod {
             value = (String) request.getAttribute(name.toUpperCase());
         }
 
-        System.out.println("SA \t attribute " + name + " " + value);
+        threadRequestSystemOut(request, "SA \t attribute " + name + " " + value);
 
         // Second try to get the value from the header
         if (StringUtils.isEmpty(value)) {
@@ -1150,7 +1168,7 @@ public class ShibAuthentication implements AuthenticationMethod {
             value = request.getHeader(name.toUpperCase());
         }
 
-        System.out.println("SA \t header " + name + " " + value);
+        threadRequestSystemOut(request, "SA \t header " + name + " " + value);
 
         // Added extra check for empty value of an attribute.
         // In case that value is Empty, it should not be returned, return 'null' instead.
@@ -1176,7 +1194,7 @@ public class ShibAuthentication implements AuthenticationMethod {
             }
         }
 
-        System.out.println("SA \t\tattribute " + name + " = " + value);
+        threadRequestSystemOut(request, "SA \t\tattribute " + name + " = " + value);
 
         return value;
     }
