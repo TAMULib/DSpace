@@ -207,8 +207,19 @@ public interface AuthenticationMethod {
                     break;
             }
 
-            if (authMethod != null) {
+            if (StringUtils.isNotEmpty(authMethod)) {
+                threadRequestSystemOut(context, request, "AM: Setting auth method " + authMethod + " on context from request URL matching login filter");
                 context.setAuthenticationMethod(authMethod);
+            } else {
+                threadRequestSystemOut(context, request, "AM: Auth method not known yet. Checking request attribute am");
+                authMethod = (String) request.getAttribute("am");
+                
+                if (StringUtils.isNotEmpty(authMethod)) {
+                    threadRequestSystemOut(context, request, "AM: Setting auth method " + authMethod + " on context from request attribute am");
+                    context.setAuthenticationMethod(authMethod);
+                } else {
+                    threadRequestSystemOut(context, request, "AM: Request attribute am not defined");
+                }
             }
         }
 
