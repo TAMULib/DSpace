@@ -306,11 +306,18 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             log.debug("Starting to determine special groups");
             String[] defaultRoles = configurationService.getArrayProperty("authentication-shibboleth.default-roles");
+            System.out.println("SA default roles (authentication-shibboleth.default-roles): " + Arrays.toString(defaultRoles));
+
             String roleHeader = configurationService.getProperty("authentication-shibboleth.role-header");
+            System.out.println("SA role header (authentication-shibboleth.role-header): " + roleHeader);
+
             boolean ignoreScope = configurationService
                 .getBooleanProperty("authentication-shibboleth.role-header.ignore-scope", true);
+            System.out.println("SA ignore scope (authentication-shibboleth.role-header.ignore-scope): " + ignoreScope);
+
             boolean ignoreValue = configurationService
                 .getBooleanProperty("authentication-shibboleth.role-header.ignore-value", false);
+            System.out.println("SA ignore value (authentication-shibboleth.role-header.ignore-value): " + ignoreValue);
 
             if (ignoreScope && ignoreValue) {
                 throw new IllegalStateException(
@@ -322,15 +329,20 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             // Get the Shib supplied affiliation or use the default affiliation
             List<String> affiliations = findMultipleAttributes(request, roleHeader);
+            System.out.println("SA affiliations (findMultipleAttributes): " + affiliations);
             if (affiliations == null) {
+                System.out.println("SA affiliations not found");
                 if (defaultRoles != null) {
                     affiliations = Arrays.asList(defaultRoles);
+                    System.out.println("SA default roles");
+                    System.out.println("SA default roles as " + affiliations.size() + " affiliations");
                 }
                 log.debug(
                     "Failed to find Shibboleth role header, '" + roleHeader + "', falling back to the default roles: " +
                         "'" + StringUtils
                         .join(defaultRoles, ",") + "'");
             } else {
+                System.out.println("SA " + affiliations.size() + " found");
                 log.debug("Found Shibboleth role header: '" + roleHeader + "' = '" + affiliations + "'");
             }
 
@@ -338,6 +350,7 @@ public class ShibAuthentication implements AuthenticationMethod {
             Set<Group> groups = new HashSet<>();
             if (affiliations != null) {
                 for (String affiliation : affiliations) {
+                    System.out.println("SA \taffiliation" + affiliation);
                     // If we ignore the affiliation's scope then strip the scope if it exists.
                     if (ignoreScope) {
                         int index = affiliation.indexOf('@');
@@ -356,18 +369,27 @@ public class ShibAuthentication implements AuthenticationMethod {
                     // Get the group names
                     String[] groupNames = configurationService
                         .getArrayProperty("authentication-shibboleth.role." + affiliation);
+                    System.out.println("SA group names (authentication-shibboleth.role. " + affiliation + "): " + Arrays.toString(groupNames));
+
                     if (groupNames == null || groupNames.length == 0) {
                         groupNames = configurationService
                             .getArrayProperty("authentication-shibboleth.role." + affiliation.toLowerCase());
+                        System.out.println("SA group names (authentication-shibboleth.role. " + affiliation.toLowerCase() + "): " + Arrays.toString(groupNames));
                     }
 
                     if (groupNames == null) {
+                        System.out.println(
+                            "Unable to find role mapping for the value, '" + affiliation + "', there should be a " +
+                                "mapping in config/modules/authentication-shibboleth.cfg:  role." + affiliation + " =" +
+                                " <some group name>");
                         log.debug(
                             "Unable to find role mapping for the value, '" + affiliation + "', there should be a " +
                                 "mapping in config/modules/authentication-shibboleth.cfg:  role." + affiliation + " =" +
                                 " <some group name>");
                         continue;
                     } else {
+                        System.out.println(
+                            "Mapping role affiliation to DSpace group: '" + StringUtils.join(groupNames, ",") + "'");
                         log.debug(
                             "Mapping role affiliation to DSpace group: '" + StringUtils.join(groupNames, ",") + "'");
                     }
@@ -394,7 +416,7 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             log.info("Added current EPerson to special groups: " + groups);
 
-            System.out.println("SA special groups");
+            System.out.println("SA " + groups.size() + " special groups found");
             groups.stream().forEach(sg -> {
                 System.out.println("SA: \t" + sg.getName() + " (" + sg.getID() + ")");
             });
@@ -1151,6 +1173,8 @@ public class ShibAuthentication implements AuthenticationMethod {
             }
         }
 
+        System.out.println("SA \t\tattribute " + name + " = " + value);
+
         return value;
     }
 
@@ -1201,7 +1225,7 @@ public class ShibAuthentication implements AuthenticationMethod {
     }
 
     /**
-     * Find a particular Shibboleth hattributeeader value and return the values.
+     * Find a particular Shibboleth attribute header value and return the values.
      * The attribute name uses a bit of fuzzy logic, so it will first try case
      * sensitive, then it will try lowercase, and finally it will try uppercase.
      *
