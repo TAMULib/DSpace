@@ -231,13 +231,13 @@ public class ShibAuthentication implements AuthenticationMethod {
             // Step 3: Update User's Metadata
             updateEPerson(context, request, eperson);
 
-            // Step 3.5: Add special groups to context
+            // Step 4: Log the user in.
+            context.setCurrentUser(eperson);
+
             getSpecialGroups(context, request)
                 .stream()
                 .forEach(sg -> context.setSpecialGroup(sg.getID()));
 
-            // Step 4: Log the user in.
-            context.setCurrentUser(eperson);
             request.setAttribute("shib.authenticated", true);
             AuthenticateServiceFactory.getInstance().getAuthenticationService().initEPerson(context, request, eperson);
 
