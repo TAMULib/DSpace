@@ -172,9 +172,9 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                 context.setAuthenticationMethod(authMethod);
             }
 
-            // threadRequestSystemOut(context, request, "SAF: Context: " + context);
-            // threadRequestSystemOut(context, request, "SAF: Context authentication method: " + context.getAuthenticationMethod());
-            // threadRequestSystemOut(context, request, "SAF: Context special groups: " + context.getSpecialGroupUuids());
+            threadRequestSystemOut(context, request, "SAF: Context: " + context);
+            threadRequestSystemOut(context, request, "SAF: Context authentication method: " + context.getAuthenticationMethod());
+            threadRequestSystemOut(context, request, "SAF: Context special groups: " + context.getSpecialGroupUuids());
 
             // parse the token.
             EPerson eperson = restAuthenticationService.getAuthenticatedEPerson(request, res, context);
@@ -211,7 +211,14 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
     }
 
     private void threadRequestSystemOut(Context context, HttpServletRequest request, String message) {
-        System.out.println("Context " + context.hashCode() + " - thread " + Thread.currentThread().getId() + " - request " + request.getRequestId() + ": " + message);
+        System.out.println(
+            String.format(
+                "Context %10s - thread %10s - request %10s: %s",
+                context.hashCode(),
+                Thread.currentThread().getId(),
+                request.getRequestId(), message
+            )
+        );
     }
 
     private Authentication getOnBehalfOfAuthentication(Context context, String onBehalfOfParameterValue,
