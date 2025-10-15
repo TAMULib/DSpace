@@ -450,7 +450,7 @@ public class ShibAuthentication implements AuthenticationMethod {
     private void threadRequestSystemOut(Context context, HttpServletRequest request, String message) {
         System.out.println(
             String.format(
-                "Context %10s - thread %10s - request %10s: %s",
+                "Context %12s - thread %4s - request %4s: %s",
                 context.hashCode(),
                 Thread.currentThread().getId(),
                 request.getRequestId(), message
