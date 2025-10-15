@@ -55,7 +55,7 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
 
             final String servletPath = request.getServletPath();
 
-            System.out.println("SGCP: Request servlet path: " + servletPath);
+            threadRequestSystemOut(context, request, "SGCP: Request servlet path: " + servletPath);
             String authMethod = null;
 
             switch (servletPath) {
@@ -65,55 +65,55 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
 
                     if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
                         authMethod = "password"; // new PasswordAuthentication().getName()
-                        System.out.println("SGCP: Password Authentication");
+                        threadRequestSystemOut(context, request, "SGCP: Password Authentication");
                     } else {
                         authMethod = null;
                     }
                     break;
                 case "/api/authn/shibboleth":
                     authMethod = "shib"; // new ShibAuthentication().getName()
-                    System.out.println("SGCP: Shibboleth Authentication");
+                    threadRequestSystemOut(context, request, "SGCP: Shibboleth Authentication");
                     break;
                 case "/api/authn/orcid":
                     authMethod = "orcid"; // new OrcidAuthentication().getName()
-                    System.out.println("SGCP: Orcid Authentication");
+                    threadRequestSystemOut(context, request, "SGCP: Orcid Authentication");
                     break;
                 case "/api/authn/oidc":
                     authMethod = "oidc"; // new OidcAuthentication().getName()
-                    System.out.println("SGCP: OIDC Authentication");
+                    threadRequestSystemOut(context, request, "SGCP: OIDC Authentication");
                     break;
                 case "/api/authn/saml":
                     authMethod = "saml"; // new SamlAuthentication().getName()
-                    System.out.println("SGCP: SAML Authentication");
+                    threadRequestSystemOut(context, request, "SGCP: SAML Authentication");
                     break;
                 default:
                     break;
             }
 
             if (StringUtils.isNotEmpty(authMethod)) {
-                System.out.println("SGCP: Setting auth method " + authMethod + " on context from request URL matching login filter");
+                threadRequestSystemOut(context, request, "SGCP: Setting auth method " + authMethod + " on context from request URL matching login filter");
                 context.setAuthenticationMethod(authMethod);
             } else {
-                System.out.println("SGCP: Auth method not known yet. Checking request attribute am");
+                threadRequestSystemOut(context, request, "SGCP: Auth method not known yet. Checking request attribute am");
                 authMethod = (String) request.getAttribute("am");
                 
                 if (StringUtils.isNotEmpty(authMethod)) {
-                    System.out.println("SGCP: Setting auth method " + authMethod + " on context from request attribute am");
+                    threadRequestSystemOut(context, request, "SGCP: Setting auth method " + authMethod + " on context from request attribute am");
                     context.setAuthenticationMethod(authMethod);
                 } else {
-                    System.out.println("SGCP: Request attribute am not defined");
+                    threadRequestSystemOut(context, request, "SGCP: Request attribute am not defined");
                 }
             }
 
-            System.out.println("SGCP: Context: " + context);
-            System.out.println("SGCP: Context authentication method: " + context.getAuthenticationMethod());
-            // System.out.println("SGCP: Context special groups: " + context.getSpecialGroupUuids());
+            threadRequestSystemOut(context, request, "SGCP: Context: " + context);
+            threadRequestSystemOut(context, request, "SGCP: Context authentication method: " + context.getAuthenticationMethod());
+            threadRequestSystemOut(context, request, "SGCP: Context special groups: " + context.getSpecialGroupUuids());
 
             groups = authenticationService.getSpecialGroups(context, request);
 
-            System.out.println("SGCP: Special groups from authentication service: ");
+            threadRequestSystemOut(context, request, "SGCP: Special groups from authentication service: ");
             groups.stream().forEach(sg -> {
-                System.out.println("SGCP: \t" + sg.getName() + " (" + sg.getID() + ")");
+                threadRequestSystemOut(context, request, "SGCP: \t" + sg.getName() + " (" + sg.getID() + ")");
             });
         } catch (SQLException e) {
             log.error("SQLException while retrieving special groups", e);
@@ -134,6 +134,10 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
         } catch (ParseException e) {
             log.error("Error while trying to access specialgroups from ClaimSet", e);
         }
+    }
+
+    private void threadRequestSystemOut(Context context, HttpServletRequest request, String message) {
+        System.out.println("Context " + context.hashCode() + " - thread " + Thread.currentThread().getId() + " - request " + request.getRequestId() + ": " + message);
     }
 
 }
