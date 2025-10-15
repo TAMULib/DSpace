@@ -316,9 +316,9 @@ public class ShibAuthentication implements AuthenticationMethod {
             if (specialGroups.size() > 0 ) {
                 threadRequestSystemOut(context, request, "SA Returning cached special groups:");
                 log.debug("Returning cached special groups.");
-                specialGroups.stream().forEach(sg -> {
-                    threadRequestSystemOut(context, request, "SA: \t" + sg.getName() + " (" + sg.getID() + ")");
-                });
+                for (Group group : specialGroups) {
+                    threadRequestSystemOut(context, request, "SA: \t" + group.getName() + " (" + group.getID() + ")");
+                }
                 return specialGroups;
             }
 
@@ -392,7 +392,7 @@ public class ShibAuthentication implements AuthenticationMethod {
                     if (groupNames == null || groupNames.length == 0) {
                         groupNames = configurationService
                             .getArrayProperty("authentication-shibboleth.role." + affiliation.toLowerCase());
-                        threadRequestSystemOut(context, request, "SA group names (authentication-shibboleth.role. " + affiliation.toLowerCase() + "): " + Arrays.toString(groupNames));
+                        threadRequestSystemOut(context, request, "SA group names (authentication-shibboleth.role." + affiliation.toLowerCase() + "): " + Arrays.toString(groupNames));
                     }
 
                     if (groupNames == null) {
@@ -435,9 +435,9 @@ public class ShibAuthentication implements AuthenticationMethod {
             log.info("Added current EPerson to special groups: " + groups);
 
             threadRequestSystemOut(context, request, "SA " + groups.size() + " special groups found");
-            groups.stream().forEach(sg -> {
-                threadRequestSystemOut(context, request, "SA: \t" + sg.getName() + " (" + sg.getID() + ")");
-            });
+            for (Group group : groups) {
+                threadRequestSystemOut(context, request, "SA: \t" + group.getName() + " (" + group.getID() + ")");
+            }
 
             return new ArrayList<>(groups);
 

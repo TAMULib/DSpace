@@ -180,9 +180,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         threadRequestSystemOut(context, request, "ASI: getSpecialGroups");
         for (AuthenticationMethod method : getAuthenticationMethodStack()) {
-            threadRequestSystemOut(context, request, "ASI: method " + method.getName());
             boolean areSpecialGroupsApplicable = method.areSpecialGroupsApplicable(context, request);
-            threadRequestSystemOut(context, request, "ASI: method " + method.getName() + (areSpecialGroupsApplicable ? " are applicable" : " are not applicable"));
+            threadRequestSystemOut(context, request, "ASI: method " + method.getName() + " special groups " + (areSpecialGroupsApplicable ? " are applicable" : " are not applicable"));
             if (areSpecialGroupsApplicable) {
                 List<Group> gl = method.getSpecialGroups(context, request);
                 if (gl.size() > 0) {

@@ -109,14 +109,20 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
             threadRequestSystemOut(context, request, "SGCP: Context authentication method: " + context.getAuthenticationMethod());
             threadRequestSystemOut(context, request, "SGCP: Context special groups: " + context.getSpecialGroupUuids());
 
-            List<Group> lazyGroups = authenticationService.getSpecialGroups(context, request);
-
-            groups.addAll(lazyGroups);
-
-            threadRequestSystemOut(context, request, "SGCP: Special groups from authentication service: ");
-            groups.stream().forEach(sg -> {
-                threadRequestSystemOut(context, request, "SGCP: \t" + sg.getName() + " (" + sg.getID() + ")");
+            authenticationService.getSpecialGroups(context, request)
+                .stream()
+                .forEach(sg -> {
+                    threadRequestSystemOut(context, request, "SGCP: Adding special group " + sg.getName() + " (" + sg.getID() + ") to context");
+                    context.setSpecialGroup(sg.getID());
             });
+
+            groups = context.getSpecialGroups();
+
+            threadRequestSystemOut(context, request, "SGCP: " + groups.size() + " special groups from authentication service: ");
+
+            for (Group group : groups) {
+                threadRequestSystemOut(context, request, "SGCP: \t" + group.getName() + " (" + group.getID() + ")");
+            }
         } catch (SQLException e) {
             log.error("SQLException while retrieving special groups", e);
             return null;
