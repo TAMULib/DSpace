@@ -178,10 +178,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         List<Group> result = new ArrayList<>();
         int totalLen = 0;
 
+        threadRequestSystemOut(context, request, "ASI: getSpecialGroups");
         for (AuthenticationMethod method : getAuthenticationMethodStack()) {
-
-            if (method.areSpecialGroupsApplicable(context, request)) {
-
+            threadRequestSystemOut(context, request, "ASI: method " + method.getName());
+            boolean areSpecialGroupsApplicable = method.areSpecialGroupsApplicable(context, request);
+            threadRequestSystemOut(context, request, "ASI: method " + method.getName() + (areSpecialGroupsApplicable ? " are applicable" : " are not applicable"));
+            if (areSpecialGroupsApplicable) {
                 List<Group> gl = method.getSpecialGroups(context, request);
                 if (gl.size() > 0) {
                     result.addAll(gl);
@@ -192,6 +194,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         return result;
+    }
+
+    private void threadRequestSystemOut(Context context, HttpServletRequest request, String message) {
+        System.out.println("Context " + context.hashCode() + " - thread " + Thread.currentThread().getId() + " - request " + request.getRequestId() + ": " + message);
     }
 
     @Override
