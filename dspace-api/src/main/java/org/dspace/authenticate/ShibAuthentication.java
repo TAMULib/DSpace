@@ -368,7 +368,7 @@ public class ShibAuthentication implements AuthenticationMethod {
             Set<Group> groups = new HashSet<>();
             if (affiliations != null) {
                 for (String affiliation : affiliations) {
-                    threadRequestSystemOut(context, request, "SA \taffiliation" + affiliation);
+                    threadRequestSystemOut(context, request, "SA \taffiliation " + affiliation);
                     // If we ignore the affiliation's scope then strip the scope if it exists.
                     if (ignoreScope) {
                         int index = affiliation.indexOf('@');
@@ -387,7 +387,7 @@ public class ShibAuthentication implements AuthenticationMethod {
                     // Get the group names
                     String[] groupNames = configurationService
                         .getArrayProperty("authentication-shibboleth.role." + affiliation);
-                    threadRequestSystemOut(context, request, "SA group names (authentication-shibboleth.role. " + affiliation + "): " + Arrays.toString(groupNames));
+                    threadRequestSystemOut(context, request, "SA group names (authentication-shibboleth.role." + affiliation + "): " + Arrays.toString(groupNames));
 
                     if (groupNames == null || groupNames.length == 0) {
                         groupNames = configurationService
