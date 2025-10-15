@@ -10,6 +10,7 @@ package org.dspace.app.rest.security.jwt;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -136,16 +137,30 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
         try {
             List<String> groupIds = jwtClaimsSet.getStringListClaim(SPECIAL_GROUPS);
 
+            String[] gids = new String[groupIds.size()];
+
+            int i = 0;
             for (String groupId : CollectionUtils.emptyIfNull(groupIds)) {
                 context.setSpecialGroup(UUID.fromString(groupId));
+
+                gids[i++] = groupId;
             }
+
+            threadRequestSystemOut(context, request, "SGCP: parsed special groups " + Arrays.toString(gids) + " from stateless token");
         } catch (ParseException e) {
             log.error("Error while trying to access specialgroups from ClaimSet", e);
         }
     }
 
     private void threadRequestSystemOut(Context context, HttpServletRequest request, String message) {
-        System.out.println("Context " + context.hashCode() + " - thread " + Thread.currentThread().getId() + " - request " + request.getRequestId() + ": " + message);
+        System.out.println(
+            String.format(
+                "Context %10s - thread %10s - request %10s: %s",
+                context.hashCode(),
+                Thread.currentThread().getId(),
+                request.getRequestId(), message
+            )
+        );
     }
 
 }
