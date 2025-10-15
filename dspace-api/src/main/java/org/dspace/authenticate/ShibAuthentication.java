@@ -194,23 +194,21 @@ public class ShibAuthentication implements AuthenticationMethod {
 
         // Log all headers received if debugging is turned on. This is enormously
         // helpful when debugging shibboleth related problems.
-        if (log.isDebugEnabled()) {
-            log.debug("Starting Shibboleth Authentication");
+        // if (log.isDebugEnabled()) {
+            System.out.println("SA#authenticate: Starting Shibboleth Authentication");
 
-            String message = "Received the following headers:\n";
-            @SuppressWarnings("unchecked")
+            String message = "SA#authenticate: Received the following headers:\n";
             Enumeration<String> headerNames = request.getHeaderNames();
             while (headerNames.hasMoreElements()) {
                 String headerName = headerNames.nextElement();
-                @SuppressWarnings("unchecked")
                 Enumeration<String> headerValues = request.getHeaders(headerName);
                 while (headerValues.hasMoreElements()) {
                     String headerValue = headerValues.nextElement();
-                    message += "" + headerName + "='" + headerValue + "'\n";
+                    message += "\t\t\t" + headerName + "='" + headerValue + "'\n";
                 }
             }
-            log.debug(message);
-        }
+            System.out.println(message);
+        // }
 
         // Should we auto register new users.
         boolean autoRegister = configurationService.getBooleanProperty("authentication-shibboleth.autoregister", true);
@@ -1126,6 +1124,7 @@ public class ShibAuthentication implements AuthenticationMethod {
      * @return The value of the attribute or header requested, or null if none found.
      */
     protected String findAttribute(HttpServletRequest request, String name) {
+        System.out.println("SA \tfind attribute " + name);
         if (name == null) {
             return null;
         }
@@ -1138,6 +1137,8 @@ public class ShibAuthentication implements AuthenticationMethod {
             value = (String) request.getAttribute(name.toUpperCase());
         }
 
+        System.out.println("SA \t attribute " + name + " " + value);
+
         // Second try to get the value from the header
         if (StringUtils.isEmpty(value)) {
             value = request.getHeader(name);
@@ -1148,6 +1149,8 @@ public class ShibAuthentication implements AuthenticationMethod {
         if (StringUtils.isEmpty(value)) {
             value = request.getHeader(name.toUpperCase());
         }
+
+        System.out.println("SA \t header " + name + " " + value);
 
         // Added extra check for empty value of an attribute.
         // In case that value is Empty, it should not be returned, return 'null' instead.
