@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Utility for authentication.
  */
-public class AuthenticationUtility {
+public class Authentication {
 
     public static final String PASSWORD_PATH = "/api/authn/login";
     public static final String SHIBBOLETH_PATH = "/api/authn/shibboleth";
@@ -21,7 +21,7 @@ public class AuthenticationUtility {
 
     public static final String AUTHENTICATION_METHOD = "authenticationMethod";
 
-    private AuthenticationUtility() {
+    private Authentication() {
         // private empty constructor
     }
 
@@ -56,6 +56,7 @@ public class AuthenticationUtility {
             return methodName;
         }
 
+        // update WebSecurityConfiguration to prevent unsynchronized changes of authentication method URLs
         public String getMethodUrl() {
             return methodUrl;
         }
@@ -66,8 +67,11 @@ public class AuthenticationUtility {
     }
 
     /**
-     * Update context authentication method if not set by inferring from request servlet path
-     * or `authenticationMethod` request attribute set during authentication process.
+     * Update context authentication method from request servlet path or `authenticationMethod`
+     * request attribute set during authentication process.
+     * 
+     * Sets context authentication method.
+     * Sets request `authenticationMethod` attribute.
      *
      * @param context Context current DSpace context
      * @param request HttpServletRequest current request

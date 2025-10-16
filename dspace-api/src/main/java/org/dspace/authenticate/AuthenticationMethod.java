@@ -166,7 +166,7 @@ public interface AuthenticationMethod {
      *                 otherwise
      */
     public default boolean areSpecialGroupsApplicable(Context context, HttpServletRequest request) {
-        AuthenticationUtility.updateAuthenticationMethod(context, request);
+        Authentication.updateAuthenticationMethod(context, request);
 
         return getName().equals(context.getAuthenticationMethod());
     }

@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
-import org.dspace.authenticate.AuthenticationUtility;
+import org.dspace.authenticate.Authentication;
 import org.dspace.core.Context;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -86,7 +86,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 
         Context context = ContextUtil.obtainContext(req);
 
-        AuthenticationUtility.updateAuthenticationMethod(context, req);
+        Authentication.updateAuthenticationMethod(context, req);
 
         try {
             restAuthenticationService.getAuthenticationService()
