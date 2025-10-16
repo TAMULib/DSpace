@@ -83,13 +83,13 @@ public class AuthenticationUtility {
             authMethod = Mapping.getMethodName(request.getServletPath());
         }
 
-        if (StringUtils.isBlank(authMethod)) {
-            authMethod = (String) request.getAttribute(AUTHENTICATION_METHOD);
-        }
+        // if (StringUtils.isBlank(authMethod)) {
+        //     authMethod = (String) request.getAttribute(AUTHENTICATION_METHOD);
+        // }
 
         if (StringUtils.isNotBlank(authMethod)) {
             context.setAuthenticationMethod(authMethod);
-            request.setAttribute(AUTHENTICATION_METHOD, authMethod);
+            // request.setAttribute(AUTHENTICATION_METHOD, authMethod);
         }
     }
 }

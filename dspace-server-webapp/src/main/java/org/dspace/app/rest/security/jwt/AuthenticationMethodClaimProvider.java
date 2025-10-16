@@ -56,7 +56,7 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
         try {
             String authMethod = jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD);
             context.setAuthenticationMethod(authMethod);
-            request.setAttribute(AUTHENTICATION_METHOD, authMethod);
+            // request.setAttribute(AUTHENTICATION_METHOD, authMethod);
         } catch (ParseException e) {
             log.error(e::getMessage, e);
         }
