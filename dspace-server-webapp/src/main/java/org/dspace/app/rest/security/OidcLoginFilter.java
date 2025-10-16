@@ -48,10 +48,10 @@ public class OidcLoginFilter extends StatelessLoginFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
         throws AuthenticationException {
-        // First, if Shibboleth is not enabled, throw an immediate ProviderNotFoundException
+        // First, if OIDC is not enabled, throw an immediate ProviderNotFoundException
         // This tells Spring Security that authentication failed
         if (!OidcAuthentication.isEnabled()) {
-            throw new ProviderNotFoundException("Shibboleth is disabled.");
+            throw new ProviderNotFoundException("OIDC is disabled.");
         }
         // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
         return authenticationManager.authenticate(new DSpaceAuthentication());
