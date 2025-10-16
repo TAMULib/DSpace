@@ -9,19 +9,17 @@ package org.dspace.app.rest.security;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.List;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
+import org.dspace.authenticate.AuthenticationUtility;
 import org.dspace.core.Context;
-import org.dspace.eperson.Group;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -87,86 +85,22 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
         String password = req.getParameter("password");
 
         Context context = ContextUtil.obtainContext(req);
-        final String servletPath = req.getServletPath();
 
-        threadRequestSystemOut(context, req, "SLF: Request servlet path: " + servletPath);
-        String authMethod = null;
-
-        switch (servletPath) {
-            case "/api/authn/login": {
-                if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
-                    authMethod = "password"; // new PasswordAuthentication().getName()
-                    threadRequestSystemOut(context, req, "SLF: Password Authentication");
-                } else {
-                    authMethod = null;
-                }
-            } break;
-            case "/api/authn/shibboleth":
-                authMethod = "shib"; // new ShibAuthentication().getName()
-                threadRequestSystemOut(context, req, "SLF: Shibboleth Authentication");
-                break;
-            case "/api/authn/orcid":
-                authMethod = "orcid"; // new OrcidAuthentication().getName()
-                threadRequestSystemOut(context, req, "SLF: Orcid Authentication");
-                break;
-            case "/api/authn/oidc":
-                authMethod = "oidc"; // new OidcAuthentication().getName()
-                threadRequestSystemOut(context, req, "SLF: OIDC Authentication");
-                break;
-            case "/api/authn/saml":
-                authMethod = "saml"; // new SamlAuthentication().getName()
-                threadRequestSystemOut(context, req, "SLF: SAML Authentication");
-                break;
-            default:
-                break;
-        }
-
-        if (StringUtils.isNotEmpty(authMethod)) {
-            threadRequestSystemOut(context, req, "SLF: Setting auth method " + authMethod + " on context from request URL matching login filter");
-            context.setAuthenticationMethod(authMethod);
-        } else {
-            threadRequestSystemOut(context, req, "SLF: Auth method not known yet. Checking request attribute am");
-            authMethod = (String) req.getAttribute("am");
-            
-            if (StringUtils.isNotEmpty(authMethod)) {
-                threadRequestSystemOut(context, req, "SLF: Setting auth method " + authMethod + " on context from request attribute am");
-                context.setAuthenticationMethod(authMethod);
-            } else {
-                threadRequestSystemOut(context, req, "SLF: Request attribute am not defined");
-            }
-        }
-
-        threadRequestSystemOut(context, req, "SLF: Context: " + context);
-        threadRequestSystemOut(context, req, "SLF: Context authentication method: " + context.getAuthenticationMethod());
-        threadRequestSystemOut(context, req, "SLF: Context special groups: " + context.getSpecialGroupUuids());
+        AuthenticationUtility.updateAuthenticationMethod(context, req);
 
         try {
-            List<Group> specialGroups = restAuthenticationService.getAuthenticationService().getSpecialGroups(context, req);
-
-            threadRequestSystemOut(context, req, "SLF: Adding special groups to context:");
-            specialGroups.stream().forEach(sg -> {
-                threadRequestSystemOut(context, req, "SLF: \t" + sg.getName() + " (" + sg.getID() + ")");
-                context.setSpecialGroup(sg.getID());
-            });
+            restAuthenticationService.getAuthenticationService()
+                .getSpecialGroups(context, req)
+                .stream()
+                .forEach(sg -> context.setSpecialGroup(sg.getID()));
         } catch (SQLException e) {
-            // whatever dspace
+
         }
 
         // Attempt to authenticate by passing user & password (if provided) to AuthenticationProvider class(es)
         // NOTE: This method will check if the user was already authenticated by StatelessAuthenticationFilter,
         // and, if so, just refresh their token.
         return authenticationManager.authenticate(new DSpaceAuthentication(user, password));
-    }
-
-    private void threadRequestSystemOut(Context context, HttpServletRequest request, String message) {
-        System.out.println(
-            String.format(
-                "Context %12s - thread %4s - request %4s: %s",
-                context.hashCode(),
-                Thread.currentThread().getId(),
-                request.getRequestId(), message
-            )
-        );
     }
 
     /**

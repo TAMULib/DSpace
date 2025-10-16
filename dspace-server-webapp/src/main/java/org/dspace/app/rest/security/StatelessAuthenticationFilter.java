@@ -17,10 +17,10 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
+import org.dspace.authenticate.AuthenticationUtility;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
 import org.dspace.authorize.service.AuthorizeService;
@@ -102,8 +102,6 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
         }
         // If we have a valid Authentication, save it to Spring Security
         if (authentication != null) {
-            Context context = ContextUtil.obtainContext(req);
-            threadRequestSystemOut(context, req, "SAF: Authentication success. Adding authentication to the security context.");
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
         chain.doFilter(req, res);
@@ -128,58 +126,12 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
 
         if (restAuthenticationService.hasAuthenticationData(request)) {
             Context context = ContextUtil.obtainContext(request);
-            final String servletPath = request.getServletPath();
 
-            threadRequestSystemOut(context, request, "SAF: Request servlet path: " + servletPath);
-            String authMethod = null;
-
-            switch (servletPath) {
-                case "/api/authn/login":
-                    String user = request.getParameter("user");
-                    String password = request.getParameter("password");
-
-                    if (StringUtils.isNotEmpty(user) && StringUtils.isNotEmpty(password)) {
-                        authMethod = "password"; // new PasswordAuthentication().getName()
-                        threadRequestSystemOut(context, request, "SLF: Password Authentication");
-                    } else {
-                        authMethod = null;
-                    }
-                    break;
-                case "/api/authn/shibboleth":
-                    authMethod = "shib"; // new ShibAuthentication().getName()
-                    threadRequestSystemOut(context, request, "SAF: Shibboleth Authentication");
-                    break;
-                case "/api/authn/orcid":
-                    authMethod = "orcid"; // new OrcidAuthentication().getName()
-                    threadRequestSystemOut(context, request, "SAF: Orcid Authentication");
-                    break;
-                case "/api/authn/oidc":
-                    authMethod = "oidc"; // new OidcAuthentication().getName()
-                    threadRequestSystemOut(context, request, "SAF: OIDC Authentication");
-                    break;
-                case "/api/authn/saml":
-                    authMethod = "saml"; // new SamlAuthentication().getName()
-                    threadRequestSystemOut(context, request, "SAF: SAML Authentication");
-                    break;
-                default:
-                    break;
-            }
-
-            if (StringUtils.isNotEmpty(authMethod)) {
-                threadRequestSystemOut(context, request, "SAF: Setting auth method " + authMethod + " on request attribute am");
-                request.setAttribute("am", authMethod);
-                threadRequestSystemOut(context, request, "SAF: Setting auth method " + authMethod + " on context");
-                context.setAuthenticationMethod(authMethod);
-            }
-
-            threadRequestSystemOut(context, request, "SAF: Context: " + context);
-            threadRequestSystemOut(context, request, "SAF: Context authentication method: " + context.getAuthenticationMethod());
-            threadRequestSystemOut(context, request, "SAF: Context special groups: " + context.getSpecialGroupUuids());
+            AuthenticationUtility.updateAuthenticationMethod(context, request);
 
             // parse the token.
             EPerson eperson = restAuthenticationService.getAuthenticatedEPerson(request, res, context);
             if (eperson != null) {
-                threadRequestSystemOut(context, request, "SAF: Found authentication data in request for EPerson " + eperson.getEmail());
                 log.debug("Found authentication data in request for EPerson {}", eperson::getEmail);
                 //Pass the eperson ID to the request service
                 requestService.setCurrentUserId(eperson.getID());
@@ -208,17 +160,6 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
         }
 
         return null;
-    }
-
-    private void threadRequestSystemOut(Context context, HttpServletRequest request, String message) {
-        System.out.println(
-            String.format(
-                "Context %12s - thread %4s - request %4s: %s",
-                context.hashCode(),
-                Thread.currentThread().getId(),
-                request.getRequestId(), message
-            )
-        );
     }
 
     private Authentication getOnBehalfOfAuthentication(Context context, String onBehalfOfParameterValue,
