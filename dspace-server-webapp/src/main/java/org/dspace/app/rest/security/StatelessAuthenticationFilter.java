@@ -20,7 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
-import org.dspace.authenticate.Authentication;
+import org.dspace.authenticate.AuthenticationUtility;
 import org.dspace.authorize.AuthorizeException;
 import org.dspace.authorize.factory.AuthorizeServiceFactory;
 import org.dspace.authorize.service.AuthorizeService;
@@ -83,7 +83,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                                     HttpServletResponse res,
                                     FilterChain chain) throws IOException, ServletException {
 
-        Authentication authentication;
+        AuthenticationUtility authentication;
         try {
             authentication = getAuthentication(req, res);
         } catch (AuthorizeException e) {
@@ -121,13 +121,13 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
      * @return              An Authentication object for the EPerson with the uuid in the parameter
      * @throws IOException  If something goes wrong
      */
-    private Authentication getAuthentication(HttpServletRequest request, HttpServletResponse res)
+    private AuthenticationUtility getAuthentication(HttpServletRequest request, HttpServletResponse res)
         throws AuthorizeException, SQLException {
 
         if (restAuthenticationService.hasAuthenticationData(request)) {
             Context context = ContextUtil.obtainContext(request);
 
-            Authentication.updateAuthenticationMethod(context, request);
+            AuthenticationUtility.updateAuthenticationMethod(context, request);
 
             // parse the token.
             EPerson eperson = restAuthenticationService.getAuthenticatedEPerson(request, res, context);
@@ -162,7 +162,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
         return null;
     }
 
-    private Authentication getOnBehalfOfAuthentication(Context context, String onBehalfOfParameterValue,
+    private AuthenticationUtility getOnBehalfOfAuthentication(Context context, String onBehalfOfParameterValue,
                                                        HttpServletResponse res) throws SQLException {
 
         if (!authorizeService.isAdmin(context)) {

@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.utils.ContextUtil;
-import org.dspace.authenticate.Authentication;
+import org.dspace.authenticate.AuthenticationUtility;
 import org.dspace.core.Context;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.Authentication;
@@ -78,7 +78,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
      * @see EPersonRestAuthenticationProvider
      */
     @Override
-    public Authentication attemptAuthentication(HttpServletRequest req,
+    public AuthenticationUtility attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
 
         String user = req.getParameter("user");
@@ -86,7 +86,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 
         Context context = ContextUtil.obtainContext(req);
 
-        Authentication.updateAuthenticationMethod(context, req);
+        AuthenticationUtility.updateAuthenticationMethod(context, req);
 
         try {
             restAuthenticationService.getAuthenticationService()
@@ -123,7 +123,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
     protected void successfulAuthentication(HttpServletRequest req,
                                             HttpServletResponse res,
                                             FilterChain chain,
-                                            Authentication auth) throws IOException, ServletException {
+                                            AuthenticationUtility auth) throws IOException, ServletException {
 
         DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
         log.debug("Authentication successful for EPerson {}", dSpaceAuthentication::getName);

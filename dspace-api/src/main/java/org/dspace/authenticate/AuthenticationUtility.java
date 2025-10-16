@@ -11,7 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 /**
  * Utility for authentication.
  */
-public class Authentication {
+public class AuthenticationUtility {
 
     public static final String PASSWORD_PATH = "/api/authn/login";
     public static final String SHIBBOLETH_PATH = "/api/authn/shibboleth";
@@ -21,7 +21,7 @@ public class Authentication {
 
     public static final String AUTHENTICATION_METHOD = "authenticationMethod";
 
-    private Authentication() {
+    private AuthenticationUtility() {
         // private empty constructor
     }
 
