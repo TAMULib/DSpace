@@ -83,7 +83,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
                                     HttpServletResponse res,
                                     FilterChain chain) throws IOException, ServletException {
 
-        AuthenticationUtility authentication;
+        Authentication authentication;
         try {
             authentication = getAuthentication(req, res);
         } catch (AuthorizeException e) {
@@ -121,7 +121,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
      * @return              An Authentication object for the EPerson with the uuid in the parameter
      * @throws IOException  If something goes wrong
      */
-    private AuthenticationUtility getAuthentication(HttpServletRequest request, HttpServletResponse res)
+    private Authentication getAuthentication(HttpServletRequest request, HttpServletResponse res)
         throws AuthorizeException, SQLException {
 
         if (restAuthenticationService.hasAuthenticationData(request)) {
@@ -162,7 +162,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
         return null;
     }
 
-    private AuthenticationUtility getOnBehalfOfAuthentication(Context context, String onBehalfOfParameterValue,
+    private Authentication getOnBehalfOfAuthentication(Context context, String onBehalfOfParameterValue,
                                                        HttpServletResponse res) throws SQLException {
 
         if (!authorizeService.isAdmin(context)) {

@@ -78,7 +78,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
      * @see EPersonRestAuthenticationProvider
      */
     @Override
-    public AuthenticationUtility attemptAuthentication(HttpServletRequest req,
+    public Authentication attemptAuthentication(HttpServletRequest req,
                                                 HttpServletResponse res) throws AuthenticationException {
 
         String user = req.getParameter("user");
@@ -123,7 +123,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
     protected void successfulAuthentication(HttpServletRequest req,
                                             HttpServletResponse res,
                                             FilterChain chain,
-                                            AuthenticationUtility auth) throws IOException, ServletException {
+                                            Authentication auth) throws IOException, ServletException {
 
         DSpaceAuthentication dSpaceAuthentication = (DSpaceAuthentication) auth;
         log.debug("Authentication successful for EPerson {}", dSpaceAuthentication::getName);
