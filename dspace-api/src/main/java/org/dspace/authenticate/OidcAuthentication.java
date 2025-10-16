@@ -8,10 +8,13 @@
 package org.dspace.authenticate;
 
 import java.sql.SQLException;
+import java.util.Iterator;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import org.dspace.authenticate.factory.AuthenticateServiceFactory;
 import org.dspace.core.Context;
 import org.dspace.eperson.EPerson;
 import org.dspace.eperson.Group;
@@ -89,6 +92,25 @@ public class OidcAuthentication implements AuthenticationMethod {
     @Override
     public boolean canChangePassword(Context context, EPerson ePerson, String currentPassword) {
         return false;
+    }
+
+    /**
+     * Check if OIDC plugin is enabled
+     * @return true if enabled, false otherwise
+     */
+    public static boolean isEnabled() {
+        final String oidcPluginName = new OidcAuthentication().getName();
+        boolean oidcEnabled = false;
+        // Loop through all enabled authentication plugins to see if OIDC is one of them.
+        Iterator<AuthenticationMethod> authenticationMethodIterator =
+                AuthenticateServiceFactory.getInstance().getAuthenticationService().authenticationMethodIterator();
+        while (authenticationMethodIterator.hasNext()) {
+            if (oidcPluginName.equals(authenticationMethodIterator.next().getName())) {
+                oidcEnabled = true;
+                break;
+            }
+        }
+        return oidcEnabled;
     }
 
 }

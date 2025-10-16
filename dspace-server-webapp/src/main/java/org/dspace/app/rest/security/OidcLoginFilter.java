@@ -7,8 +7,6 @@
  */
 package org.dspace.app.rest.security;
 
-import static org.dspace.authenticate.OidcAuthenticationBean.OIDC_AUTH_ATTRIBUTE;
-
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -19,10 +17,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.authenticate.OidcAuthentication;
 import org.dspace.core.Utils;
 import org.dspace.services.ConfigurationService;
 import org.dspace.services.factory.DSpaceServicesFactory;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.ProviderNotFoundException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 
@@ -48,7 +48,11 @@ public class OidcLoginFilter extends StatelessLoginFilter {
     @Override
     public Authentication attemptAuthentication(HttpServletRequest req, HttpServletResponse res)
         throws AuthenticationException {
-        req.setAttribute(OIDC_AUTH_ATTRIBUTE, OIDC_AUTH_ATTRIBUTE);
+        // First, if Shibboleth is not enabled, throw an immediate ProviderNotFoundException
+        // This tells Spring Security that authentication failed
+        if (!OidcAuthentication.isEnabled()) {
+            throw new ProviderNotFoundException("Shibboleth is disabled.");
+        }
         // NOTE: because this authentication is implicit, we pass in an empty DSpaceAuthentication
         return authenticationManager.authenticate(new DSpaceAuthentication());
     }
