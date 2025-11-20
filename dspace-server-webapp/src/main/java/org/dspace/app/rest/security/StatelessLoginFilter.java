@@ -83,7 +83,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
 
         String user = req.getParameter("user");
         String password = req.getParameter("password");
-
+        // Begin TAMU Customization - #382 Shibboleth Special Groups
         Context context = ContextUtil.obtainContext(req);
 
         AuthenticationUtility.updateAuthenticationMethod(context, req);
@@ -96,7 +96,7 @@ public class StatelessLoginFilter extends AbstractAuthenticationProcessingFilter
         } catch (SQLException e) {
 
         }
-
+        // End TAMU Customization - #382 Shibboleth Special Groups
         // Attempt to authenticate by passing user & password (if provided) to AuthenticationProvider class(es)
         // NOTE: This method will check if the user was already authenticated by StatelessAuthenticationFilter,
         // and, if so, just refresh their token.
