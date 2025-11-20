@@ -12,8 +12,10 @@ import java.text.ParseException;
 
 import com.nimbusds.jwt.JWTClaimsSet;
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.authenticate.AuthenticationUtility;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.core.Context;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,19 +41,28 @@ public class AuthenticationMethodClaimProvider implements JWTClaimProvider {
 
     @Override
     public Object getValue(final Context context, final HttpServletRequest request) {
-        if (context.getAuthenticationMethod() != null) {
-            return context.getAuthenticationMethod();
-        }
-        return authenticationService.getAuthenticationMethod(context, request);
+        // Begin TAMU Customization - #382 Shibboleth Special Groups
+        AuthenticationUtility.updateAuthenticationMethod(context, request);
+
+        String authMethod = context.getAuthenticationMethod();
+
+        return StringUtils.isBlank(authMethod)
+            ? authenticationService.getAuthenticationMethod(context, request)
+            : authMethod;
+        // End TAMU Customization - #382 Shibboleth Special Groups
     }
 
     @Override
     public void parseClaim(final Context context, final HttpServletRequest request, final JWTClaimsSet jwtClaimsSet)
             throws SQLException {
         try {
-            context.setAuthenticationMethod(jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD));
+            // TAMU Customization - #382 Shibboleth Special Groups
+            String authMethod = jwtClaimsSet.getStringClaim(AUTHENTICATION_METHOD);
+            context.setAuthenticationMethod(authMethod);
+            // request.setAttribute(AUTHENTICATION_METHOD, authMethod);
         } catch (ParseException e) {
             log.error(e::getMessage, e);
         }
     }
+
 }

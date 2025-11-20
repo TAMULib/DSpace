@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dspace.authenticate.AuthenticationUtility;
 import org.dspace.authenticate.service.AuthenticationService;
 import org.dspace.core.Context;
 import org.dspace.eperson.Group;
@@ -50,7 +51,15 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
     public Object getValue(Context context, HttpServletRequest request) {
         List<Group> groups = new ArrayList<>();
         try {
-            groups = authenticationService.getSpecialGroups(context, request);
+            // Begin TAMU Customization - #382 Shibboleth Special Groups
+            AuthenticationUtility.updateAuthenticationMethod(context, request);
+
+            authenticationService.getSpecialGroups(context, request)
+                .stream()
+                .forEach(sg -> context.setSpecialGroup(sg.getID()));
+
+            groups = context.getSpecialGroups();
+            // End TAMU Customization - #382 Shibboleth Special Groups
         } catch (SQLException e) {
             log.error("SQLException while retrieving special groups", e);
             return null;
