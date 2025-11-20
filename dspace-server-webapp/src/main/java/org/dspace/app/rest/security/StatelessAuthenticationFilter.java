@@ -126,7 +126,7 @@ public class StatelessAuthenticationFilter extends BasicAuthenticationFilter {
 
         if (restAuthenticationService.hasAuthenticationData(request)) {
             Context context = ContextUtil.obtainContext(request);
-
+            // TAMU Customization - #382 Shibboleth Special Groups
             AuthenticationUtility.updateAuthenticationMethod(context, request);
 
             // parse the token.

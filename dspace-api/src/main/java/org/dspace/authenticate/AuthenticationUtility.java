@@ -9,6 +9,7 @@ import org.dspace.core.Context;
 import jakarta.servlet.http.HttpServletRequest;
 
 /**
+ * TAMU Customization - #382 Shibboleth Special Groups
  * Utility for authentication.
  */
 public class AuthenticationUtility {

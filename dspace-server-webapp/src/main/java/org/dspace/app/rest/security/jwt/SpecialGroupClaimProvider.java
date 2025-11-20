@@ -51,6 +51,7 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
     public Object getValue(Context context, HttpServletRequest request) {
         List<Group> groups = new ArrayList<>();
         try {
+            // Begin TAMU Customization - #382 Shibboleth Special Groups
             AuthenticationUtility.updateAuthenticationMethod(context, request);
 
             authenticationService.getSpecialGroups(context, request)
@@ -58,6 +59,7 @@ public class SpecialGroupClaimProvider implements JWTClaimProvider {
                 .forEach(sg -> context.setSpecialGroup(sg.getID()));
 
             groups = context.getSpecialGroups();
+            // End TAMU Customization - #382 Shibboleth Special Groups
         } catch (SQLException e) {
             log.error("SQLException while retrieving special groups", e);
             return null;
