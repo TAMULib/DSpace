@@ -123,7 +123,11 @@ public class AuthorizeServiceImpl implements AuthorizeService {
     @Override
     public void authorizeAction(Context c, EPerson e, DSpaceObject o, int action, boolean useInheritance)
         throws AuthorizeException, SQLException {
+        log.info("*** we are in authorizeAction");
+
         if (o == null) {
+            log.info("*** dso is null");
+
             // action can be -1 due to a null entry
             String actionText;
 
@@ -168,6 +172,9 @@ public class AuthorizeServiceImpl implements AuthorizeService {
             } else {
                 actionText = Constants.actionText[action];
             }
+            log.info("*** Authorization denied for action "
+                                             + actionText + " on " + Constants.typeText[otype] + ":"
+                                             + oid + " by user " + userid, o, action);
 
             throw new AuthorizeException("Authorization denied for action "
                                              + actionText + " on " + Constants.typeText[otype] + ":"
@@ -202,14 +209,20 @@ public class AuthorizeServiceImpl implements AuthorizeService {
     public boolean authorizeActionBoolean(Context c, EPerson e, DSpaceObject o, int a, boolean useInheritance)
         throws SQLException {
         boolean isAuthorized = true;
-
+        log.info("*** We are in AuthService.authorizeActionBoolean checking: ");
+        log.info("eperson name and id: "+e.getFullName()+" "+e.getID());
+        
         if (o == null) {
+            log.info("*** dso was false, cancelling");
             return false;
         }
+        log.info("dso handle and id: "+o.getHandle()+" "+o.getID());
 
         try {
             authorizeAction(c, e, o, a, useInheritance);
         } catch (AuthorizeException ex) {
+            log.info("*** unauthorized due to AuthorizationException!");
+            log.info(ex.getMessage());
             isAuthorized = false;
         }
 
@@ -235,10 +248,13 @@ public class AuthorizeServiceImpl implements AuthorizeService {
      */
     protected boolean authorize(Context c, DSpaceObject o, int action, EPerson e, boolean useInheritance)
         throws SQLException {
+        log.info("*** We are in the final authorize method");
         // return FALSE if there is no DSpaceObject
         if (o == null) {
+            log.info("*** dso was null");
             return false;
         }
+        log.info("*** We are in the final authorize method checking: "+o.getID()+" "+o.getName());
 
         // is authorization disabled for this context?
         if (c.ignoreAuthorization()) {
@@ -291,10 +307,12 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         }
 
         for (ResourcePolicy rp : getPoliciesActionFilter(c, o, action)) {
-
+            log.info("*** Checking policy (ID, GroupID, Group Name): "+rp.getID()+" "+rp.getGroup().getID()+" "+rp.getGroup().getName());
             if (ignoreCustomPolicies
                 && ResourcePolicy.TYPE_CUSTOM.equals(rp.getRpType())) {
                 if (c.isReadOnly()) {
+                    log.info("*** Policy is read only: "+rp.getID()+" "+rp.getGroup().getID()+" "+rp.getGroup().getName());
+
                     //When we are in read-only mode, we will cache authorized actions in a different way
                     //So we remove this resource policy from the cache.
                     c.uncacheEntity(rp);
@@ -305,6 +323,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
             // check policies for date validity
             if (resourcePolicyService.isDateValid(rp)) {
                 if (rp.getEPerson() != null && rp.getEPerson().equals(userToCheck)) {
+                    log.info("*** Policy is valid 1: "+rp.getID()+" "+rp.getGroup().getID()+" "+rp.getGroup().getName());
                     c.cacheAuthorizedAction(o, action, e, true, rp);
                     return true; // match
                 }
@@ -313,9 +332,12 @@ public class AuthorizeServiceImpl implements AuthorizeService {
                     && groupService.isMember(c, e, rp.getGroup())) {
                     // group was set, and eperson is a member
                     // of that group
+                    log.info("*** Policy is valid 2: "+rp.getID()+" "+rp.getGroup().getID()+" "+rp.getGroup().getName());
                     c.cacheAuthorizedAction(o, action, e, true, rp);
                     return true;
                 }
+            } else {
+                log.info("*** Policy has invalid date: "+rp.getID()+" "+rp.getGroup().getID()+" "+rp.getGroup().getName());
             }
 
             if (c.isReadOnly()) {
@@ -336,6 +358,7 @@ public class AuthorizeServiceImpl implements AuthorizeService {
             }
         }
         // default authorization is denial
+        log.info("*** Default authorization denial");
         c.cacheAuthorizedAction(o, action, e, false, null);
         return false;
     }

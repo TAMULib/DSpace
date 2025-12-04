@@ -10,6 +10,8 @@ package org.dspace.app.rest.authorization;
 import java.sql.SQLException;
 import java.util.Objects;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.model.BaseObjectRest;
 import org.dspace.app.rest.security.DSpaceRestPermission;
 import org.dspace.app.rest.utils.Utils;
@@ -27,6 +29,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class AuthorizeServiceRestUtil {
+    private static final Logger log = LogManager.getLogger();
 
     @Autowired
     private ItemService itemService;
@@ -50,6 +53,7 @@ public class AuthorizeServiceRestUtil {
 
         DSpaceObject dSpaceObject = (DSpaceObject)utils.getDSpaceAPIObjectFromRest(context, object);
         if (dSpaceObject == null) {
+            log.info("*** dSpaceObject was null");
             return false;
         }
 
@@ -61,10 +65,11 @@ public class AuthorizeServiceRestUtil {
             Item item = (Item) dSpaceObject;
             if (!DSpaceRestPermission.READ.equals(dSpaceRestPermission)
                 && (itemService.isInProgressSubmission(context, item) || Objects.nonNull(item.getTemplateItemOf()))) {
+                    log.info("*** item is in progress");
                 return false;
             }
         }
-
+        log.info("*** Calling AuthorizeService from AuthorizeServiceRestUtil for: "+dSpaceRestPermission.getDspaceApiActionId());
         return authorizeService.authorizeActionBoolean(context, ePerson, dSpaceObject,
             dSpaceRestPermission.getDspaceApiActionId(), true);
     }

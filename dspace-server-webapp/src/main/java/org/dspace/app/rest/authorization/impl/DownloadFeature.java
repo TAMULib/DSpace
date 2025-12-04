@@ -9,6 +9,8 @@ package org.dspace.app.rest.authorization.impl;
 
 import java.sql.SQLException;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.dspace.app.rest.authorization.AuthorizationFeature;
 import org.dspace.app.rest.authorization.AuthorizationFeatureDocumentation;
 import org.dspace.app.rest.authorization.AuthorizeServiceRestUtil;
@@ -29,6 +31,8 @@ import org.springframework.stereotype.Component;
         description = "It can be used to verify if the user can download a bitstream")
 public class DownloadFeature implements AuthorizationFeature {
 
+    private static final Logger log = LogManager.getLogger();
+
     public final static String NAME = "canDownload";
 
     @Autowired
@@ -36,7 +40,9 @@ public class DownloadFeature implements AuthorizationFeature {
 
     @Override
     public boolean isAuthorized(Context context, BaseObjectRest object) throws SQLException {
+        log.info("*** Checking download authorization");
         if (object instanceof BitstreamRest) {
+            log.info("*** object is a BitstreamRest");
             return authorizeServiceRestUtil.authorizeActionBoolean(context, object, DSpaceRestPermission.READ);
         }
         return false;
