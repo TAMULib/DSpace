@@ -210,7 +210,11 @@ public class AuthorizeServiceImpl implements AuthorizeService {
         throws SQLException {
         boolean isAuthorized = true;
         log.info("*** We are in AuthService.authorizeActionBoolean checking: ");
-        log.info("eperson name and id: "+e.getFullName()+" "+e.getID());
+        if (e != null) {
+            log.info("eperson name and id: "+e.getFullName()+" "+e.getID());
+        } else {
+            log.info("no eperson present");
+        }
         
         if (o == null) {
             log.info("*** dso was false, cancelling");
