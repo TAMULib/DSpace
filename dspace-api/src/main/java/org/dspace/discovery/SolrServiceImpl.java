@@ -17,6 +17,7 @@ import java.io.StringWriter;
 import java.sql.SQLException;
 import java.time.Instant;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -792,16 +793,20 @@ public class SolrServiceImpl implements SearchService, IndexingService {
 
         solrQuery.setQuery(query);
 
-        // Add any search fields to our query. This is the limited list
-        // of fields that will be returned in the solr result
-        for (String fieldName : discoveryQuery.getSearchFields()) {
-            solrQuery.addField(fieldName);
+        if (discoveryQuery.getMaxResults() != 0) {
+            // set search fields in Solr query only if we are interested in the actual search results
+
+            // Add any search fields to our query. This is the limited list
+            // of fields that will be returned in the solr result
+            for (String fieldName : discoveryQuery.getSearchFields()) {
+                solrQuery.addField(fieldName);
+            }
+            // Also ensure a few key obj identifier fields are returned with every query
+            solrQuery.addField(SearchUtils.RESOURCE_TYPE_FIELD);
+            solrQuery.addField(SearchUtils.RESOURCE_ID_FIELD);
+            solrQuery.addField(SearchUtils.RESOURCE_UNIQUE_ID);
+            solrQuery.addField(STATUS_FIELD);
         }
-        // Also ensure a few key obj identifier fields are returned with every query
-        solrQuery.addField(SearchUtils.RESOURCE_TYPE_FIELD);
-        solrQuery.addField(SearchUtils.RESOURCE_ID_FIELD);
-        solrQuery.addField(SearchUtils.RESOURCE_UNIQUE_ID);
-        solrQuery.addField(STATUS_FIELD);
 
         if (discoveryQuery.isSpellCheck()) {
             solrQuery.setParam(SpellingParams.SPELLCHECK_Q, query);
@@ -896,8 +901,20 @@ public class SolrServiceImpl implements SearchService, IndexingService {
         if (0 < discoveryQuery.getHitHighlightingFields().size()) {
             solrQuery.setHighlight(true);
             solrQuery.add(HighlightParams.USE_PHRASE_HIGHLIGHTER, Boolean.TRUE.toString());
+            boolean escapeHTML = configurationService.getBooleanProperty("discovery.highlights.escape-html", true);
+            String[] renderHTMLForFields =
+                configurationService.getArrayProperty("discovery.highlights.html-allowed-fields");
             for (DiscoverHitHighlightingField highlightingField : discoveryQuery.getHitHighlightingFields()) {
                 solrQuery.addHighlightField(highlightingField.getField() + "_hl");
+                boolean allowHTMLInField = Arrays.stream(renderHTMLForFields)
+                    .anyMatch(field -> highlightingField.getField().matches(field));
+                if (!escapeHTML || allowHTMLInField) {
+                    solrQuery.add("f." + highlightingField.getField() + "_hl." + HighlightParams.METHOD, "original");
+                } else {
+                    solrQuery.add("f." + highlightingField.getField() + "_hl." + HighlightParams.METHOD, "unified");
+                    solrQuery.add("f." + highlightingField.getField() + "_hl." + HighlightParams.ENCODER, "html");
+                }
+
                 solrQuery.add("f." + highlightingField.getField() + "_hl." + HighlightParams.FRAGSIZE,
                               String.valueOf(highlightingField.getMaxChars()));
                 solrQuery.add("f." + highlightingField.getField() + "_hl." + HighlightParams.SNIPPETS,
