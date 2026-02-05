@@ -234,11 +234,6 @@ public class ShibAuthentication implements AuthenticationMethod {
 
             // Step 4: Log the user in.
             context.setCurrentUser(eperson);
-            // TAMU Customization - #382 Shibboleth Special Groups
-            getSpecialGroups(context, request)
-                .stream()
-                .forEach(sg -> context.setSpecialGroup(sg.getID()));
-
             request.setAttribute("shib.authenticated", true);
             AuthenticateServiceFactory.getInstance().getAuthenticationService().initEPerson(context, request, eperson);
 
@@ -297,14 +292,12 @@ public class ShibAuthentication implements AuthenticationMethod {
                 context.getCurrentUser() == null) {
                 return Collections.EMPTY_LIST;
             }
-            // Begin TAMU Customization - #382 Shibboleth Special Groups
-            List<Group> specialGroups = context.getSpecialGroups();
 
-            if (specialGroups.size() > 0 ) {
+            if ((context.getSpecialGroups().size() > 0 ) {
                 log.debug("Returning cached special groups.");
-                return specialGroups;
+                return context.getSpecialGroups();
             }
-            // End TAMU Customization - #382 Shibboleth Special Groups
+
             log.debug("Starting to determine special groups");
             String[] defaultRoles = configurationService.getArrayProperty("authentication-shibboleth.default-roles");
             String roleHeader = configurationService.getProperty("authentication-shibboleth.role-header");

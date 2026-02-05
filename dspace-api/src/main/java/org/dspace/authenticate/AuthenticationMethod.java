@@ -166,9 +166,6 @@ public interface AuthenticationMethod {
      *                 otherwise
      */
     public default boolean areSpecialGroupsApplicable(Context context, HttpServletRequest request) {
-        // TAMU Customization - #382 Shibboleth Special Groups
-        AuthenticationUtility.updateAuthenticationMethod(context, request);
-
         return getName().equals(context.getAuthenticationMethod());
     }
 
