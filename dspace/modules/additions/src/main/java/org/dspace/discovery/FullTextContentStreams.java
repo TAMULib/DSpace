@@ -111,7 +111,7 @@ public class FullTextContentStreams extends ContentStreamBase {
                             ChronoLocalDate start = rp.getStartDate();
                             ChronoLocalDate end = rp.getEndDate();
                             ChronoLocalDate now = LocalDate.now();
-                            if (rp.getGroup().getName().equalsIgnoreCase("anonymous")
+                            if (rp.getGroup() != null && rp.getGroup().getName().equalsIgnoreCase("anonymous")
                                 && (start == null || ((start.isBefore(now) || start.isEqual(now))
                                 && (end == null || (end.isAfter(now) || now.isEqual(end)))))
                             ) {
